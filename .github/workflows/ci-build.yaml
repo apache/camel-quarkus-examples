@@ -58,6 +58,13 @@ jobs:
           version: '11'
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Build Camel Quarkus
+        if: github.ref == 'refs/heads/camel-quarkus-master' || github.base_ref == 'camel-quarkus-master'
+        run: |
+          git clone --depth 1 --branch master https://github.com/apache/camel-quarkus.git \
+            && cd camel-quarkus \
+            && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
+            && ./mvnw ${MAVEN_ARGS} clean install -DskipTests -Denforcer.skip -Dquarkus.build.skip
       - name: mvn license:check formatter:validate impsort:check
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} \
