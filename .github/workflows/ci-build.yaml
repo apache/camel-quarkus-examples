@@ -65,12 +65,13 @@ jobs:
             && cd camel-quarkus \
             && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
             && ./mvnw ${MAVEN_ARGS} clean install -DskipTests -Denforcer.skip -Dquarkus.build.skip
-      - name: mvn license:check formatter:validate impsort:check
+      - name: mvn license:check formatter:validate impsort:check cq:sync-example-properties
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} \
             license:check \
             net.revelc.code.formatter:formatter-maven-plugin:validate \
-            net.revelc.code:impsort-maven-plugin:check
+            net.revelc.code:impsort-maven-plugin:check \
+            org.l2x6.cq:cq-maven-plugin:0.21.0:sync-example-properties
       - name: mvn clean verify -Pnative,docker
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} clean verify -Pnative,docker
