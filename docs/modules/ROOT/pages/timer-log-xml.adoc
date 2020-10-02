@@ -1,0 +1,4 @@
+= XML Hello World: A Camel Quarkus example
+:cq-example-title: XML Hello World
+:cq-example-description: Shows how to define Camel routes using XML.
+:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-xml

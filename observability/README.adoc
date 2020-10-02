@@ -1,6 +1,7 @@
-= Camel Quarkus Observability
+= Observability: A Camel Quarkus example
+:cq-example-description: An example that demonstrates how to add support for metrics, health checks and distributed tracing
 
-This example project demonstrates how to add support for metrics, health checks and distributed tracing.
+{cq-description}
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.

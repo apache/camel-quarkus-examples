@@ -1,0 +1,4 @@
+= Configure a Camel component using CDI: A Camel Quarkus example
+:cq-example-title: Configure a Camel component using CDI
+:cq-example-description: Demonstrates how to set-up a Camel component (the `log` component in this case) programmatically using CDI
+:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-cdi

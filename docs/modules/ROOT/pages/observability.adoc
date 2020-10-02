@@ -1,0 +1,4 @@
+= Observability: A Camel Quarkus example
+:cq-example-title: Observability
+:cq-example-description: Demonstrates how to add support for metrics, health checks and distributed tracing
+:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/observability

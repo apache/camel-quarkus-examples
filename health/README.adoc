@@ -1,14 +1,14 @@
-== Camel Quarkus Example Health
+= Health: A Camel Quarkus example
+:cq-example-description: An example that shows how to use Camel health-checks with Quarkus.
 
-This example shows how to use Camel health-check with Quarkus.
-The example shows how you can build custom health-checks and have
-them automatic discovered by Camel and used as parts of its health-check system.
+{cq-description} It also shows how you can build custom health-checks and have them automatic discovered by Camel and
+used as parts of its health-check system.
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
 The example has two routes. The timer route performs a given task at regular interval. For the sake of this example we'll say
-that this task unexpectedly freezes the service from time to time. The details can be consulted at http://localhost:8080/health. 
+that this task unexpectedly freezes the service from time to time. The details can be consulted at http://localhost:8080/health.
 The custom health check is expected to report UNKNOWN on first consultation, then UP during 10 seconds, and finally DOWN so as to
 simulate that the service is frozen.
 
