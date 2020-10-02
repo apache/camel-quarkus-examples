@@ -1,13 +1,15 @@
-= file-split-log-xml
+= Tokenize a CSV file: A Camel Quarkus example
+:cq-example-description: An example that shows how to define a Camel route in XML for tokenizing a CSV a file.
 
-This is a basic hello world example that uses XML to set-up a Camel file consumer which reads a file in the resources folder.
+{cq-description}
 
-It demonstrates the following;
-1. Reading a file using camel file endpoint as a consumer.
-2. Splitting the file by row.
-3. Splitting the row by columns.
-4. Usage of properties in the camel endpoint uri.
-5. No Java code required or used, the XML can still be compiled to native code. Pretty cool.
+In particular, it demonstrates the following:
+
+1. Reading a file using Camel `file` component as a consumer
+2. Splitting the file into rows
+3. Splitting the rows into columns
+4. Usage of properties defined in `application.properties` in a Camel endpoint URI
+5. No Java code required or used, the route defined in XML can still be compiled to native code.
 
 The file consumer has been marked as non-idempotent thus it will read the same file again using a configurable 30 second delay.
 

@@ -1,7 +1,7 @@
-= timer-log
+= Timer Hello World: A Camel Quarkus example
+:cq-example-description: An example using the Camel timer component to output a Hello world message to the console
 
-This is a basic hello world example that uses a Camel timer that
-triggers every second and prints to the log.
+{cq-description}
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.

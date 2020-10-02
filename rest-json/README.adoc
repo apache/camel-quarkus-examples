@@ -1,4 +1,7 @@
-= rest-json
+= REST with `platform-http`: A Camel Quarkus example
+:cq-example-description: An example that demonstrates how to create a REST service using `platform-http` Camel component and Jackson.
+
+{cq-description}
 
 This example is a port of Quarkus' quickstart https://github.com/quarkusio/quarkus-quickstarts/blob/master/rest-json[rest-json] to Camel.
 

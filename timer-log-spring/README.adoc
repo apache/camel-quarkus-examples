@@ -1,8 +1,7 @@
-= timer-log-spring
+= Spring Dependency Injection: A Camel Quarkus example
+:cq-example-description: An example that shows how to use Spring Dependency Injection when defining routes on Camel Quarkus.
 
-This is a basic hello world example that uses Spring to set-up
-a Camel timer that triggers every second and prints to the
-log.
+{cq-description}
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.

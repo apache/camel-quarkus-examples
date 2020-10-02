@@ -21,9 +21,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+/**
+ * A JAX-RS resource
+ */
 @Path("/hello")
 public class ExampleResource {
 
+    /**
+     * A JAX-RS endpoint always returning {@code "hello"}
+     * 
+     * @return {@code "hello"}
+     */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() {

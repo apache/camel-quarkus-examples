@@ -1,0 +1,4 @@
+= Custom `main()`: A Camel Quarkus example
+:cq-example-title: Custom `main()`
+:cq-example-description: Shows how to start Camel from a custom `main()` method
+:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-main

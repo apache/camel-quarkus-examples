@@ -1,0 +1,4 @@
+= Timer Hello World: A Camel Quarkus example
+:cq-example-title: Timer Hello World
+:cq-example-description: An example using the Camel timer component to output a Hello world message to the console
+:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/timer-log
