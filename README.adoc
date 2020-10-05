@@ -1,0 +1,12 @@
+= Apache Camel Quarkus Examples
+
+Useful links:
+
+* https://camel.apache.org/camel-quarkus/latest/user-guide/examples.html[List of Camel Quarkus examples] with short descriptions
+* https://camel.apache.org/camel-quarkus/latest/user-guide/index.html[Camel Quarkus User guide]
+* https://camel.apache.org/camel-quarkus/latest/contributor-guide/index.html[Camel Quarkus Contributor guide]
+* https://github.com/apache/camel-quarkus[Camel Quarkus source repository]
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
