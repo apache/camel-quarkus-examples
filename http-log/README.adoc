@@ -110,3 +110,7 @@ public class ExampleResource {
     }
 }
 ----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

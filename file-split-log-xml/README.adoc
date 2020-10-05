@@ -66,3 +66,7 @@ $ ./target/*-runner
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.011s.
 ...
 ----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

@@ -69,3 +69,7 @@ $ ./target/*-runner Hello 2
 [example] (Camel (camel-6) thread #8 - timer://foo) Exchange[Body: Hello]
 ...
 ----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

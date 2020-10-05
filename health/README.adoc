@@ -67,13 +67,6 @@ $ ./target/*-runner
 ...
 ----
 
-=== Help and contributions
+== Feedback
 
-If you hit any problem using Camel or have some feedback, then please
-https://camel.apache.org/support.html[let us know].
-
-We also love contributors, so
-https://camel.apache.org/contributing.html[get involved] :-)
-
-The Camel riders!
-
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
