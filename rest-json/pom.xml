@@ -22,14 +22,14 @@
 
     <artifactId>camel-quarkus-examples-rest-json</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
 
     <name>Camel Quarkus :: Examples :: Rest Json</name>
     <description>Camel Quarkus Example :: Rest Json</description>
 
     <properties>
         <camel-quarkus.version>1.2.0-SNAPSHOT</camel-quarkus.version>
-        <quarkus.version>1.8.1.Final</quarkus.version>
+        <quarkus.version>1.9.0.Final</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
