@@ -61,8 +61,8 @@ jobs:
       - name: Build Camel Quarkus
         if: github.ref == 'refs/heads/camel-quarkus-master' || github.base_ref == 'camel-quarkus-master'
         run: |
-          git clone --depth 1 --branch master https://github.com/apache/camel-quarkus.git \
-            && cd camel-quarkus \
+          git clone --depth 1 --branch master https://github.com/apache/camel-quarkus.git ${{ runner.temp }}/camel-quarkus \
+            && cd ${{ runner.temp }}/camel-quarkus \
             && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
             && ./mvnw ${MAVEN_ARGS} clean install -DskipTests -Denforcer.skip -Dquarkus.build.skip
       - name: mvn license:check formatter:validate impsort:check cq:sync-example-properties
