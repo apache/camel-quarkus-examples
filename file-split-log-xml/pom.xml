@@ -22,14 +22,14 @@
 
     <artifactId>camel-quarkus-examples-file-log-xml</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
 
     <name>Camel Quarkus :: Examples :: File To Log XML DSL</name>
     <description>Camel Quarkus Example :: File To Log XML DSL</description>
 
     <properties>
-        <camel-quarkus.version>1.1.0</camel-quarkus.version>
-        <quarkus.version>1.8.0.Final</quarkus.version>
+        <camel-quarkus.version>1.3.0</camel-quarkus.version>
+        <quarkus.version>1.9.0.Final</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
