@@ -1,4 +1,0 @@
-= REST with `platform-http`: A Camel Quarkus example
-:cq-example-title: REST with `platform-http`
-:cq-example-description: Demonstrates how to create a REST service using `platform-http` Camel component and Jackson.
-:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/rest-json

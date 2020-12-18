@@ -1,4 +1,0 @@
-= Spring Dependency Injection: A Camel Quarkus example
-:cq-example-title: Spring Dependency Injection
-:cq-example-description: Shows how to use Spring Dependency Injection when defining routes on Camel Quarkus.
-:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-spring
