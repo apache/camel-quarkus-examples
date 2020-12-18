@@ -28,8 +28,8 @@
     <description>Camel Quarkus Example :: File To Log XML DSL</description>
 
     <properties>
-        <camel-quarkus.version>1.4.0</camel-quarkus.version>
-        <quarkus.version>1.10.0.Final</quarkus.version>
+        <camel-quarkus.version>1.5.0</camel-quarkus.version>
+        <quarkus.version>1.10.3.Final</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
