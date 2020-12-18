@@ -1,4 +1,0 @@
-= Health: A Camel Quarkus example
-:cq-example-title: Health
-:cq-example-description: Shows how to use Camel health-checks with Quarkus.
-:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/health

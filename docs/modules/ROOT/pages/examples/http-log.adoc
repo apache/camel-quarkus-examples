@@ -1,4 +1,0 @@
-= HTTP with vanilla JAX-RS or with Camel `platform-http` component: A Camel Quarkus example
-:cq-example-title: HTTP with vanilla JAX-RS or with Camel `platform-http` component
-:cq-example-description: Shows how to create HTTP endpoints using either the RESTEasy
-:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/http-log

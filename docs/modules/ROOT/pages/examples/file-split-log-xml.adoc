@@ -1,4 +1,0 @@
-= Tokenize a CSV file: A Camel Quarkus example
-:cq-example-title: Tokenize a CSV file
-:cq-example-description: Shows how to define a Camel route in XML for tokenizing a CSV a file.
-:cq-example-url: https://github.com/apache/camel-quarkus-examples/tree/master/file-split-log-xml
