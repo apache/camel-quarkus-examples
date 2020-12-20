@@ -71,7 +71,7 @@ jobs:
             license:check \
             net.revelc.code.formatter:formatter-maven-plugin:validate \
             net.revelc.code:impsort-maven-plugin:check \
-            org.l2x6.cq:cq-maven-plugin:0.23.2:sync-example-properties
+            org.l2x6.cq:cq-maven-plugin:0.25.0:sync-example-properties
       - name: mvn clean verify -Pnative,docker
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} clean verify -Pnative,docker
