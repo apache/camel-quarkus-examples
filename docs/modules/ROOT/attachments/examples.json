@@ -1,1 +1,57 @@
-[{"title":"Configure a Camel component using CDI","description":"Demonstrates how to set-up a Camel component (the `log` component in this case) programmatically using CDI","link":"https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-cdi"},{"title":"Custom `main()`","description":"Shows how to start Camel from a custom `main()` method","link":"https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-main"},{"title":"HTTP with vanilla JAX-RS or with Camel `platform-http` component","description":"Shows how to create HTTP endpoints using either the RESTEasy","link":"https://github.com/apache/camel-quarkus-examples/tree/master/http-log"},{"title":"Health","description":"Shows how to use Camel health-checks with Quarkus.","link":"https://github.com/apache/camel-quarkus-examples/tree/master/health"},{"title":"Kotlin Hello World","description":"Shows how to define Camel routes using Kotlin programming language","link":"https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-kotlin"},{"title":"Observability","description":"Demonstrates how to add support for metrics, health checks and distributed tracing","link":"https://github.com/apache/camel-quarkus-examples/tree/master/observability"},{"title":"REST with `platform-http`","description":"Demonstrates how to create a REST service using `platform-http` Camel component and Jackson.","link":"https://github.com/apache/camel-quarkus-examples/tree/master/rest-json"},{"title":"Spring Dependency Injection","description":"Shows how to use Spring Dependency Injection when defining routes on Camel Quarkus.","link":"https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-spring"},{"title":"Timer Hello World","description":"Uses the Camel timer component to output a Hello world message to the console","link":"https://github.com/apache/camel-quarkus-examples/tree/master/timer-log"},{"title":"Tokenize a CSV file","description":"Shows how to define a Camel route in XML for tokenizing a CSV a file.","link":"https://github.com/apache/camel-quarkus-examples/tree/master/file-split-log-xml"},{"title":"XML Hello World","description":"Shows how to define Camel routes using XML.","link":"https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-xml"}]
+[
+  {
+    "title": "Configure a Camel component using CDI",
+    "description": "Demonstrates how to set-up a Camel component (the `log` component in this case) programmatically using CDI",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-cdi"
+  },
+  {
+    "title": "Custom `main()`",
+    "description": "Shows how to start Camel from a custom `main()` method",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-main"
+  },
+  {
+    "title": "HTTP with vanilla JAX-RS or with Camel `platform-http` component",
+    "description": "Shows how to create HTTP endpoints using either the RESTEasy",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/http-log"
+  },
+  {
+    "title": "Health",
+    "description": "Shows how to use Camel health-checks with Quarkus.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/health"
+  },
+  {
+    "title": "Kotlin Hello World",
+    "description": "Shows how to define Camel routes using Kotlin programming language",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-kotlin"
+  },
+  {
+    "title": "Observability",
+    "description": "Demonstrates how to add support for metrics, health checks and distributed tracing",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/observability"
+  },
+  {
+    "title": "REST with `platform-http`",
+    "description": "Demonstrates how to create a REST service using `platform-http` Camel component and Jackson.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/rest-json"
+  },
+  {
+    "title": "Spring Dependency Injection",
+    "description": "Shows how to use Spring Dependency Injection when defining routes on Camel Quarkus.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-spring"
+  },
+  {
+    "title": "Timer Hello World",
+    "description": "Uses the Camel timer component to output a Hello world message to the console",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/timer-log"
+  },
+  {
+    "title": "Tokenize a CSV file",
+    "description": "Shows how to define a Camel route in XML for tokenizing a CSV a file.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/file-split-log-xml"
+  },
+  {
+    "title": "XML Hello World",
+    "description": "Shows how to define Camel routes using XML.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-xml"
+  }
+]
