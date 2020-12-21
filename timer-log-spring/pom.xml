@@ -29,7 +29,7 @@
 
     <properties>
         <camel-quarkus.version>1.5.0</camel-quarkus.version>
-        <quarkus.version>1.10.3.Final</quarkus.version>
+        <quarkus.version>1.11.0.Beta1</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
