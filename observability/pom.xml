@@ -22,14 +22,14 @@
 
     <artifactId>camel-quarkus-examples-observability</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.6.0-SNAPSHOT</version>
 
     <name>Camel Quarkus :: Examples :: Observability</name>
     <description>Camel Quarkus Example :: Observability</description>
 
     <properties>
-        <camel-quarkus.version>1.5.0</camel-quarkus.version>
-        <quarkus.version>1.10.3.Final</quarkus.version>
+        <camel-quarkus.version>1.6.0</camel-quarkus.version>
+        <quarkus.version>1.11.0.Final</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
