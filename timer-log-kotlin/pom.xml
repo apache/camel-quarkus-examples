@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Timer to Log Kotlin</description>
 
     <properties>
-        <camel-quarkus.version>1.6.0</camel-quarkus.version>
+        <camel-quarkus.version>1.7.0</camel-quarkus.version>
         <quarkus.version>1.11.0.Final</quarkus.version>
         <kotlin.version>1.4.20</kotlin.version>
 

@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Observability</description>
 
     <properties>
-        <camel-quarkus.version>1.6.0</camel-quarkus.version>
+        <camel-quarkus.version>1.7.0</camel-quarkus.version>
         <quarkus.version>1.11.0.Final</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
