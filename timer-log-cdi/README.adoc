@@ -34,7 +34,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 [source,shell]
 ----
 $ mvn clean package
-$ java -jar target/*-runner.jar
+$ java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
 ----
