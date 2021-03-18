@@ -45,6 +45,8 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <mycila-license.version>3.0</mycila-license.version>
+
+        <quarkus.runner>${project.build.directory}/quarkus-app/quarkus-run.jar</quarkus.runner>
     </properties>
 
     <dependencyManagement>
@@ -57,21 +59,54 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.camel.quarkus</groupId>
+                <artifactId>camel-quarkus-bom-test</artifactId>
+                <version>${camel-quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-main</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-microprofile-health</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-timer</artifactId>
         </dependency>
+
+        <!-- Test -->
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-log</artifactId>
+            <artifactId>camel-quarkus-integration-tests-process-executor-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -113,16 +148,27 @@
                     </configuration>
                 </plugin>
 
+                <!-- Move surefire:test to integration-test phase to be able to execute the runner JAR from a test -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
-                    <configuration>
-                        <failIfNoTests>false</failIfNoTests>
-                        <systemProperties>
-                            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                        </systemProperties>
-                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>default-test</id>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                            <phase>integration-test</phase>
+                            <configuration>
+                                <failIfNoTests>false</failIfNoTests>
+                                <systemProperties>
+                                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                                    <quarkus.runner>${quarkus.runner}</quarkus.runner>
+                                </systemProperties>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
 
                 <plugin>
@@ -227,7 +273,30 @@
             </activation>
             <properties>
                 <quarkus.package.type>native</quarkus.package.type>
+                <quarkus.runner>${project.build.directory}/${project.artifactId}-${project.version}-runner</quarkus.runner>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <systemPropertyVariables>
+                                        <quarkus.package.type>${quarkus.package.type}</quarkus.package.type>
+                                        <quarkus.runner>${quarkus.runner}</quarkus.runner>
+                                    </systemPropertyVariables>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

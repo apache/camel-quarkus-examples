@@ -14,27 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.acme.http;
+package org.acme.timer
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
-/**
- * A JAX-RS resource
- */
-@Path("/hello")
-public class ExampleResource {
+import io.quarkus.test.junit.QuarkusTest;
+import org.awaitility.Awaitility.await
+import org.junit.jupiter.api.Test;
 
-    /**
-     * A JAX-RS endpoint always returning {@code "hello"}
-     * 
-     * @return {@code "hello"}
-     */
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String hello() {
-        return "hello";
+@QuarkusTest
+open class TimerLogKotlinTest {
+
+    @Test
+    fun testTimerLogKotlin() {
+        val packageType = System.getProperty("quarkus.package.type")
+        var pathPrefix = "target"
+        if (packageType != null && packageType == "native") {
+            pathPrefix += "/target"
+        }
+
+        val quarkusLogFile = File("$pathPrefix/quarkus.log")
+
+        await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until {
+            quarkusLogFile.readText(StandardCharsets.UTF_8).contains("Hello from Kotlin!")
+        }
     }
 }
