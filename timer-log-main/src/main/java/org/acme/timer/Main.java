@@ -26,10 +26,12 @@ import javax.inject.Named;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import org.apache.camel.quarkus.main.CamelMainApplication;
+import org.jboss.logging.Logger;
 
 @QuarkusMain
 public class Main {
 
+    private static final Logger LOG = Logger.getLogger(Main.class);
     private static String greeting;
 
     public static void main(String... args) {
@@ -39,18 +41,24 @@ public class Main {
          * @Inject @Named("greeting")
          * And we pass the second argument as -durationMaxMessages which is the number of messages that the application
          * will process before terminating */
-        if (args.length < 2) {
-            throw new IllegalStateException("Expected at least two CLI arguments");
-        }
-        int i = 0;
         List<String> filteredArgs = new ArrayList<>(args.length);
-        greeting = args[i++];
-        final String repeatTimes = args[i++];
-        filteredArgs.add("-durationMaxMessages");
-        filteredArgs.add(repeatTimes);
+        if (args.length < 2) {
+            LOG.warnf(
+                    "Expected at least 2 CLI arguments but got %d. Will proceed with default greeting. Refer to the README instructions.",
+                    args.length);
+            greeting = "Hello";
+            filteredArgs.add("-durationMaxMessages");
+            filteredArgs.add("2");
+        } else {
+            int i = 0;
+            greeting = args[i++];
+            final String repeatTimes = args[i++];
+            filteredArgs.add("-durationMaxMessages");
+            filteredArgs.add(repeatTimes);
 
-        for (; i < args.length; i++) {
-            filteredArgs.add(args[i++]);
+            for (; i < args.length; i++) {
+                filteredArgs.add(args[i++]);
+            }
         }
 
         Quarkus.run(CamelMainApplication.class, filteredArgs.toArray(new String[filteredArgs.size()]));
