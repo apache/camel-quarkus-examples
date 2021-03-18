@@ -10,6 +10,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/master/timer-log-main"
   },
   {
+    "title": "File consumer with Bindy \u0026 FTP",
+    "description": "Shows how to consume CSV files, marshal \u0026 unmarshal the data and send it onwards via FTP",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/master/file-bindy-ftp"
+  },
+  {
     "title": "HTTP with vanilla JAX-RS or with Camel `platform-http` component",
     "description": "Shows how to create HTTP endpoints using either the RESTEasy",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/master/http-log"
