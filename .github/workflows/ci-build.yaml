@@ -43,10 +43,14 @@ env:
   LANG: en_US.UTF-8
   MAVEN_OPTS: -Xmx3000m
   MAVEN_ARGS: -V -ntp -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -e
+  TESTCONTAINERS_RYUK_DISABLED: true
 
 jobs:
-  mvn-verify:
+  initial-mvn-install:
+    if: github.repository == 'apache/camel-quarkus-examples'
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-itest-matrix.outputs.matrix }}
     steps:
       - name: Set up JDK 11
         uses: AdoptOpenJDK/install-jdk@v1
@@ -60,7 +64,7 @@ jobs:
           git clone --depth 1 --branch master https://github.com/apache/camel-quarkus.git ${{ runner.temp }}/camel-quarkus \
             && cd ${{ runner.temp }}/camel-quarkus \
             && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
-            && ./mvnw ${MAVEN_ARGS} clean install -DskipTests -Denforcer.skip -Dquarkus.build.skip
+            && ./mvnw ${MAVEN_ARGS} clean install -Dquickly
       - name: mvn license:check formatter:validate impsort:check cq:sync-example-properties
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} \
@@ -68,9 +72,84 @@ jobs:
             net.revelc.code.formatter:formatter-maven-plugin:validate \
             net.revelc.code:impsort-maven-plugin:check \
             org.l2x6.cq:cq-maven-plugin:0.25.0:sync-example-properties
-      - name: mvn clean verify -Pnative,docker
+      - name: Validate test categories YAML
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} clean verify -Pnative,docker
+          VALID=true
+          for EXAMPLE in $(dirname $(grep -l "camel-quarkus-examples-" $(find . -name pom.xml)) | cut -f2 -d'/'); do
+            if ! grep ${EXAMPLE} .github/test-categories.yaml > /dev/null; then
+              echo "Project ${EXAMPLE} is not listed in .github/test-categories.yaml"
+              VALID=false
+            fi
+          done
+
+          if [[ ${VALID} != "true" ]]; then
+            exit 1
+          fi
+      - name: Build Camel Quarkus Examples
+        run: |
+          ./mvnw-for-each.sh ${MAVEN_ARGS} clean install -DskipTests -Dquarkus.build.skip -Dimpsort.skip -Dformatter.skip
+      - name: Fail if there are uncommitted changes
+        shell: bash
+        run: |
+          [[ -z $(git status --porcelain) ]] || { echo 'There are uncommitted changes'; git status; exit 1; }
+      - name: Tar Maven Repo
+        shell: bash
+        run: |
+          tar -czf ${{ runner.temp }}/maven-repo.tgz -C ~ .m2/repository
+      - name: Persist Maven Repo
+        uses: actions/upload-artifact@v2
+        with:
+          name: maven-repo
+          path: ${{ runner.temp }}/maven-repo.tgz
+          retention-days: 1
+      - name: Setup Integration Test Matrix
+        id: set-itest-matrix
+        run: |
+          sudo wget -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/3.2.1/yq_linux_amd64"
+          sudo chmod +x /usr/local/bin/yq
+          CATEGORIES=$(cat .github/test-categories.yaml | yq r - --printMode p "*." | sed "s/\(.*\)/'\1'/" | sed ':a;N;$!ba;s/\n/,/g')
+          echo "::set-output name=matrix::{'category': [${CATEGORIES}]}"
+
+  integration-tests:
+    name: Integration Tests - ${{matrix.category}}
+    needs: initial-mvn-install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.initial-mvn-install.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: AdoptOpenJDK/install-jdk@v1
+        with:
+          version: '11'
+      - name: Download Maven Repo
+        uses: actions/download-artifact@v2
+        with:
+          name: maven-repo
+          path: ..
+      - name: Extract Maven Repo
+        shell: bash
+        run: |
+          tar -xzf ../maven-repo.tgz -C ~
+      - name: Install yq
+        run: |
+          sudo wget -O /usr/local/bin/yq "https://github.com/mikefarah/yq/releases/download/3.2.1/yq_linux_amd64"
+          sudo chmod +x /usr/local/bin/yq
+      - name: Integration Tests
+        run: |
+          EXAMPLE_PROJECTS=""
+          for EXAMPLE in $(cat .github/test-categories.yaml | yq r - "${{ matrix.category }}.*"); do
+            if [ "${EXAMPLE}" == "-" ]; then
+              continue
+            fi
+
+            ./mvnw ${MAVEN_ARGS} clean verify \
+              -Dformatter.skip -Dimpsort.skip -Denforcer.skip \
+              -Pnative,docker \
+              -f "${EXAMPLE}/pom.xml"
+          done
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
