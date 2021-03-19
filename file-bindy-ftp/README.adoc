@@ -151,6 +151,11 @@ To clean up do.
 $ kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-file-bindy-ftp
 ----
 
+[NOTE]
+====
+If you need to configure container resource limits & requests, or enable the Quarkus Kubernetes client to trust self signed certificates, you can find these configuration options in `src/main/resources/application.properties`. Simply uncomment them and set your desired values.
+====
+
 ==== Deploying to OpenShift
 
 To start a Source To Image (S2I) build and deploy the application.
