@@ -20,14 +20,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.camel.health.HealthCheckResultBuilder;
-import org.apache.camel.microprofile.health.AbstractCamelMicroProfileLivenessCheck;
+import org.apache.camel.impl.health.AbstractHealthCheck;
 
 /**
  * A simple custom liveness check which utilizes the Camel Health API.
  *
  * The check status is recorded as DOWN on every 5th invocation.
  */
-public class CustomLivenessCheck extends AbstractCamelMicroProfileLivenessCheck {
+public class CustomLivenessCheck extends AbstractHealthCheck {
 
     AtomicInteger hitCount = new AtomicInteger();
 
@@ -46,5 +46,10 @@ public class CustomLivenessCheck extends AbstractCamelMicroProfileLivenessCheck 
         } else {
             builder.up();
         }
+    }
+
+    @Override
+    public boolean isReadiness() {
+        return false;
     }
 }

@@ -19,12 +19,12 @@ package org.acme.observability.health.camel;
 import java.util.Map;
 
 import org.apache.camel.health.HealthCheckResultBuilder;
-import org.apache.camel.microprofile.health.AbstractCamelMicroProfileReadinessCheck;
+import org.apache.camel.impl.health.AbstractHealthCheck;
 
 /**
  * A simple custom liveness check which utilizes the Camel Health API.
  */
-public class CustomReadinessCheck extends AbstractCamelMicroProfileReadinessCheck {
+public class CustomReadinessCheck extends AbstractHealthCheck {
 
     public CustomReadinessCheck() {
         super("custom-readiness-check");
@@ -34,5 +34,10 @@ public class CustomReadinessCheck extends AbstractCamelMicroProfileReadinessChec
     @Override
     protected void doCall(HealthCheckResultBuilder builder, Map<String, Object> options) {
         builder.up();
+    }
+
+    @Override
+    public boolean isLiveness() {
+        return false;
     }
 }
