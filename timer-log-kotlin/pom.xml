@@ -28,9 +28,9 @@
     <description>Camel Quarkus Example :: Timer to Log Kotlin</description>
 
     <properties>
-        <camel-quarkus.version>1.8.1</camel-quarkus.version>
-        <quarkus.version>1.13.0.Final</quarkus.version>
-        <kotlin.version>1.4.31</kotlin.version>
+        <camel-quarkus.version>2.0.0</camel-quarkus.version>
+        <quarkus.version>2.0.0.Alpha3</quarkus.version>
+        <kotlin.version>1.4.32</kotlin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -244,7 +244,7 @@
                     </dependency>
                 </dependencies>
             </plugin>
-        
+
             <plugin>
                 <groupId>net.revelc.code.formatter</groupId>
                 <artifactId>formatter-maven-plugin</artifactId>
