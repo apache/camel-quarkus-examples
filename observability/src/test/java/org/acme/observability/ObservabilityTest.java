@@ -22,6 +22,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
@@ -60,7 +61,7 @@ public class ObservabilityTest {
                 .statusCode(200)
                 .body("status", Matchers.is("UP"),
                         "checks.name",
-                        containsInAnyOrder("camel-readiness-checks", "camel-context-check", "Uptime readiness check"),
+                        hasItems("camel-readiness-checks", "Uptime readiness check"),
                         "checks.data.custom-readiness-check", containsInAnyOrder(null, "UP"));
     }
 }
