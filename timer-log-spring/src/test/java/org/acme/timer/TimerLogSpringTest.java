@@ -16,12 +16,12 @@
  */
 package org.acme.timer;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
 import static org.awaitility.Awaitility.await;
@@ -31,19 +31,9 @@ public class TimerLogSpringTest {
 
     @Test
     public void testTimerLogSpring() {
-        File quarkusLogFile = getQuarkusLogFile();
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
-            String log = FileUtils.readFileToString(quarkusLogFile, StandardCharsets.UTF_8);
+            String log = new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8);
             return log.contains("Incremented the counter");
         });
-    }
-
-    private File getQuarkusLogFile() {
-        String pathPrefix = "target";
-        String packageType = System.getProperty("quarkus.package.type");
-        if (packageType != null && packageType.equals("native")) {
-            pathPrefix += "/target";
-        }
-        return new File(pathPrefix + "/quarkus.log");
     }
 }

@@ -29,13 +29,7 @@ open class TimerLogKotlinTest {
 
     @Test
     fun testTimerLogKotlin() {
-        val packageType = System.getProperty("quarkus.package.type")
-        var pathPrefix = "target"
-        if (packageType != null && packageType == "native") {
-            pathPrefix += "/target"
-        }
-
-        val quarkusLogFile = File("$pathPrefix/quarkus.log")
+        val quarkusLogFile = File("target/quarkus.log")
 
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until {
             quarkusLogFile.readText(StandardCharsets.UTF_8).contains("Hello from Kotlin!")
