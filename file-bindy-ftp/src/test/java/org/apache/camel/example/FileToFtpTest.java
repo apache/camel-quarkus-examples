@@ -52,7 +52,7 @@ public class FileToFtpTest {
 
             await().atMost(10L, TimeUnit.SECONDS).pollDelay(500, TimeUnit.MILLISECONDS).until(() -> {
                 try {
-                    return channelSftp.ls("uploads/books").size() >= 3;
+                    return channelSftp.ls("uploads/books/*.csv").size() >= 3;
                 } catch (Exception e) {
                     return false;
                 }
