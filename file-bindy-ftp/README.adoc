@@ -83,7 +83,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package
+$ mvn clean package -DskipTests
 $ java -jar target/quarkus-app/quarkus-run.jar
 ----
 
@@ -96,7 +96,7 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Pnative
+$ mvn clean package -DskipTests -Pnative
 $ ./target/*-runner
 ----
 
