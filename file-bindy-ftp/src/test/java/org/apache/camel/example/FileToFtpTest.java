@@ -25,6 +25,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.Test;
 
 import static org.awaitility.Awaitility.await;
@@ -35,11 +37,14 @@ public class FileToFtpTest {
 
     @Test
     public void testFileToFtp() throws JSchException {
-        JSch jsch = new JSch();
-        jsch.setKnownHosts(System.getProperty("user.home") + "/.ssh/known_hosts");
 
-        Session session = jsch.getSession("ftpuser", System.getProperty("ftp.host"));
-        session.setPort(Integer.parseInt(System.getProperty("ftp.port")));
+        Config config = ConfigProvider.getConfig();
+
+        JSch jsch = new JSch();
+        jsch.setKnownHosts(config.getValue("user.home", String.class) + "/.ssh/known_hosts");
+
+        Session session = jsch.getSession("ftpuser", config.getValue("ftp.host", String.class));
+        session.setPort(Integer.parseInt(config.getValue("ftp.port", String.class)));
         session.setPassword("ftppassword");
         session.setConfig("StrictHostKeyChecking", "no");
         session.connect(5000);
