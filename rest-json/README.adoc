@@ -3,7 +3,7 @@
 
 {cq-description}
 
-This example is a port of Quarkus' quickstart https://github.com/quarkusio/quarkus-quickstarts/blob/master/rest-json[rest-json] to Camel.
+This example is a port of Quarkus' quickstart https://github.com/quarkusio/quarkus-quickstarts/blob/main/rest-json[rest-json] to Camel.
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.

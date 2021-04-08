@@ -20,8 +20,8 @@ name: Camel Quarkus CI
 on:
   push:
     branches:
-      - master
-      - camel-quarkus-master
+      - main
+      - camel-quarkus-main
     paths-ignore:
       - '**.adoc'
       - 'Jenkinsfile'
@@ -30,8 +30,8 @@ on:
       - 'NOTICE.txt'
   pull_request:
     branches:
-      - master
-      - camel-quarkus-master
+      - main
+      - camel-quarkus-main
     paths-ignore:
       - '**.adoc'
       - 'Jenkinsfile'
@@ -59,9 +59,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build Camel Quarkus
-        if: github.ref == 'refs/heads/camel-quarkus-master' || github.base_ref == 'camel-quarkus-master'
+        if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
         run: |
-          git clone --depth 1 --branch master https://github.com/apache/camel-quarkus.git ${{ runner.temp }}/camel-quarkus \
+          git clone --depth 1 --branch main https://github.com/apache/camel-quarkus.git ${{ runner.temp }}/camel-quarkus \
             && cd ${{ runner.temp }}/camel-quarkus \
             && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
             && ./mvnw ${MAVEN_ARGS} clean install -Dquickly
@@ -71,7 +71,7 @@ jobs:
             license:check \
             net.revelc.code.formatter:formatter-maven-plugin:validate \
             net.revelc.code:impsort-maven-plugin:check \
-            org.l2x6.cq:cq-maven-plugin:0.25.0:sync-example-properties
+            org.l2x6.cq:cq-maven-plugin:0.33.0:sync-example-properties
       - name: Validate test categories YAML
         run: |
           VALID=true
