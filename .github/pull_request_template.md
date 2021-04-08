@@ -1,2 +1,2 @@
-Note that the `master` branch points at the latest stable Camel Quarkus release.
-Pull requests should be generally send against the `camel-quarkus-master` branch pointing at the current Camel Quarkus SNAPSHOT.
+Note that the `main` branch points at the latest stable Camel Quarkus release.
+Pull requests should be generally send against the `camel-quarkus-main` branch pointing at the current Camel Quarkus SNAPSHOT.

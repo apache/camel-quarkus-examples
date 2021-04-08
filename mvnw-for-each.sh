@@ -15,4 +15,4 @@ do
 done
 
 cd "${pwd}"
-./mvnw org.l2x6.cq:cq-maven-plugin:0.25.0:update-examples-json
+./mvnw org.l2x6.cq:cq-maven-plugin:0.33.0:update-examples-json
