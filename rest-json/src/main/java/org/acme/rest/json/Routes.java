@@ -21,7 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.JsonLibrary;
+import org.apache.camel.model.rest.RestBindingMode;
 
 /**
  * Camel route definitions.
@@ -43,26 +43,26 @@ public class Routes extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("platform-http:/fruits?httpMethodRestrict=GET,POST")
-                .choice()
-                .when(simple("${header.CamelHttpMethod} == 'GET'"))
-                .setBody()
-                .constant(fruits)
-                .endChoice()
-                .when(simple("${header.CamelHttpMethod} == 'POST'"))
-                .unmarshal()
-                .json(JsonLibrary.Jackson, Fruit.class)
-                .process()
-                .body(Fruit.class, fruits::add)
-                .setBody()
-                .constant(fruits)
-                .endChoice()
-                .end()
-                .marshal().json();
 
-        from("platform-http:/legumes?httpMethodRestrict=GET")
+        restConfiguration().bindingMode(RestBindingMode.json);
+
+        rest("/fruits")
+                .get()
+                .route()
+                .setBody().constant(fruits)
+                .endRest()
+
+                .post()
+                .type(Fruit.class)
+                .route()
+                .process().body(Fruit.class, fruits::add)
+                .setBody().constant(fruits)
+                .endRest();
+
+        rest("/legumes")
+                .get()
+                .route()
                 .setBody().constant(legumes)
-                .marshal().json();
-
+                .endRest();
     }
 }
