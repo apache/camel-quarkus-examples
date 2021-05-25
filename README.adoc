@@ -10,3 +10,21 @@ Useful links:
 == Feedback
 
 Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
+
+== Contributing
+
+=== Branches
+
+The `main` branch should always point at the latest Camel Quarkus release.
+The `camel-quarkus-main` branch points at the Camel Quarkus snapshot version currently available in Camel Quarkus `main` branch.
+
+=== Upgrading Camel Quarkus
+
+[source,shell]
+----
+$ NEW_CQ_VERSION=1.2.3-SNAPSHOT
+$ find . -type f -name pom.xml -exec sed -i "s|<camel-quarkus.version>[^<]*</camel-quarkus.version>|<camel-quarkus.version>$NEW_CQ_VERSION</camel-quarkus.version>|g" {} \;
+$ ./mvnw-for-each.sh org.l2x6.cq:cq-maven-plugin:0.25.0:sync-example-properties
+# Possibly also change the project versions
+./mvnw-for-each.sh versions:set -DnewVersion=1.2.3-SNAPSHOT
+----
