@@ -20,12 +20,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>camel-quarkus-examples-timer-log-main</artifactId>
+    <artifactId>camel-quarkus-examples-kafka</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
     <version>2.0.0-SNAPSHOT</version>
 
-    <name>Camel Quarkus :: Examples :: Timer Log Main</name>
-    <description>Camel Quarkus Example :: Timer to Log Main</description>
+    <name>Camel Quarkus :: Examples :: Kafka</name>
+    <description>Camel Quarkus Example :: Kafka</description>
 
     <properties>
         <camel-quarkus.version>2.0.0-SNAPSHOT</camel-quarkus.version>
@@ -45,8 +45,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <mycila-license.version>3.0</mycila-license.version>
-
-        <quarkus.runner>${project.build.directory}/quarkus-app/quarkus-run.jar</quarkus.runner>
+        <strimzi.testcontainers.version>0.20.1</strimzi.testcontainers.version>
     </properties>
 
     <dependencyManagement>
@@ -59,28 +58,41 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>org.apache.camel.quarkus</groupId>
-                <artifactId>camel-quarkus-bom-test</artifactId>
-                <version>${camel-quarkus.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-log</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-microprofile-health</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-log</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-timer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-seda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-kubernetes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-container-image-docker</artifactId>
         </dependency>
 
         <!-- Test -->
@@ -95,13 +107,19 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-integration-tests-process-executor-support</artifactId>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.strimzi</groupId>
+            <artifactId>test-container</artifactId>
+            <version>${strimzi.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -144,27 +162,16 @@
                     </configuration>
                 </plugin>
 
-                <!-- Move surefire:test to integration-test phase to be able to execute the runner JAR from a test -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>default-test</id>
-                            <goals>
-                                <goal>test</goal>
-                            </goals>
-                            <phase>integration-test</phase>
-                            <configuration>
-                                <failIfNoTests>false</failIfNoTests>
-                                <systemProperties>
-                                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                                    <quarkus.runner>${quarkus.runner}</quarkus.runner>
-                                </systemProperties>
-                            </configuration>
-                        </execution>
-                    </executions>
+                    <configuration>
+                        <failIfNoTests>false</failIfNoTests>
+                        <systemProperties>
+                            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        </systemProperties>
+                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -205,7 +212,8 @@
                         <mapping>
                             <java>SLASHSTAR_STYLE</java>
                             <properties>CAMEL_PROPERTIES_STYLE</properties>
-                            <kt>SLASHSTAR_STYLE</kt>
+                            <Dockerfile.jvm>CAMEL_PROPERTIES_STYLE</Dockerfile.jvm>
+                            <Dockerfile.native>CAMEL_PROPERTIES_STYLE</Dockerfile.native>
                         </mapping>
                         <headerDefinitions>
                             <headerDefinition>${maven.multiModuleProjectDirectory}/license-properties-headerdefinition.xml</headerDefinition>
@@ -269,7 +277,6 @@
             </activation>
             <properties>
                 <quarkus.package.type>native</quarkus.package.type>
-                <quarkus.runner>${project.build.directory}/${project.artifactId}-${project.version}-runner</quarkus.runner>
             </properties>
             <build>
                 <plugins>
@@ -282,17 +289,44 @@
                                     <goal>integration-test</goal>
                                     <goal>verify</goal>
                                 </goals>
-                                <configuration>
-                                    <systemPropertyVariables>
-                                        <quarkus.package.type>${quarkus.package.type}</quarkus.package.type>
-                                        <quarkus.runner>${quarkus.runner}</quarkus.runner>
-                                    </systemPropertyVariables>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>kubernetes</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>kubernetes</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-container-image-jib</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>openshift</id>
+            <activation>
+                <property>
+                    <name>openshift</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-openshift</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 

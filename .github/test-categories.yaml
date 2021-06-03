@@ -35,3 +35,5 @@ examples-timer-log-2:
 examples-timer-log-3:
   - timer-log-spring
   - timer-log-xml
+examples-other:
+  - kafka

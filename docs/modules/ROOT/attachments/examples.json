@@ -25,6 +25,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/health"
   },
   {
+    "title": "Kafka example ",
+    "description": "Shows how to produce and consume messages in a Kafka topic",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kafka"
+  },
+  {
     "title": "Kotlin Hello World",
     "description": "Shows how to define Camel routes using Kotlin programming language",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-kotlin"
