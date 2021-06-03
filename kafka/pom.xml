@@ -20,15 +20,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>camel-quarkus-examples-timer-log-spring</artifactId>
+    <artifactId>camel-quarkus-examples-kafka</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
     <version>2.0.0-SNAPSHOT</version>
 
-    <name>Camel Quarkus :: Examples :: Timer Log Spring</name>
-    <description>Camel Quarkus Example :: Timer to Log Spring</description>
+    <name>Camel Quarkus :: Examples :: Kafka</name>
+    <description>Camel Quarkus Example :: Kafka</description>
 
     <properties>
-        <camel-quarkus.version>2.0.0</camel-quarkus.version>
+        <camel-quarkus.version>2.0.0-SNAPSHOT</camel-quarkus.version>
         <quarkus.version>2.0.0.CR3</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,6 +45,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <mycila-license.version>3.0</mycila-license.version>
+        <strimzi.testcontainers.version>0.20.1</strimzi.testcontainers.version>
     </properties>
 
     <dependencyManagement>
@@ -63,19 +64,35 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-log</artifactId>
+            <artifactId>camel-quarkus-microprofile-health</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-microprofile-health</artifactId>
+            <artifactId>camel-quarkus-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-log</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-timer</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-seda</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-spring-di</artifactId>
+            <artifactId>quarkus-resteasy-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-kubernetes</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-container-image-docker</artifactId>
         </dependency>
 
         <!-- Test -->
@@ -85,8 +102,24 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.strimzi</groupId>
+            <artifactId>test-container</artifactId>
+            <version>${strimzi.testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -179,7 +212,8 @@
                         <mapping>
                             <java>SLASHSTAR_STYLE</java>
                             <properties>CAMEL_PROPERTIES_STYLE</properties>
-                            <kt>SLASHSTAR_STYLE</kt>
+                            <Dockerfile.jvm>CAMEL_PROPERTIES_STYLE</Dockerfile.jvm>
+                            <Dockerfile.native>CAMEL_PROPERTIES_STYLE</Dockerfile.native>
                         </mapping>
                         <headerDefinitions>
                             <headerDefinition>${maven.multiModuleProjectDirectory}/license-properties-headerdefinition.xml</headerDefinition>
@@ -255,16 +289,44 @@
                                     <goal>integration-test</goal>
                                     <goal>verify</goal>
                                 </goals>
-                                <configuration>
-                                    <systemPropertyVariables>
-                                        <quarkus.package.type>${quarkus.package.type}</quarkus.package.type>
-                                    </systemPropertyVariables>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>kubernetes</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>kubernetes</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-container-image-jib</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>openshift</id>
+            <activation>
+                <property>
+                    <name>openshift</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-openshift</artifactId>
+                </dependency>
+            </dependencies>
         </profile>
     </profiles>
 
