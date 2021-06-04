@@ -32,9 +32,9 @@ public class HealthTest {
                 .then()
                 .statusCode(200)
                 .body("status", is("UP"),
-                        "checks.status", containsInAnyOrder("UP", "UP"),
+                        "checks.status", containsInAnyOrder("UP", "UP", "UP"),
                         "checks.name",
-                        containsInAnyOrder("camel-readiness-checks", "camel-liveness-checks"),
-                        "checks.data.context", containsInAnyOrder(null, "UP"));
+                        containsInAnyOrder("camel-readiness-checks", "camel-liveness-checks", "camel-context-check"),
+                        "checks.data.contextStatus", containsInAnyOrder(null, null, "Started"));
     }
 }
