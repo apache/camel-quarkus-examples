@@ -34,7 +34,7 @@ public class ObservabilityTest {
         // Verify a expected Camel metric is available
         given()
                 .when().accept(ContentType.JSON)
-                .get("/metrics/application")
+                .get("/q/metrics/application")
                 .then()
                 .statusCode(200)
                 .body(
@@ -46,7 +46,7 @@ public class ObservabilityTest {
         // Verify liveness
         given()
                 .when().accept(ContentType.JSON)
-                .get("/health/live")
+                .get("/q/health/live")
                 .then()
                 .statusCode(200)
                 .body("status", Matchers.is("UP"),
@@ -56,12 +56,12 @@ public class ObservabilityTest {
         // Verify readiness
         given()
                 .when().accept(ContentType.JSON)
-                .get("/health/ready")
+                .get("/q/health/ready")
                 .then()
                 .statusCode(200)
                 .body("status", Matchers.is("UP"),
                         "checks.name",
                         hasItems("camel-readiness-checks", "Uptime readiness check"),
-                        "checks.data.custom-readiness-check", containsInAnyOrder(null, "UP"));
+                        "checks.data.custom-readiness-check", containsInAnyOrder("UP"));
     }
 }
