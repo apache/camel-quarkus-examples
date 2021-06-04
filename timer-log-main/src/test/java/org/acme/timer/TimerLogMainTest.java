@@ -74,7 +74,7 @@ public class TimerLogMainTest {
         try {
             int status = RestAssured.given()
                     .port(port)
-                    .get("/health")
+                    .get("/q/health")
                     .then()
                     .extract()
                     .statusCode();
