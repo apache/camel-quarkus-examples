@@ -28,14 +28,14 @@ To view all Camel metrics do:
 
 [source,shell]
 ----
-$ curl localhost:8080/metrics/application
+$ curl localhost:8080/q/metrics/application
 ----
 
 To pick out specific metrics you can either use `grep` or the `https://stedolan.github.io/jq/[jq]` library :
 
 [source,shell]
 ----
-$ curl -s -H"Accept: application/json" localhost:8080/metrics/application \
+$ curl -s -H"Accept: application/json" localhost:8080/q/metrics/application \
     | jq '.["camel.context.exchanges.completed.total;camelContext=camel-quarkus-observability"]'
 ----
 
@@ -45,12 +45,12 @@ Camel provides some out of the box liveness and readiness checks. To see this wo
 
 [source,shell]
 ----
-$ curl -s localhost:8080/health/live
+$ curl -s localhost:8080/q/health/live
 ----
 
 [source,shell]
 ----
-$ curl -s localhost:8080/health/ready
+$ curl -s localhost:8080/q/health/ready
 ----
 
 The JSON output will contain a checks for verifying whether the `CamelContext` and each individual route is in the 'Started' state.
