@@ -22,7 +22,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode
 
 === Metrics endpoint
 
-Metrics are exposed on an HTTP endpoint at `/metrics`. You can also browse application specific metrics from the `/metrics/application` endpoint.
+Metrics are exposed on an HTTP endpoint at `/q/metrics`. You can also browse application specific metrics from the `/q/metrics/application` endpoint.
 
 To view all Camel metrics do:
 
@@ -41,7 +41,7 @@ $ curl -s -H"Accept: application/json" localhost:8080/q/metrics/application \
 
 === Health endpoint
 
-Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/health/live` and `/health/ready` endpoints:
+Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/q/health/live` and `/q/health/ready` endpoints:
 
 [source,shell]
 ----
