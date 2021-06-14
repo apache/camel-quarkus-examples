@@ -39,8 +39,8 @@ From a web browser, you can call the two services via
 
 There is also health check and metrics available from the following urls:
 
-- http://localhost:8080/health
-- http://localhost:8080/metrics
+- http://localhost:8080/q/health
+- http://localhost:8080/q/metrics
 
 === Package and run the application
 
