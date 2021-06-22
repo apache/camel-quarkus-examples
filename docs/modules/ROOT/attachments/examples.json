@@ -25,6 +25,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/health"
   },
   {
+    "title": "Kamelet Chuck Norris",
+    "description": "Shows how you can build a simple Kamelet and use with your Camel applications.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kamelet-chucknorris"
+  },
+  {
     "title": "Kotlin Hello World",
     "description": "Shows how to define Camel routes using Kotlin programming language",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-kotlin"

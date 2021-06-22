@@ -35,3 +35,4 @@ group-05:
 group-06:
   - timer-log-spring
   - timer-log-xml
+  - kamelet-chucknorris
