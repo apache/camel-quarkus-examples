@@ -37,3 +37,4 @@ examples-timer-log-3:
   - timer-log-xml
 examples-other:
   - kafka
+  - kamelet-chucknorris
