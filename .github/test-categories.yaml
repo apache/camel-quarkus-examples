@@ -37,3 +37,4 @@ group-06:
   - timer-log-xml
 examples-other:
   - kafka
+  - kamelet-chucknorris
