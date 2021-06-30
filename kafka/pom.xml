@@ -58,6 +58,13 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.apache.camel.quarkus</groupId>
+                <artifactId>camel-quarkus-bom-test</artifactId>
+                <version>${camel-quarkus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -307,10 +314,6 @@
                 <dependency>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-kubernetes</artifactId>
-                </dependency>
-                <dependency>
-                    <groupId>io.quarkus</groupId>
-                    <artifactId>quarkus-container-image-jib</artifactId>
                 </dependency>
             </dependencies>
         </profile>
