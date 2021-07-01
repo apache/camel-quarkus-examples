@@ -35,6 +35,6 @@ group-05:
 group-06:
   - timer-log-spring
   - timer-log-xml
-examples-other:
+group-07:
   - kafka
   - kamelet-chucknorris
