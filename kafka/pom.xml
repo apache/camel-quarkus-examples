@@ -46,6 +46,7 @@
         <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
         <mycila-license.version>3.0</mycila-license.version>
         <strimzi.testcontainers.version>0.20.1</strimzi.testcontainers.version>
+        <kafka-oauth-client.version>0.7.2</kafka-oauth-client.version>
     </properties>
 
     <dependencyManagement>
@@ -64,6 +65,11 @@
                 <version>${camel-quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.strimzi</groupId>
+                <artifactId>kafka-oauth-client</artifactId>
+                <version>${kafka-oauth-client.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -95,12 +101,9 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-kubernetes</artifactId>
+            <artifactId>quarkus-kubernetes-config</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-container-image-docker</artifactId>
-        </dependency>
+
 
         <!-- Test -->
         <dependency>
@@ -315,11 +318,16 @@
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-kubernetes</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-container-image-jib</artifactId>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
             <id>openshift</id>
             <activation>
+                <activeByDefault>false</activeByDefault>
                 <property>
                     <name>openshift</name>
                 </property>
@@ -328,6 +336,25 @@
                 <dependency>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-openshift</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-container-image-openshift</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>oauth2</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>oauth2</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.strimzi</groupId>
+                    <artifactId>kafka-oauth-client</artifactId>
                 </dependency>
             </dependencies>
         </profile>

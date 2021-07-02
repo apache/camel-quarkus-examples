@@ -26,7 +26,7 @@
   },
   {
     "title": "Kafka example ",
-    "description": "Shows how to produce and consume messages in a Kafka topic",
+    "description": "Shows how to produce and consume messages in a Kafka topic, using Strimzi Operator",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kafka"
   },
   {
