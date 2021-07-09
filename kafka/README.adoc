@@ -64,7 +64,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 Uncomment the corresponding commented section in `src/main/resources/application.properties`.
 
 - The section Kafka instance without Authentication if no Authentication required.
-- The section Kafka instance with SASL Plain is using SASL.
+- The section Kafka instance with SASL Plain if using SASL.
 - The section Kafka instance with SASL Oauth Bearer if using Oauth Bearer.
 
 You need to set the corresponding environment variables:
