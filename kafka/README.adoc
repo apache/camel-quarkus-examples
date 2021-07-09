@@ -17,7 +17,7 @@ For simplicity, this example uses Quarkus DevServices in dev mode. It will autom
 
 Run the application in development mode.
 
-TIP: If you want to use another running instance, in dev mode. Uncomment the corresponding Kafka configuration section in `src/main/resources/application.properties` and change `%prod` profile by `%dev`.
+TIP: If you want to use another running instance, in dev mode. Uncomment the corresponding Kafka configuration section in `src/main/resources/application.properties` and change `%prod` profile to `%dev`.
 
 [source,shell]
 ----
