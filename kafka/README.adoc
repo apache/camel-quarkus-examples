@@ -151,7 +151,7 @@ If you are using a local development cluster like Kind or k3s, you can use host 
 
 TIP: You can build & deploy in one single step by doing `mvn clean package -DskipTests -Dkubernetes -Dquarkus.kubernetes.deploy=true`
 
-Check pods are running.
+Check that the pods are running.
 
 Example when using Strimzi operator, with a Kafka instance named `Test` :
 
