@@ -53,7 +53,7 @@ $ curl -X GET http://0.0.0.0:8080/example
 ----
 
 
-=== Configure Kafka client, Package and run the application
+=== Configure Kafka client, package and run the application
 
 Once you are done with developing you may want to configure your kafka client, package and run the application.
 
