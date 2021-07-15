@@ -16,22 +16,22 @@
  */
 package org.apache.camel.example;
 
-import io.quarkus.test.common.QuarkusTestResource;
+import java.util.concurrent.TimeUnit;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.awaitility.Awaitility.await;
 
 @QuarkusTest
-@QuarkusTestResource(StrimziTestResource.class)
 public class KafkaTest {
 
     @Test
     public void testKafka() {
-        RestAssured.get("/example")
-                .then()
-                .statusCode(200)
-                .body(containsString("Message #"));
+        await().atMost(10, TimeUnit.SECONDS).until(() -> {
+            String message = RestAssured.get("/example").asString();
+            return message != null && message.contains("Message #");
+        });
     }
 }

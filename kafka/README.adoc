@@ -122,7 +122,7 @@ You can build a container image for the application like this. Refer to the http
 
 This example uses Jib to create the container image for Kubernetes deployment.
 
-Uncomment the creating container with jib, in the Kubernetes specific section in  `src/main/resources/application.properties`. Set image group and image registry.
+Uncomment the creating container with jib and secrets, in the Kubernetes specific section in  `src/main/resources/application.properties`. Set image group and image registry.
 
 Build the application using the `kubernetes` profile.
 
@@ -190,42 +190,15 @@ $ kubectl delete secret camel-kafka
 If you need to configure container resource limits & requests, or enable the Quarkus Kubernetes client to trust self signed certificates, you can find these configuration options in `src/main/resources/application.properties`. Simply uncomment them and set your desired values.
 ====
 
-=== Using SASL OauthBearer
-
-If your Kafka broker uses OAuth as authentication mechanism, you need to configure the Kafka consumer to enable this authentication process. First, add the following dependency to your application
-
-[source,shell]
-----
-<dependency>
-    <groupId>io.strimzi</groupId>
-    <artifactId>kafka-oauth-client</artifactId>
-</dependency>
-----
-
-You can also add `-Doauth2` in the kubernetes build and deployment command, as the profile `oAuth2` declares this dependency.
-
-Command line to deploy on Kubernetes.
-
-[source,shell]
-----
-$  mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Doauth2  -Dkubernetes
-----
-
 
 ==== Deploying to OpenShift
 
-Uncomment the creating container with openshift, in the Openshift specific section in  `src/main/resources/application.properties`.
+Uncomment the creating container with openshift and secrets, in the Openshift specific section in  `src/main/resources/application.properties`.
 
 
 [source,shell]
 ----
 $ mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dopenshift
-----
-
-For oAuth2  :
-[source,shell]
-----
-$ mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dopenshift  -Doauth2
 ----
 
 The `openshift` profile uses quarkus openshift and openshift-container extensions, as described in the `pom.xml`.
