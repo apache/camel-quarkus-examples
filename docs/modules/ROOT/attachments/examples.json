@@ -68,5 +68,10 @@
     "title": "XML Hello World",
     "description": "Shows how to define Camel routes using XML.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-xml"
+  },
+  {
+    "title": "Deploying a Camel Route in AWS Lambda",
+    "description": "Demonstrates how to define Camel routes using CDI and deployed as functions into the Amazon Lambda",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/direct-log-cdi-bean-lambda"
   }
 ]
