@@ -1,4 +1,4 @@
-#Deploying a Camel Route in AWS Lambda : A Camel Quarkus example
+# Deploying a Camel Route in AWS Lambda : A Camel Quarkus example
 
 This project uses the following framework 
 
@@ -69,7 +69,8 @@ The application is now runnable using `java -jar target/quarkus-app/quarkus-run.
 
 It also generates a zip file target/function.zip. This zip file contains your java code along with the dependencies.
 
-##<a name="native"> </a>Building and Packaging the Java code as Quarkus Native executable
+<a name="native"> </a>
+## Building and Packaging the Java code as Quarkus Native executable
 
 If you want a lower memory footprint and faster initialization times for your lambda, you can compile your Java code to a native executable. Just make sure to rebuild your project with the -Pnative switch.
 > :warning: **Building Native Executables will take much longer time and depends on the underlying system**
