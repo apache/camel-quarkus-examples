@@ -7,18 +7,18 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.legacy-jar -t quarkus/code-with-quarkus-legacy-jar .
+# docker build -f src/main/docker/Dockerfile.legacy-jar -t camel-quarkus-examples/direct-log-cdi-bean-lambda-legacy-jar .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/code-with-quarkus-legacy-jar
+# docker run -i --rm -p 8080:8080 camel-quarkus-examples/direct-log-cdi-bean-lambda-legacy-jar
 #
 # If you want to include the debug port into your docker image
 # you will have to expose the debug port (default 5005) like this :  EXPOSE 8080 5005
 #
 # Then run the container using :
 #
-# docker run -i --rm -p 8080:8080 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" quarkus/code-with-quarkus-legacy-jar
+# docker run -i --rm -p 8080:8080 -p 5005:5005 -e JAVA_ENABLE_DEBUG="true" camel-quarkus-examples/direct-log-cdi-bean-lambda-legacy-jar
 #
 ###
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.4 
