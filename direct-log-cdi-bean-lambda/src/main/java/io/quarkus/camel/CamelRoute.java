@@ -32,7 +32,7 @@ public class CamelRoute extends RouteBuilder {
         from("direct:input").routeId("Test")
            .log("Inside Camel Route Received Payload ==> ${body}")
            /*
-            * If you use the below Bean EIP then it uses reflection to invoke the method at runtime
+            * If you use the below Bean EIP then it uses reflection to invoke the bean method at runtime.
             * Avoiding Reflection will have some improvement in terms of boot up, execution time and max memory used
             *
             */
