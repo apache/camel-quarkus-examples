@@ -72,6 +72,6 @@
   {
     "title": "Deploying a Camel Route in AWS Lambda",
     "description": "Demonstrates how to define Camel routes using CDI and deployed as functions into the Amazon Lambda",
-    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/direct-log-cdi-bean-lambda"
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws-lambda"
   }
 ]
