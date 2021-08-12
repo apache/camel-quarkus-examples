@@ -14,13 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.camel;
+package org.apache.camel.quarkus.examples;
 
 import javax.enterprise.context.ApplicationScoped;
 
-
-//@RegisterForReflection is required if you want to invoke this bean's methods via Bean Component / EIP in your camel route
-// and want to deploy your app as Native executable.
 @ApplicationScoped
 public class GreetService {
 

@@ -27,7 +27,6 @@ This example contains a sample Greeter service build using Quarkus & Camel frame
     * [camel-quarkus-core](https://camel.apache.org/camel-quarkus/latest/reference/extensions/core.html)
     * [camel-quarkus-direct](https://camel.apache.org/camel-quarkus/latest/reference/extensions/direct.html)
     * [camel-quarkus-log](https://camel.apache.org/camel-quarkus/latest/reference/extensions/log.html)
-    * [camel-quarkus-bean](https://camel.apache.org/camel-quarkus/latest/reference/extensions/bean.html)
 
 2. **Amazon Lambda**
     * [quarkus-amazon-lambda](https://quarkus.io/guides/amazon-lambda)
@@ -44,7 +43,7 @@ This example contains a sample Greeter service build using Quarkus & Camel frame
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
-./mvnw compile quarkus:dev
+mvn compile quarkus:dev
 ```
 
 > **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
@@ -53,7 +52,7 @@ You can run your application in dev mode that enables live coding using:
 
 The application can be packaged using:
 ```shell script
-./mvnw clean package
+mvn clean package
 ```
 This will compile and package your code. 
 
@@ -62,32 +61,33 @@ Be aware that it’s not an _uber-jar_ as the dependencies are copied into the `
 
 If you want to build an _uber-jar_, execute the following command:
 ```shell script
-./mvnw package -Dquarkus.package.type=uber-jar
+mvn package -Dquarkus.package.type=uber-jar
 ```
 
 The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
 
-It also generates a zip file target/function.zip. This zip file contains your java code along with the dependencies.
+It also generates a zip file `target/function.zip`. This zip file contains your java code along with the dependencies.
 
 <a name="native"> </a>
+
 ## Building and Packaging the Java code as Quarkus Native executable
 
 If you want a lower memory footprint and faster initialization times for your lambda, you can compile your Java code to a native executable. Just make sure to rebuild your project with the -Pnative switch.
 > :warning: **Building Native Executables will take much longer time and depends on the underlying system**
 ```shell script
-./mvnw package -Pnative
+mvn package -Pnative
 ```
 > :information_source: If you are building on a non-Linux system Or, if you don't have GraalVM installed, you can run the native executable build using docker container. You need to pass in a property instructing quarkus to use a docker build as Amazon Lambda requires linux binaries. 
 >You can do this by passing this property to your Maven build: `-Dquarkus.native.container-build=true`. However, This requires to have docker installed locally.
 
 ```shell script
-./mvnw package -Pnative -Dquarkus.native.container-build=true
+mvn package -Pnative -Dquarkus.native.container-build=true
 ```
 
 Either of these commands will compile and create a native executable image. 
 You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
 
-It also generates a zip file target/function.zip. This zip file contains your native executable image renamed to bootstrap. This is a requirement of the AWS Lambda Custom (Provided) Runtime.
+It also generates a zip file `target/function.zip`. This zip file contains your native executable image renamed to bootstrap. This is a requirement of the AWS Lambda Custom (Provided) Runtime.
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
 
@@ -120,9 +120,9 @@ If you want to learn more about building native executables, please consult http
 
 6. Once the function is created click the function name to upload the generated function.zip file and configure it. 
 
-7. Scroll down and select the Code tab. Click the upload from dropdown on right hand side of the screen and select .zip or .jar file 
+7. Scroll down and select the Code tab. Click the upload from dropdown on right-hand side of the screen and select .zip or .jar file 
 
-8. Click upload and browse to the path where the generated zip file is created `target/function.zip` and select the function.zip file and click save
+8. Click upload and browse to the path where the generated zip file `target/function.zip` was created and select the function.zip file and click save
 
 9. Under the Code tab scroll down to the Runtime settings and click edit 
 
@@ -162,9 +162,9 @@ io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
 
 6. Once the function is created click the function name to upload the generated function.zip file and configure it. 
 
-7. Scroll down and select the Code tab. Click the upload from dropdown on right hand side of the screen and select .zip or .jar file 
+7. Scroll down and select the Code tab. Click the upload from dropdown on right-hand side of the screen and select .zip or .jar file 
 
-8. Click upload and browse to the path where the generated a zip file is created `target/function.zip` and select the function.zip file and click save
+8. Click upload and browse to the path where the generated zip file `target/function.zip` was created and select the function.zip file and click save
 
 9. Under the Code tab scroll down to the Runtime settings and click edit 
 

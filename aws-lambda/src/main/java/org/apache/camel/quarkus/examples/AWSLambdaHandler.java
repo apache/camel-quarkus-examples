@@ -14,23 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.quarkus.camel;
+package org.apache.camel.quarkus.examples;
 
-public class Person {
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import org.apache.camel.ProducerTemplate;
 
-    private String name;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-    public String getName() {
-        return name;
-    }
+@Named("awsLambdaHandler")
+public class AWSLambdaHandler implements RequestHandler<Person, String> {
 
-    public Person setName(String name) {
-        this.name = name;
-        return this;
-    }
+    @Inject
+    ProducerTemplate template;
 
     @Override
-    public String toString() {
-        return String.format("Person[name= %s]",this.name);
+    public String handleRequest(Person input, Context context) {
+        LambdaLogger logger = context.getLogger();
+        logger.log("Calling Camel Route :)");
+        return template.requestBody("direct:input", input, String.class);
     }
 }
