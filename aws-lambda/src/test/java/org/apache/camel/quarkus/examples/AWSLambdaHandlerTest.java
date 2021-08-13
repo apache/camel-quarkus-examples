@@ -24,16 +24,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import javax.inject.Inject;
-
 @QuarkusTest
 public class AWSLambdaHandlerTest {
 
-    @Inject
-    GreetService greetService;
-
     @BeforeAll
     public static void setup() {
+
         GreetService mock = Mockito.mock(GreetService.class);
         Mockito.when(mock.greet("Stu")).thenReturn("Hello Stu ! How are you? from GreetService");
         QuarkusMock.installMockForType(mock, GreetService.class);

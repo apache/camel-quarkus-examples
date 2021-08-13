@@ -16,13 +16,13 @@
  */
 package org.apache.camel.quarkus.examples;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.apache.camel.ProducerTemplate;
-
-import javax.inject.Inject;
-import javax.inject.Named;
 
 @Named("awsLambdaHandler")
 public class AWSLambdaHandler implements RequestHandler<Person, String> {

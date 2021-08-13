@@ -16,22 +16,22 @@
  */
 package org.apache.camel.quarkus.examples;
 
-import org.apache.camel.builder.RouteBuilder;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
+import org.apache.camel.builder.RouteBuilder;
 
 @ApplicationScoped
 public class CamelRoute extends RouteBuilder {
 
-   @Inject
-   GreetService greetService;
+    @Inject
+    GreetService greetService;
 
     @Override
     public void configure() throws Exception {
         from("direct:input").routeId("Test")
-           .log("Inside Camel Route Received Payload ==> ${body}")
-           .setBody().body(Person.class, p -> greetService.greet(p.getName()))
-        .end();
+                .log("Inside Camel Route Received Payload ==> ${body}")
+                .setBody().body(Person.class, p -> greetService.greet(p.getName()))
+                .end();
     }
 }

@@ -31,6 +31,6 @@ public class Person {
 
     @Override
     public String toString() {
-        return String.format("Person[name= %s]",this.name);
+        return String.format("Person[name= %s]", this.name);
     }
 }
