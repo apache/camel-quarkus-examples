@@ -28,7 +28,7 @@ public class CamelRoute extends RouteBuilder {
     GreetService greetService;
 
     @Override
-    public void configure() throws Exception {
+    public void configure() {
         from("direct:input").routeId("Test")
                 .log("Inside Camel Route Received Payload ==> ${body}")
                 .setBody().body(Person.class, p -> greetService.greet(p.getName()))

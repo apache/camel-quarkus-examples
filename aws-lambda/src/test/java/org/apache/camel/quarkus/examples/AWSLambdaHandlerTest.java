@@ -17,26 +17,23 @@
 package org.apache.camel.quarkus.examples;
 
 import io.quarkus.amazon.lambda.test.LambdaClient;
-import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
+import static org.mockito.Mockito.when;
 
 @QuarkusTest
 public class AWSLambdaHandlerTest {
 
-    @BeforeAll
-    public static void setup() {
-
-        GreetService mock = Mockito.mock(GreetService.class);
-        Mockito.when(mock.greet("Stu")).thenReturn("Hello Stu ! How are you? from GreetService");
-        QuarkusMock.installMockForType(mock, GreetService.class);
-    }
+    @InjectMock
+    GreetService mockGreetingService;
 
     @Test
-    public void testSimpleLambdaSuccess() throws Exception {
+    public void testSimpleLambdaSuccess() {
+        when(mockGreetingService.greet("Stu")).thenReturn("Hello Stu ! How are you? from GreetService");
+
         Person in = new Person();
         in.setName("Stu");
         String out = LambdaClient.invoke(String.class, in);
