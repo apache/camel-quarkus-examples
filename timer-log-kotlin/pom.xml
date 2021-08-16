@@ -29,7 +29,7 @@
 
     <properties>
         <camel-quarkus.version>2.2.0-SNAPSHOT</camel-quarkus.version>
-        <quarkus.version>2.1.0.Final</quarkus.version>
+        <quarkus.version>2.1.1.Final</quarkus.version>
         <kotlin.version>1.5.21</kotlin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
