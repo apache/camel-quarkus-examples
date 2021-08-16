@@ -27,6 +27,7 @@ group-03:
   - http-log
   - rest-json
 group-04:
+  - aws-lambda
   - timer-log
   - timer-log-cdi
 group-05:

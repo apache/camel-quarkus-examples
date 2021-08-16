@@ -10,6 +10,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-main"
   },
   {
+    "title": "Deploying a Camel Route in AWS Lambda ",
+    "description": "Shows how to deploy a Camel Quarkus route as an AWS Lambda function",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws-lambda"
+  },
+  {
     "title": "File consumer with Bindy \u0026 FTP",
     "description": "Shows how to consume CSV files, marshal \u0026 unmarshal the data and send it onwards via FTP",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/file-bindy-ftp"
@@ -68,10 +73,5 @@
     "title": "XML Hello World",
     "description": "Shows how to define Camel routes using XML.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-xml"
-  },
-  {
-    "title": "Deploying a Camel Route in AWS Lambda",
-    "description": "Demonstrates how to define Camel routes using CDI and deployed as functions into the Amazon Lambda",
-    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws-lambda"
   }
 ]
