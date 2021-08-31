@@ -28,8 +28,8 @@
     <description>Camel Quarkus Example :: Health Check</description>
 
     <properties>
-        <camel-quarkus.version>2.2.0-SNAPSHOT</camel-quarkus.version>
-        <quarkus.version>2.1.1.Final</quarkus.version>
+        <camel-quarkus.version>2.2.0</camel-quarkus.version>
+        <quarkus.version>2.2.0.Final</quarkus.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
