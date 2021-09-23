@@ -31,9 +31,8 @@ import static org.awaitility.Awaitility.await;
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
 public class JdbcDataSourceTest {
-
     @Test
-    public void testCamelsInDatabase() {
+    public void testCamelsInDatabase() throws Exception {
         // Verify that camels are being inserted in the database:
         await()
                 .atMost(10L, TimeUnit.SECONDS)
