@@ -39,3 +39,5 @@ group-06:
 group-07:
   - kafka
   - kamelet-chucknorris
+group-08:
+  - jdbc-datasource
