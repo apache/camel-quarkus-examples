@@ -7,8 +7,8 @@ In particular, it demonstrates the following:
 
 1. Defining a DataSource
 2. Querying the Database defined in the previous DataSource
-4. Usage of properties defined in `application.properties`
-5. No Java code required or used, the route defined in XML can still be compiled to native code.
+3. Usage of properties defined in `application.properties`
+4. No Java code required or used, the route defined in XML can still be compiled to native code.
 
 This example will connect to an H2 database with the connection details defined in `application.properties`.
 If the example is run on Development mode and no database exists, Quarkus will create a matching database
