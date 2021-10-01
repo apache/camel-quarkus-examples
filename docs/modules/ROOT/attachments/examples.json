@@ -5,6 +5,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-cdi"
   },
   {
+    "title": "Connecting to a JDBC DataSource",
+    "description": "Shows how to connect to a Database using Datastores.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jdbc-datasource"
+  },
+  {
     "title": "Custom `main()`",
     "description": "Shows how to start Camel from a custom `main()` method",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-main"
