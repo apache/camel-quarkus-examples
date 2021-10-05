@@ -9,9 +9,13 @@ and other general information.
 
 == Prerequisites
 
-The example application requires a running Kafka instance.
+The example application requires a Kafka instance.
 
-For simplicity, this example uses Quarkus DevServices in dev mode. It will automatically start Strimzi container for your tests, and you don’t even need to configure anything: the container will be automatically wired to the Quarkus dev mode configuration.
+You do not need to provide the Kafka instance yourself
+as long as you play with the example code in dev mode (a.k.a. `mvn quarkus:dev` - read more [here](https://quarkus.io/guides/getting-started#development-mode))
+or as long as you only run the supplied tests (`mvn test`).
+In those situations, Quarkus tooling starts a Redpanda image for you via [Quarkus Dev Services](https://quarkus.io/guides/kafka-dev-services)
+and it also configures the application so that you do not need touch anything in `application.properties`.
 
 == Start in Development mode
 

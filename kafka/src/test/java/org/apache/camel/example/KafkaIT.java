@@ -17,7 +17,9 @@
 package org.apache.camel.example;
 
 import io.quarkus.test.junit.NativeImageTest;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("https://github.com/apache/camel-quarkus/issues/3157")
 @NativeImageTest
 public class KafkaIT extends KafkaTest {
 }
