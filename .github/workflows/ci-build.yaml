@@ -69,13 +69,12 @@ jobs:
             && cd ${{ runner.temp }}/camel-quarkus \
             && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
             && ./mvnw ${MAVEN_ARGS} clean install -Dquickly
-      - name: mvn license:check formatter:validate impsort:check cq:sync-example-properties
+      - name: mvn license:check formatter:validate impsort:check
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} \
             license:check \
             net.revelc.code.formatter:formatter-maven-plugin:validate \
-            net.revelc.code:impsort-maven-plugin:check \
-            org.l2x6.cq:cq-maven-plugin:0.33.0:sync-example-properties
+            net.revelc.code:impsort-maven-plugin:check
       - name: Validate test categories YAML
         run: |
           VALID=true
