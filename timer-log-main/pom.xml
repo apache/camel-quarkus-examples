@@ -22,22 +22,22 @@
 
     <artifactId>camel-quarkus-examples-timer-log-main</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>2.3.0-SNAPSHOT</version>
+    <version>2.3.0</version>
 
     <name>Camel Quarkus :: Examples :: Timer Log Main</name>
     <description>Camel Quarkus Example :: Timer to Log Main</description>
 
     <properties>
         <quarkus.platform.version>2.3.0.Final</quarkus.platform.version>
-        <camel-quarkus.platform.version>2.3.0</camel-quarkus.platform.version>
+        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <!-- TODO: https://github.com/apache/camel-quarkus/issues/3156 -->
         <camel-quarkus.version>2.3.0</camel-quarkus.version>
 
-        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
-        <camel-quarkus.platform.artifact-id>camel-quarkus-bom</camel-quarkus.platform.artifact-id>
+        <camel-quarkus.platform.group-id>${quarkus.platform.group-id}</camel-quarkus.platform.group-id>
+        <camel-quarkus.platform.artifact-id>quarkus-camel-bom</camel-quarkus.platform.artifact-id>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
