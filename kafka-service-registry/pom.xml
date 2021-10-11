@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>camel-quarkus-examples-kafka-service-registry-example</artifactId>
+    <groupId>org.apache.camel.quarkus.examples</groupId>
+    <version>2.3.0</version>
+
+    <name>Camel Quarkus :: Examples :: Kafka Service Registry</name>
+    <description>Camel Quarkus Example :: Kafka Service Registry</description>
+
+    <packaging>pom</packaging>
+
+    <modules>
+       <module>kafka-registry-producer</module>
+       <module>kafka-registry-consumer</module>
+    </modules>
+
+</project>
