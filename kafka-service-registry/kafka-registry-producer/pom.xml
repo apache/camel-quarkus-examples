@@ -156,6 +156,27 @@
             <plugins>
 
                 <plugin>
+                    <groupId>net.revelc.code.formatter</groupId>
+                    <artifactId>formatter-maven-plugin</artifactId>
+                    <version>${formatter-maven-plugin.version}</version>
+                    <configuration>
+                        <configFile>${maven.multiModuleProjectDirectory}/eclipse-formatter-config.xml</configFile>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>net.revelc.code</groupId>
+                    <artifactId>impsort-maven-plugin</artifactId>
+                    <version>${impsort-maven-plugin.version}</version>
+                    <configuration>
+                        <groups>java.,javax.,org.w3c.,org.xml.,junit.</groups>
+                        <removeUnused>true</removeUnused>
+                        <staticAfter>true</staticAfter>
+                        <staticGroups>java.,javax.,org.w3c.,org.xml.,junit.</staticGroups>
+                    </configuration>
+                </plugin>
+
+                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>${maven-compiler-plugin.version}</version>
