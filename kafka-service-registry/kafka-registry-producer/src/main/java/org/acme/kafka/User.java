@@ -66,10 +66,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
     /**
      * Create a new BinaryMessageDecoder instance for this class that uses the specified {@link SchemaStore}.
      * 
-     * @param resolver
-     *            a {@link SchemaStore} used to find schemas by fingerprint
+     * @param  resolver
+     *                  a {@link SchemaStore} used to find schemas by fingerprint
      * 
-     * @return a BinaryMessageDecoder instance for this class backed by the given SchemaStore
+     * @return          a BinaryMessageDecoder instance for this class backed by the given SchemaStore
      */
     public static BinaryMessageDecoder<User> createDecoder(SchemaStore resolver) {
         return new BinaryMessageDecoder<User>(MODEL$, SCHEMA$, resolver);
@@ -78,10 +78,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
     /**
      * Serializes this User to a ByteBuffer.
      * 
-     * @return a buffer holding the serialized data for this instance
+     * @return                     a buffer holding the serialized data for this instance
      * 
      * @throws java.io.IOException
-     *             if this instance could not be serialized
+     *                             if this instance could not be serialized
      */
     public java.nio.ByteBuffer toByteBuffer() throws java.io.IOException {
         return ENCODER.encode(this);
@@ -90,13 +90,13 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
     /**
      * Deserializes a User from a ByteBuffer.
      * 
-     * @param b
-     *            a byte buffer holding serialized data for an instance of this class
+     * @param  b
+     *                             a byte buffer holding serialized data for an instance of this class
      * 
-     * @return a User instance decoded from the given buffer
+     * @return                     a User instance decoded from the given buffer
      * 
      * @throws java.io.IOException
-     *             if the given bytes could not be deserialized into an instance of this class
+     *                             if the given bytes could not be deserialized into an instance of this class
      */
     public static User fromByteBuffer(java.nio.ByteBuffer b) throws java.io.IOException {
         return DECODER.decode(b);
@@ -116,9 +116,9 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
      * All-args constructor.
      * 
      * @param name
-     *            The new value for name
+     *             The new value for name
      * @param age
-     *            The new value for age
+     *             The new value for age
      */
     public User(java.lang.CharSequence name, java.lang.Integer age) {
         this.name = name;
@@ -173,7 +173,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
      * Sets the value of the 'name' field.
      * 
      * @param value
-     *            the value to set.
+     *              the value to set.
      */
     public void setName(java.lang.CharSequence value) {
         this.name = value;
@@ -192,7 +192,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
      * Sets the value of the 'age' field.
      * 
      * @param value
-     *            the value to set.
+     *              the value to set.
      */
     public void setAge(int value) {
         this.age = value;
@@ -210,10 +210,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
     /**
      * Creates a new User RecordBuilder by copying an existing Builder.
      * 
-     * @param other
-     *            The existing builder to copy.
+     * @param  other
+     *               The existing builder to copy.
      * 
-     * @return A new User RecordBuilder
+     * @return       A new User RecordBuilder
      */
     public static org.acme.kafka.User.Builder newBuilder(org.acme.kafka.User.Builder other) {
         if (other == null) {
@@ -226,10 +226,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
     /**
      * Creates a new User RecordBuilder by copying an existing User instance.
      * 
-     * @param other
-     *            The existing instance to copy.
+     * @param  other
+     *               The existing instance to copy.
      * 
-     * @return A new User RecordBuilder
+     * @return       A new User RecordBuilder
      */
     public static org.acme.kafka.User.Builder newBuilder(org.acme.kafka.User other) {
         if (other == null) {
@@ -258,7 +258,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
          * Creates a Builder by copying an existing Builder.
          * 
          * @param other
-         *            The existing Builder to copy.
+         *              The existing Builder to copy.
          */
         private Builder(org.acme.kafka.User.Builder other) {
             super(other);
@@ -276,7 +276,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
          * Creates a Builder by copying an existing User instance
          * 
          * @param other
-         *            The existing instance to copy.
+         *              The existing instance to copy.
          */
         private Builder(org.acme.kafka.User other) {
             super(SCHEMA$);
@@ -302,10 +302,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
         /**
          * Sets the value of the 'name' field.
          * 
-         * @param value
-         *            The value of 'name'.
+         * @param  value
+         *               The value of 'name'.
          * 
-         * @return This builder.
+         * @return       This builder.
          */
         public org.acme.kafka.User.Builder setName(java.lang.CharSequence value) {
             validate(fields()[0], value);
@@ -346,10 +346,10 @@ public class User extends org.apache.avro.specific.SpecificRecordBase
         /**
          * Sets the value of the 'age' field.
          * 
-         * @param value
-         *            The value of 'age'.
+         * @param  value
+         *               The value of 'age'.
          * 
-         * @return This builder.
+         * @return       This builder.
          */
         public org.acme.kafka.User.Builder setAge(int value) {
             validate(fields()[1], value);
