@@ -1,0 +1,41 @@
+= Managed Kafka and Service Registry Example with Camel-Quarkus
+
+:cq-example-description: An example that shows how to produce and consume messages in a Kafka topic, using Managed Kafka and Managed Service Registry from Red Hat Cloud.
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Prerequisites
+
+1. Create Kafka Managed Service instance on cloud.redhat.com
+
+2. Create associated Service Account, save client Id and Client Secret
+
+3. Create Service Registry Managed instance on cloud.redhat.com
+
+4. Populate correctly the producer application.properties file with the missing parameters
+
+5. Populate correctly the consumer application.properties file with the missing parameters
+
+6. From the Service Registry Managed Instance UI load the user.avsc as schema named 'test-value' with no group
+
+Notes:
+- The class User has been generated starting from the avsc user schema, through the avro tools
+
+== Run Example
+
+1. From the producer folder run
+
+   mvn clean compile package
+   java -jar target/quarkus-app/quarkus-run.jar
+
+2. From the consumer folder run
+
+   mvn clean compile package
+   java -Dquarkus.http.port=8081 -jar target/quarkus-app/quarkus-run.jar
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
