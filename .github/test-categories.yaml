@@ -39,5 +39,6 @@ group-06:
 group-07:
   - kafka
   - kamelet-chucknorris
+  - kafka-service-registry
 group-08:
   - jdbc-datasource
