@@ -1,0 +1,12 @@
+[
+  {
+    "title": "Managed Kafka and Service Registry Example with Camel-Quarkus: Consumer Side",
+    "description": "Shows how to consume messages from Managed Kafka through the usage of Managed Service Registry and Avro Schema",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kafka-registry-consumer"
+  },
+  {
+    "title": "Managed Kafka and Service Registry Example with Camel-Quarkus: Producer Side",
+    "description": "Shows how to produce messages to Managed Kafka through the usage of Managed Service Registry and Avro Schema",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kafka-registry-producer"
+  }
+]
