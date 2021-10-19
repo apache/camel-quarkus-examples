@@ -133,6 +133,7 @@
                             <exclude>**/NOTICE.txt</exclude>
                             <exclude>**/NOTICE</exclude>
                             <exclude>**/README</exclude>
+                            <exclude>**/*.avsc</exclude>
                             <exclude>**/pom.xml.versionsBackup</exclude>
                         </excludes>
                         <mapping>
