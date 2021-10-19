@@ -50,6 +50,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-kotlin"
   },
   {
+    "title": "Managed Kafka and Service Registry Example with Camel-Quarkus",
+    "description": "Shows how to produce and consume messages in a Kafka topic, using Managed Kafka and Managed Service Registry from Red Hat Cloud.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kafka-service-registry"
+  },
+  {
     "title": "Observability",
     "description": "Demonstrates how to add support for metrics, health checks and distributed tracing",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/observability"
