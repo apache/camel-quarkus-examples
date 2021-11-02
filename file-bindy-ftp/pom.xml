@@ -44,6 +44,7 @@
         <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
 
         <formatter-maven-plugin.version>2.11.0</formatter-maven-plugin.version>
+        <groovy-maven-plugin.version>2.1.1</groovy-maven-plugin.version>
         <impsort-maven-plugin.version>1.3.2</impsort-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.2.0</maven-jar-plugin.version>
@@ -264,6 +265,43 @@
                             <goal>sort</goal>
                         </goals>
                         <phase>process-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sync-k8s-resource-versions</id>
+                        <inherited>false</inherited>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <source>
+                                import java.util.regex.Matcher
+                                import java.util.regex.Pattern
+
+                                Pattern pattern = Pattern.compile("app.kubernetes.io/version: .*")
+
+                                ["kubernetes", "openshift"].each { k8sResource ->
+                                    File file = new File("${project.basedir}/src/main/kubernetes/${k8sResource}.yml")
+                                    String content = file.text
+                                    Matcher matcher = pattern.matcher(content)
+
+                                    if (matcher.find()) {
+                                        String updatedContent = matcher.replaceAll("app.kubernetes.io/version: ${project.version}")
+                                        if (updatedContent != content) {
+                                            log.info("Updating app.kubernetes.io/version label to ${project.version} in ${file.path}")
+                                            file.write(updatedContent)
+                                        }
+                                    }
+                                }
+                            </source>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
