@@ -30,9 +30,9 @@ public class HealthTest {
     public void testHealth() throws InterruptedException {
         RestAssured.get("/q/health")
                 .then()
-                .statusCode(200)
-                .body("status", is("UP"),
-                        "checks.status", containsInAnyOrder("UP", "UP"),
+                .statusCode(503)
+                .body("status", is("DOWN"),
+                        "checks.status", containsInAnyOrder("DOWN", "UP"),
                         "checks.name",
                         containsInAnyOrder("camel-readiness-checks", "camel-liveness-checks"),
                         "checks.data.context", containsInAnyOrder(null, "UP"));
