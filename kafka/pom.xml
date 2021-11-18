@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Kafka</description>
 
     <properties>
-        <quarkus.platform.version>2.5.0.CR1</quarkus.platform.version>
+        <quarkus.platform.version>2.5.0.Final</quarkus.platform.version>
         <camel-quarkus.platform.version>2.5.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
