@@ -17,7 +17,3 @@ Please report bugs and propose improvements via https://github.com/apache/camel-
 
 The `main` branch should always point at the latest https://repo1.maven.org/maven2/io/quarkus/platform/quarkus-bom[Quarkus Platform] release.
 The `camel-quarkus-main` branch points at the Camel Quarkus snapshot version currently available in Camel Quarkus `main` branch.
-
-=== Upgrading Camel Quarkus or Quarkus Platform BOM
-
-See the dedicated section in https://camel.apache.org/camel-quarkus/latest/contributor-guide/release-guide.html#_upgrade_and_tag_examples[Camel Quarkus Release guide].
