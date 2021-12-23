@@ -29,7 +29,7 @@
 
     <properties>
 
-        <quarkus.platform.version>2.5.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.6.0.Final</quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
