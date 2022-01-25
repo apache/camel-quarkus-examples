@@ -19,6 +19,7 @@ package org.acme.observability;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import org.apache.camel.CamelContext;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -27,20 +28,30 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 public class ObservabilityTest {
 
     @Test
     public void metrics() {
-        // Verify a expected Camel metric is available
-        given()
+        // Verify Camel metrics are available
+        JsonPath path = given()
                 .when().accept(ContentType.JSON)
-                .get("/q/metrics/application")
+                .get("/q/metrics")
                 .then()
                 .statusCode(200)
-                .body(
-                        "'camel.context.status;camelContext=camel-quarkus-observability'", is(3));
+                .extract()
+                .body()
+                .jsonPath();
+
+        long camelMetricCount = path.getMap("$.")
+                .keySet()
+                .stream()
+                .filter(key -> key.toString().startsWith("Camel"))
+                .count();
+
+        assertTrue(camelMetricCount > 0);
     }
 
     @Test

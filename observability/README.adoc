@@ -31,12 +31,11 @@ To view all Camel metrics do:
 $ curl localhost:8080/q/metrics/application
 ----
 
-To pick out specific metrics you can either use `grep` or the `https://stedolan.github.io/jq/[jq]` library :
+To retrieve metrics in JSON format, pass the `Accept` HTTP header in the request:
 
 [source,shell]
 ----
-$ curl -s -H"Accept: application/json" localhost:8080/q/metrics/application \
-    | jq '.["camel.context.exchanges.completed.total;camelContext=camel-quarkus-observability"]'
+$ curl -s -H"Accept: application/json" localhost:8080/q/metrics/application
 ----
 
 === Health endpoint
@@ -58,7 +57,7 @@ The JSON output will contain a checks for verifying whether the `CamelContext` a
 This example project contains a custom liveness check class `CustomLivenessCheck` and custom readiness check class `CustomReadinessCheck` which leverage the Camel health API.
 You'll see these listed in the health JSON as 'custom-liveness-check' and 'custom-readiness-check'. On every 5th invocation of these checks, the health status of `custom-liveness-check` will be reported as DOWN.
 
-You can also directly leverage MicroProfile Metrics APIs to create checks. Class `CamelUptimeHealthCheck` demonstrates how to register a readiness check.
+You can also directly leverage MicroProfile Health APIs to create checks. Class `CamelUptimeHealthCheck` demonstrates how to register a readiness check.
 
 ==== Tracing
 
