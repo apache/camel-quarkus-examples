@@ -17,7 +17,9 @@
 package org.acme.observability;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.apache.camel.CamelContext;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -43,25 +45,57 @@ public class ObservabilityTest {
 
     @Test
     public void health() {
-        // Verify liveness
-        given()
-                .when().accept(ContentType.JSON)
-                .get("/q/health/live")
-                .then()
-                .statusCode(200)
-                .body("status", Matchers.is("UP"),
-                        "checks.name", containsInAnyOrder("camel-liveness-checks"),
-                        "checks.data.custom-liveness-check", containsInAnyOrder("UP"));
+        if (isAggregatedHealthResponse()) {
+            // Verify liveness
+            given()
+                    .when().accept(ContentType.JSON)
+                    .get("/q/health/live")
+                    .then()
+                    .statusCode(200)
+                    .body("status", Matchers.is("UP"),
+                            "checks.name", containsInAnyOrder("camel-liveness-checks"),
+                            "checks.data.custom-liveness-check", containsInAnyOrder("UP"));
 
-        // Verify readiness
-        given()
-                .when().accept(ContentType.JSON)
-                .get("/q/health/ready")
-                .then()
-                .statusCode(200)
-                .body("status", Matchers.is("UP"),
-                        "checks.name",
-                        hasItems("camel-readiness-checks", "Uptime readiness check"),
-                        "checks.data.custom-readiness-check", containsInAnyOrder("UP"));
+            // Verify readiness
+            given()
+                    .when().accept(ContentType.JSON)
+                    .get("/q/health/ready")
+                    .then()
+                    .statusCode(200)
+                    .body("status", Matchers.is("UP"),
+                            "checks.name",
+                            hasItems("camel-readiness-checks", "Uptime readiness check"),
+                            "checks.data.custom-readiness-check", containsInAnyOrder("UP"));
+        } else {
+            // Verify liveness
+            RestAssured.get("/q/health/live")
+                    .then()
+                    .statusCode(200)
+                    .body("status", is("UP"),
+                            "checks.findAll { it.name == 'custom-liveness-check' }.status", Matchers.contains("UP"));
+
+            // Verify readiness
+            RestAssured.get("/q/health/ready")
+                    .then()
+                    .statusCode(200)
+                    .body("status", is("UP"),
+                            "checks.findAll { it.name == 'custom-readiness-check' }.status", Matchers.contains("UP"),
+                            "checks.findAll { it.name == 'Uptime readiness check' }.status", Matchers.contains("UP"),
+                            "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP"),
+                            "checks.findAll { it.name == 'camel-routes' }.status", Matchers.contains("UP"),
+                            "checks.findAll { it.name == 'camel-consumers' }.status", Matchers.contains("UP"));
+        }
+    }
+
+    /**
+     * The JSON structure produced by camel-microprofile-health in Camel >= 3.15 is different to that
+     * produced in previous versions. This check allows the tests to handle both formats.
+     *
+     * TODO: Remove when examples upgraded to >= Camel 3.15
+     */
+    private boolean isAggregatedHealthResponse() {
+        String version = CamelContext.class.getPackage().getImplementationVersion();
+        String[] versionParts = version.split("\\.");
+        return Integer.parseInt(versionParts[1]) < 15;
     }
 }
