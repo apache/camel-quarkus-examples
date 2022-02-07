@@ -30,6 +30,7 @@
     <properties>
 
         <quarkus.platform.version>2.7.0.Final</quarkus.platform.version>
+        <camel-quarkus.platform.version>2.8.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -320,9 +321,9 @@
                         </plugin>
 
                         <plugin>
-                            <groupId>io.quarkus</groupId>
+                            <groupId>${quarkus.platform.group-id}</groupId>
                             <artifactId>quarkus-maven-plugin</artifactId>
-                            <version>${quarkus.version}</version>
+                            <version>${quarkus.platform.version}</version>
                         </plugin>
 
                         <plugin>
