@@ -18,48 +18,23 @@ package org.acme.health;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-import org.apache.camel.CamelContext;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @QuarkusTest
 public class HealthTest {
 
     @Test
     public void testHealth() throws InterruptedException {
-        if (isAggregatedHealthResponse()) {
-            RestAssured.get("/q/health")
-                    .then()
-                    .statusCode(503)
-                    .body("status", is("DOWN"),
-                            "checks.status", containsInAnyOrder("DOWN", "UP"),
-                            "checks.name",
-                            containsInAnyOrder("camel-readiness-checks", "camel-liveness-checks"),
-                            "checks.data.context", containsInAnyOrder(null, "UP"));
-        } else {
-            RestAssured.get("/q/health")
-                    .then()
-                    .statusCode(503)
-                    .body("status", is("DOWN"),
-                            "checks.findAll { it.name == 'toolong' }.status", Matchers.contains("UP"),
-                            "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP"),
-                            "checks.findAll { it.name == 'camel-routes' }.status", Matchers.contains("UP"),
-                            "checks.findAll { it.name == 'camel-consumers' }.status", Matchers.contains("DOWN"));
-        }
-    }
-
-    /**
-     * The JSON structure produced by camel-microprofile-health in Camel >= 3.15 is different to that
-     * produced in previous versions. This check allows the tests to handle both formats.
-     *
-     * TODO: Remove when examples upgraded to >= Camel 3.15
-     */
-    private boolean isAggregatedHealthResponse() {
-        String version = CamelContext.class.getPackage().getImplementationVersion();
-        String[] versionParts = version.split("\\.");
-        return Integer.parseInt(versionParts[1]) < 15;
+        RestAssured.get("/q/health")
+                .then()
+                .statusCode(503)
+                .body("status", is("DOWN"),
+                        "checks.findAll { it.name == 'toolong' }.status", Matchers.contains("UP"),
+                        "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP"),
+                        "checks.findAll { it.name == 'camel-routes' }.status", Matchers.contains("DOWN"),
+                        "checks.findAll { it.name == 'camel-consumers' }.status", Matchers.contains("DOWN"));
     }
 }
