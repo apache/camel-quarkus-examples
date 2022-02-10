@@ -33,7 +33,6 @@ public class CustomLivenessCheck extends AbstractHealthCheck {
 
     public CustomLivenessCheck() {
         super("custom-liveness-check");
-        getConfiguration().setEnabled(true);
     }
 
     @Override
