@@ -28,7 +28,6 @@ public class CustomReadinessCheck extends AbstractHealthCheck {
 
     public CustomReadinessCheck() {
         super("custom-readiness-check");
-        getConfiguration().setEnabled(true);
     }
 
     @Override
