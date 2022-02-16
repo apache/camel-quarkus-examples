@@ -78,19 +78,6 @@ jobs:
             license:check \
             net.revelc.code.formatter:formatter-maven-plugin:validate \
             net.revelc.code:impsort-maven-plugin:check
-      - name: Validate test categories YAML
-        run: |
-          VALID=true
-          for EXAMPLE in $(dirname $(grep -l "camel-quarkus-examples-" $(find . -name pom.xml)) | cut -f2 -d'/'); do
-            if ! grep ${EXAMPLE} .github/test-categories.yaml > /dev/null; then
-              echo "Project ${EXAMPLE} is not listed in .github/test-categories.yaml"
-              VALID=false
-            fi
-          done
-
-          if [[ ${VALID} != "true" ]]; then
-            exit 1
-          fi
       - name: Build Camel Quarkus Examples
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} clean install -DskipTests -Dquarkus.build.skip
@@ -111,11 +98,12 @@ jobs:
       - name: Setup Integration Test Matrix
         id: set-itest-matrix
         run: |
-          CATEGORIES=$(yq -M -N -I 0 -o=json e 'keys' .github/test-categories.yaml | tr '"' "'")
-          echo "::set-output name=matrix::{'category': ${CATEGORIES}}"
+          sudo apt install groovy -y --no-install-recommends
+          TEST_GROUPS=$(groovy .github/generate-test-groups.groovy)
+          echo "::set-output name=matrix::${TEST_GROUPS}"
 
   integration-tests:
-    name: Integration Tests - ${{matrix.category}}
+    name: Integration Tests - ${{matrix.name}}
     needs: initial-mvn-install
     runs-on: ubuntu-latest
     strategy:
@@ -139,18 +127,31 @@ jobs:
         run: |
           tar -xzf ../maven-repo.tgz -C ~
       - name: Integration Tests
+        env:
+          TEST_MODULES: ${{matrix.tests}}
+        shell: '/usr/bin/bash {0}'
         run: |
-          EXAMPLE_PROJECTS=""
-          for EXAMPLE in $(yq -M -N e ".${{ matrix.category }}" .github/test-categories.yaml | cut -f2 -d' '); do
-            if [ "${EXAMPLE}" == "null" ]; then
-              continue
-            fi
+          BUILD_FAILURES=()
 
+          for MODULE in ${TEST_MODULES//,/ }; do
             ./mvnw ${MAVEN_ARGS} clean verify \
               -Dformatter.skip -Dimpsort.skip \
               -Pnative,docker \
-              -f "${EXAMPLE}/pom.xml"
+              -f "${MODULE}/pom.xml"
+
+            if [[ $? -ne 0 ]]; then
+              BUILD_FAILURES[${#BUILD_FAILURES[@]}]=${MODULE}
+            fi
           done
+
+          if [[ ${#BUILD_FAILURES[@]} -gt 0 ]]; then
+            echo -e "\nBuild errors were encountred in the following projects:\n"
+            for FAILURE in ${BUILD_FAILURES[@]}; do
+                echo "* ${FAILURE}"
+            done
+            echo -e "\nCheck build logs for further information."
+            exit 1
+          fi
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
