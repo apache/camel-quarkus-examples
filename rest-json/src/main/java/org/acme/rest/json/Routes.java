@@ -48,21 +48,24 @@ public class Routes extends RouteBuilder {
 
         rest("/fruits")
                 .get()
-                .route()
-                .setBody().constant(fruits)
-                .endRest()
+                .to("direct:getFruits")
 
                 .post()
                 .type(Fruit.class)
-                .route()
-                .process().body(Fruit.class, fruits::add)
-                .setBody().constant(fruits)
-                .endRest();
+                .to("direct:addFruit");
 
         rest("/legumes")
                 .get()
-                .route()
-                .setBody().constant(legumes)
-                .endRest();
+                .to("direct:getLegumes");
+
+        from("direct:getFruits")
+                .setBody().constant(fruits);
+
+        from("direct:addFruit")
+                .process().body(Fruit.class, fruits::add)
+                .setBody().constant(fruits);
+
+        from("direct:getLegumes")
+                .setBody().constant(legumes);
     }
 }
