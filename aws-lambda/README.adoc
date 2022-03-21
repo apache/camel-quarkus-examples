@@ -3,113 +3,55 @@
 
 {cq-description}
 
-== Introduction
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
 
-This example uses the following framework 
+== Start in Development mode
 
- * **Quarkus** - *The Supersonic Subatomic Java Framework for building Cloud Native Applications*
- * **Apache Camel** - *The Swiss Army Knife of Enterprise Application Integration for integrating heterogeneous systems*
- * **AWS Lambda** - *Event-driven, serverless computing platform provided by Amazon as a part of Amazon Web Services*
+In development mode, Quarkus boots up a mock AWS Lambda event server. For further information about how to feed it
+with mock events, refer to the https://quarkus.io/guides/amazon-lambda#live-coding-and-unitintegration-testing[Quarkus AWS Lambda] guide.
 
-If you want to learn more about 
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
 
-* *Quarkus - please visit its website: https://quarkus.io/*
-* *Apache Camel - please visit its website: https://camel.apache.org/*
-* *AWS Lambda - please visit its website: https://aws.amazon.com/lambda/*
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
+workspace. Any modifications in your project will automatically take effect in the running application.
 
-== Provided Code
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
-=== Quarkus Camel Amazon Lambda Integration example
+=== Package and run the application
 
-This example contains a sample Greeter service build using Quarkus & Camel framework implementing Dependency Injection design principle which can be deployed as functions into the Amazon Lambda.
+Once you are done with developing you may want to package and run the application.
 
-[WARNING]
-====
-*INCOMPATIBLE WITH DEV MODE*: Amazon Lambda Binding is not compatible with dev mode yet!
-====
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
 
-==== Quarkus Extensions / Dependencies Used
+==== JVM mode
 
-1. **https://quarkus.io/guides/camel[Apache Camel]**
-    * https://camel.apache.org/camel-quarkus/latest/reference/extensions/core.html[camel-quarkus-core]
-    * https://camel.apache.org/camel-quarkus/latest/reference/extensions/direct.html[camel-quarkus-direct]
-    * https://camel.apache.org/camel-quarkus/latest/reference/extensions/log.html[camel-quarkus-log]
+[source,shell]
+----
+$ mvn clean package -DskipTests
+$ java -jar target/quarkus-app/quarkus-run.jar
+----
 
-2. **Amazon Lambda**
-    * https://quarkus.io/guides/amazon-lambda[quarkus-amazon-lambda]
-    
-3. **https://quarkus.io/guides/cdi[Context Dependency Injection]**
-    * https://quarkus.io/guides/cdi-reference[quarkus-arc]
-    
-4. **https://quarkus.io/guides/getting-started-testing[Testing]**
-    * quarkus-junit5
-    * https://quarkus.io/blog/mocking/[quarkus-junit5-mockito]
-    * quarkus-test-amazon-lambda
+==== Native mode
 
-== Running the application in dev mode
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
 
-You can run your application in dev mode that enables live coding using:
-```shell script
-mvn compile quarkus:dev
-```
+To prepare a native executable using GraalVM, run the following command:
 
-[NOTE]
-====
-Quarkus now ships with a Dev UI, which is available in dev mode only at http://localhost:8080/q/dev/.
-====
+[source,shell]
+----
+$ mvn clean package -DskipTests -Pnative
+$ ./target/*-runner
+----
 
-== Building and Packaging the Java code as Quarkus JVM jar
+=== Extra Build Generated Files
 
-The application can be packaged using:
-```shell script
-mvn clean package
-```
-This will compile and package your code. 
-
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _uber-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-If you want to build an _uber-jar_, execute the following command:
-```shell script
-mvn package -Dquarkus.package.type=uber-jar
-```
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-It also generates a zip file `target/function.zip`. This zip file contains your java code along with the dependencies.
-
-[#package_native_executable]
-== Building and Packaging the Java code as Quarkus Native executable
-
-If you want a lower memory footprint and faster initialization times for your lambda, you can compile your Java code to a native executable. Just make sure to rebuild your project with the -Pnative switch.
-
-[WARNING]
-====
-*Building Native Executables will take much longer time and depends on the underlying system*
-====
-
-```shell script
-mvn package -Pnative
-```
-
-[NOTE]
-====
-If you are building on a non-Linux system Or, if you don't have GraalVM installed, you can run the native executable build using docker container. You need to pass in a property instructing quarkus to use a docker build as Amazon Lambda requires linux binaries. 
->You can do this by passing this property to your Maven build: `-Dquarkus.native.container-build=true`. However, This requires to have docker installed locally.
-====
-
-```shell script
-mvn package -Pnative -Dquarkus.native.container-build=true
-```
-
-Either of these commands will compile and create a native executable image. 
-You can then execute your native executable with: `./target/code-with-quarkus-1.0.0-SNAPSHOT-runner`
-
-It also generates a zip file `target/function.zip`. This zip file contains your native executable image renamed to bootstrap. This is a requirement of the AWS Lambda Custom (Provided) Runtime.
-
-If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.html.
-
-== Extra Build Generated Files
 [NOTE]
 ====
 After you run the build, there are a few extra files generated by the quarkus-amazon-lambda extension. These files are in the build directory: `target/`
@@ -152,11 +94,12 @@ https://quarkus.io/guides/amazon-lambda#extra-build-generated-files[Please click
 
 10. For the Handler details please provide the Quarkus Handler 
 
-```shell script
+[source,shell]
+----
 io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
-```
+----
 
-=== Testing the AWS Lamda Function
+=== Testing the AWS Lambda Function
 
 1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test 
 
@@ -201,7 +144,7 @@ io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
 
 12. For Key enter `DISABLE_SIGNAL_HANDLERS`	& for Value enter `true`
 
-=== Testing the AWS Lamda Function
+=== Testing the AWS Lambda Function
 
 1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test 
 
