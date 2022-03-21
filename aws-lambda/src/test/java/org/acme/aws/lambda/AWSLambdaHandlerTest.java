@@ -16,10 +16,12 @@
  */
 package org.acme.aws.lambda;
 
-import io.quarkus.amazon.lambda.test.LambdaClient;
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Assertions;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
+
+import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
 public class AWSLambdaHandlerTest {
@@ -28,7 +30,15 @@ public class AWSLambdaHandlerTest {
     public void invokeLambdaForStuShouldReturnStuGreeting() {
         Person in = new Person();
         in.setName("Stu");
-        String out = LambdaClient.invoke(String.class, in);
-        Assertions.assertEquals("Hello Stu ! How are you? from GreetService", out);
+
+        RestAssured.given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+                .body(in)
+                .when()
+                .post()
+                .then()
+                .statusCode(200)
+                .body(is("\"Hello Stu ! How are you? from GreetService\""));
     }
 }
