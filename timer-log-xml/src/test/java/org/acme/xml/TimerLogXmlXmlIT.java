@@ -16,9 +16,9 @@
  */
 package org.acme.xml;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 class TimerLogXmlXmlIT extends TimerLogXmlTest {
 
 }

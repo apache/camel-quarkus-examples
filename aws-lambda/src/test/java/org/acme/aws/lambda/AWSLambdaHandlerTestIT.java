@@ -16,9 +16,9 @@
  */
 package org.acme.aws.lambda;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 public class AWSLambdaHandlerTestIT extends AWSLambdaHandlerTest {
 
     // Execute the same tests but in native mode.

@@ -16,8 +16,8 @@
  */
 package org.acme.health;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 class HealthIT extends HealthTest {
 }
