@@ -16,8 +16,8 @@
  */
 package org.acme.http;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 class HttpLogIT extends HttpLogTest {
 }

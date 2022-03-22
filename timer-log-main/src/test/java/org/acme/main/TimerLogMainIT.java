@@ -16,9 +16,9 @@
  */
 package org.acme.main;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 class TimerLogMainIT extends TimerLogMainTest {
 
 }
