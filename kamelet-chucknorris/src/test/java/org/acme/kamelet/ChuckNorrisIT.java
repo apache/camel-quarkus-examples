@@ -16,9 +16,9 @@
  */
 package org.acme.kamelet;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 class ChuckNorrisIT extends ChuckNorrisTest {
 
 }

@@ -16,9 +16,9 @@
  */
 package org.acme.file.xml;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 class FileSplitLogXmlIT extends FileSplitLogXmlTest {
 
 }

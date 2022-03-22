@@ -16,12 +16,12 @@
  */
 package org.acme.rest.json;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 /**
  * Native mode tests. In the native mode, the same tests will be executed as in the JVM mode because this class extends
  * {@link RestJsonTest}.
  */
-@NativeImageTest
+@QuarkusIntegrationTest
 public class RestJsonIT extends RestJsonTest {
 }
