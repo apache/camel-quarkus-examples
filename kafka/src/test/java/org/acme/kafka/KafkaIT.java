@@ -17,9 +17,7 @@
 package org.acme.kafka;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
-import org.junit.jupiter.api.Disabled;
 
-@Disabled("https://github.com/apache/camel-quarkus/issues/3157")
 @QuarkusIntegrationTest
 public class KafkaIT extends KafkaTest {
 }
