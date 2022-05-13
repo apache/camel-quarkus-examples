@@ -63,19 +63,19 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 
 The tracing configuration for the application can be found within `application.properties`.
 
-To view tracing events, start a Jaeger tracing server. A simple way of doing this is with Docker:
+To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
 
 [source,shell]
 ----
-$ docker run -e COLLECTOR_ZIPKIN_HTTP_PORT=9411 -p 5775:5775/udp -p 6831:6831/udp -p 6832:6832/udp -p 5778:5778 \
-    -p 16686:16686 -p 14268:14268 -p 9411:9411 jaegertracing/all-in-one:latest
+$ docker-compose up -d
 ----
 
-With the server running, browse to http://localhost:16686. Then choose 'greetings-service' from the 'Service' drop down and click the 'Find Traces' button.
+With the server running, browse to http://localhost:16686. Then choose 'camel-quarkus-observability' from the 'Service' drop down and click the 'Find Traces' button.
 
 The `netty-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
 a hierarchy of 3 spans showing the progression of the message exchange through each endpoint.
 
+For convenience, tracing events are also logged to the application console.
 
 === Package and run the application
 
