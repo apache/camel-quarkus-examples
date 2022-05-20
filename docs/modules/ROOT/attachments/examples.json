@@ -55,6 +55,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/observability"
   },
   {
+    "title": "Platform HTTP security with Keycloak",
+    "description": "Shows how to secure platform HTTP with Keycloak",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/platform-http-security-keycloak"
+  },
+  {
     "title": "REST with Jackson",
     "description": "Demonstrates how to create a REST service using the Camel REST DSL and Jackson.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/rest-json"
