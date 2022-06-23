@@ -14,7 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.acme.xml;
+package org.acme.timer.log;
 
-public class DummyClass {
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+
+import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+@ApplicationScoped
+@Named("greeting")
+@RegisterForReflection(fields = false)
+public class GreetingBean {
+
+    @ConfigProperty(name = "greeting.message")
+    String message;
+
+    public String greet() {
+        return message;
+    }
 }
