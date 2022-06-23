@@ -19,9 +19,15 @@ workspace. Any modifications in your project will automatically take effect in t
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
-Then look at the log output in the console. As we run the example
-in Quarkus Dev Mode, you can edit the source code and have live updates.
-For example try to change the logging output to be `Bye World`.
+Then look at the log output in the console. There are 2 log messages. One generated from a route defined using the Java DSL in class `TimerRoute` and
+another defined using the XML DSL in `src/main/resources/routes/my-routes.xml`.
+
+As we run the example in Quarkus Dev Mode, you can edit the source code and have live updates.
+For example, try to change the default greeting message in `GreetingBean` to `Bye World`.
+
+The log message and the period at which the timer fires can be changed by modifying configuration properties `timer.period` and
+`greeting.message` in `application.properties`. You can also override the default values via the command line with JVM arguments
+`-Dtimer.period=5000 -Dgreeting.message="My Custom Greeting"`
 
 === Package and run the application
 
