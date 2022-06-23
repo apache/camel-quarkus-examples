@@ -24,8 +24,12 @@
             https://camel.apache.org/schema/spring/camel-spring.xsd">
 
     <route id="xml-route">
-        <from uri="timer:from-xml?period=1000"/>
-        <log message="Hello XML!"/>
+        <from uri="timer:from-xml?period={{timer.period}}"/>
+
+        <!-- Invoke the CDI GreetingBean -->
+        <bean ref="greeting" method="greet"/>
+
+        <to uri="log:timer-xml"/>
     </route>
 
 </routes>
