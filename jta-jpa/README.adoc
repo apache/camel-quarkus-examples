@@ -1,0 +1,166 @@
+= JTA and JPA: A Camel Quarkus example
+:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a message broker (Artemis).
+
+{cq-description}
+
+We use Narayana as standalone JTA Transaction Manager implementation, and Hibernate as JPA Adapter.
+
+This example will connect to a database with the connection details defined in `application.properties`.
+If the example is run on Development mode and no database exists, Quarkus will create a matching database
+https://quarkus.io/guides/datasource#dev-services[as described here].
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+NOTE: The Narayana `node.identifier` is very important when you scale up in the cloud environment. It must be unique for each node. You can set it by using `quarkus.transaction-manager.node-name` property which the default value is `1`.
+
+.Todo crash recovery issues
+- https://github.com/quarkiverse/quarkus-pooled-jms/issues/9[Add XA Recovery helper in quarkus-pooled-jms #9]
+- https://github.com/quarkusio/quarkus/issues/26160[Improve recovery manager in quarkus-narayana-jta extension #26160]
+
+== Start in the Development mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
+workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+==== External systems
+
+Start MySQL:
+[source, shell]
+----
+docker run --name db-mysql \
+  -e MYSQL_ROOT_PASSWORD=root \
+  -d -p 3306:3306 mysql
+
+docker exec -it db-mysql mysql -uroot -proot -e \
+  "CREATE DATABASE testdb CHARACTER SET utf8mb4;
+   CREATE USER 'admin'@'%' IDENTIFIED WITH mysql_native_password BY 'admin';
+   GRANT ALL ON testdb.* TO 'admin'@'%';
+   GRANT XA_RECOVER_ADMIN on *.* to 'admin'@'%';
+   FLUSH PRIVILEGES;"
+----
+
+Start Artemis:
+[source, shell]
+----
+docker run --name artemis \
+  -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
+  -d -p 61616:61616 \
+  quay.io/artemiscloud/activemq-artemis-broker
+----
+
+==== Prerequisites
+- Make sure `io.quarkus:quarkus-jdbc-mysql` has been added in `pom.xml`
+- Make sure `db-mysql` and `artemis` has been started and ready for servicing
+- Edit `src/main/resource/application.properties` to uncomment all `%prod` lines
+[source, properties]
+----
+# Production Datasource
+%prod.quarkus.datasource.db-kind=mysql
+%prod.quarkus.datasource.username=admin
+$prod.quarkus.datasource.password=admin
+%prod.quarkus.datasource.jdbc.url=mysql://localhost:3306/testdb
+%prod.quarkus.datasource.jdbc.transactions=xa
+
+# Quarkus Artemis and Messaginghub Pooled JMS
+%prod.quarkus.artemis.url=tcp://localhost:61616
+%prod.quarkus.artemis.username=admin
+%prod.quarkus.artemis.password=admin
+quarkus.pooled-jms.xa.enabled=true
+----
+
+==== JVM mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+...
+
+[io.quarkus] (main) camel-quarkus-examples-... started in 0.570s.
+----
+
+==== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ mvn clean package -Pnative
+$ ./target/*-runner
+...
+[io.quarkus] (main) camel-quarkus-examples-... started in 0.011s.
+...
+----
+
+==== How to run
+Test the service endpoint from another terminal:
+
+[source,shell]
+----
+ADDRESS="http://localhost:8080"
+curl -X POST $ADDRESS/api/messages/hello
+curl $ADDRESS/api/messages
+----
+
+Test with normal "hello" content:
+[source,shell]
+----
+curl -X POST $ADDRESS/api/message/hello
+----
+
+Check the audit_log
+[source,shell]
+----
+curl $ADDRESS/api/messages
+----
+You should get some results like
+[source]
+----
+[{message=hello}, {message=hello-ok}]
+----
+
+Test rollback by calling the service with "fail" content:
+[source,shell]
+----
+curl -X POST $ADDRESS/api/message/fail
+----
+You should not find any trace of the message in the audit_log table. And some failures like
+[source]
+----
+2022-07-01 11:03:10,257 INFO  [route2] (executor-thread-0) Forced exception
+2022-07-01 11:03:10,257 ERROR [org.apa.cam.pro.err.DefaultErrorHandler] (executor-thread-0) Failed delivery for (MessageId: 0BE5920FE20C353-0000000000000001 on ExchangeId: 0BE5920FE20C353-0000000000000001). Exhausted after delivery attempt: 1 caught: java.lang.RuntimeException: fail
+
+Message History (source location and message history is disabled)
+---------------------------------------------------------------------------------------------------------------------------------------
+Source                                   ID                             Processor                                          Elapsed (ms)
+                                         route5/route5                  from[platform-http:///api/messages/%7Bmessage%7D?h            4
+	...
+                                         route2/process1                Processor@0x60941009                                          0
+
+Stacktrace
+---------------------------------------------------------------------------------------------------------------------------------------: java.lang.RuntimeException: fail
+
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
