@@ -35,6 +35,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/health"
   },
   {
+    "title": "JTA and JPA",
+    "description": "Shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a message broker (Artemis).",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jta-jpa"
+  },
+  {
     "title": "Kafka example ",
     "description": "Shows how to produce and consume messages in a Kafka topic, using Strimzi Operator",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kafka"
