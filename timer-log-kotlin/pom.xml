@@ -28,14 +28,14 @@
     <description>Camel Quarkus Example :: Timer to Log Kotlin</description>
 
     <properties>
-        <quarkus.platform.version>2.10.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.10.1.Final</quarkus.platform.version>
         <camel-quarkus.platform.version>2.11.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
         <camel-quarkus.platform.artifact-id>camel-quarkus-bom</camel-quarkus.platform.artifact-id>
-        <kotlin.version>1.5.21</kotlin.version>
+        <kotlin.version>1.6.21</kotlin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
