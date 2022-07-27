@@ -25,15 +25,15 @@
     <name>Camel Quarkus :: Examples :: JTA JPA</name>
     <description>Camel Quarkus Example :: JTA JPA</description>
     <properties>
-        <quarkus.platform.version>2.10.1.Final</quarkus.platform.version>
-        <camel-quarkus.platform.version>2.11.0-SNAPSHOT</camel-quarkus.platform.version>
+        <quarkus.platform.version>2.11.1.Final</quarkus.platform.version>
+        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
         <quarkus-artemis.version>1.2.0</quarkus-artemis.version>
         <quarkus-pooled-jms.version>1.0.1</quarkus-pooled-jms.version>
 
-        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
-        <camel-quarkus.platform.artifact-id>camel-quarkus-bom</camel-quarkus.platform.artifact-id>
+        <camel-quarkus.platform.group-id>${quarkus.platform.group-id}</camel-quarkus.platform.group-id>
+        <camel-quarkus.platform.artifact-id>quarkus-camel-bom</camel-quarkus.platform.artifact-id>
 
         <formatter-maven-plugin.version>2.17.1</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.3.2</impsort-maven-plugin.version>
