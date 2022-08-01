@@ -157,6 +157,40 @@ jobs:
         run: |
           [[ -z $(git status --porcelain) ]] || { echo 'There are uncommitted changes'; git status; exit 1; }
 
+  integration-tests-alternative-jvm:
+    name: Integration Tests JDK - ${{ matrix.jdk }}
+    needs: initial-mvn-install
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: ['17']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up JDK {{ matrix.jdk }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.jdk }}
+      - name: Download Maven Repo
+        uses: actions/download-artifact@v2
+        with:
+          name: maven-repo
+          path: ..
+      - name: Extract Maven Repo
+        shell: bash
+        run: |
+          tar -xzf ../maven-repo.tgz -C ~
+      - name: Integration Tests
+        shell: bash
+        run: |
+          ./mvnw-for-each.sh ${MAVEN_ARGS} clean verify
+      - name: Fail if there are uncommitted changes
+        shell: bash
+        run: |
+          [[ -z $(git status --porcelain) ]] || { echo 'There are uncommitted changes'; git status; exit 1; }
+
   integration-tests-alternative-platform:
     name: Integration Tests Alternative Platform - ${{matrix.os}}
     needs: initial-mvn-install
