@@ -63,6 +63,26 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 
 The tracing configuration for the application can be found within `application.properties`.
 
+The default configuration uses the OTLP exporter, but it can be easily switched to the Jaeger exporter by applying this change in `application.properties`:
+
+[source,shell]
+----
+- quarkus.opentelemetry.tracer.exporter.otlp.endpoint=http://localhost:4317
++ quarkus.opentelemetry.tracer.exporter.jaeger.endpoint=http://localhost:14250
+----
+
+and this change in `pom.xml`:
+
+[source,xml]
+----
+        <dependency>
+            <groupId>io.quarkus</groupId>
+-           <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
++           <artifactId>quarkus-opentelemetry-exporter-jaeger</artifactId>
+        </dependency>
+----
+
+
 To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
 
 [source,shell]
