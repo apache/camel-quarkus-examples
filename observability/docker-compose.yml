@@ -23,8 +23,8 @@ services:
     image: jaegertracing/all-in-one:1.33
     ports:
       - "16686:16686"
-      - "14268"
-      - "14250"
+      - "14268:14268"
+      - "14250:14250"
 
   # Collector
   otel-collector:
@@ -35,6 +35,5 @@ services:
     ports:
       - "13133:13133" # Health_check extension
       - "4317:4317"   # OTLP gRPC receiver
-      - "55680:55680" # OTLP gRPC receiver alternative port
     depends_on:
       - jaeger-all-in-one
