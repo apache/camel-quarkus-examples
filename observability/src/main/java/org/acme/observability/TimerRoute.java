@@ -18,17 +18,11 @@ package org.acme.observability;
 
 import org.apache.camel.builder.RouteBuilder;
 
-public class Routes extends RouteBuilder {
+public class TimerRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        from("platform-http:/greeting")
-                .removeHeaders("*")
-                .to("http://localhost:{{greeting-provider-app.service.port}}/greeting-provider");
-
-        from("platform-http:/greeting-provider")
-                // Random delay to simulate latency
-                .delay(simple("${random(1000, 5000)}"))
-                .setBody(constant("Hello From Camel Quarkus!"));
+        from("timer:greeting?period=10000")
+                .to("http://{{greeting-app.service.host}}:{{greeting-app.service.port}}/greeting");
     }
 }

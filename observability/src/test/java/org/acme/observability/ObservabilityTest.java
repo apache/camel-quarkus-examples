@@ -31,6 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class ObservabilityTest {
 
     @Test
+    public void greeting() {
+        RestAssured.get("/greeting")
+                .then()
+                .statusCode(200);
+    }
+
+    @Test
     public void metrics() {
         // Verify Camel metrics are available
         JsonPath path = given()
