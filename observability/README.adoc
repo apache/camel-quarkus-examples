@@ -31,13 +31,6 @@ To view all Camel metrics do:
 $ curl localhost:8080/q/metrics/application
 ----
 
-To retrieve metrics in JSON format, pass the `Accept` HTTP header in the request:
-
-[source,shell]
-----
-$ curl -s -H"Accept: application/json" localhost:8080/q/metrics/application
-----
-
 === Health endpoint
 
 Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/q/health/live` and `/q/health/ready` endpoints:
@@ -92,7 +85,7 @@ $ docker-compose up -d
 
 With the server running, browse to http://localhost:16686. Then choose 'camel-quarkus-observability' from the 'Service' drop down and click the 'Find Traces' button.
 
-The `netty-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
+The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
 a hierarchy of 3 spans showing the progression of the message exchange through each endpoint.
 
 For convenience, tracing events are also logged to the application console.

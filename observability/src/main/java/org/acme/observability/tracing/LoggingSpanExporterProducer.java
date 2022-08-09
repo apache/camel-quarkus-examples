@@ -30,6 +30,6 @@ public class LoggingSpanExporterProducer {
 
     @Produces
     public SpanExporter loggingSpanExporter() {
-        return LoggingSpanExporter.create();
+        return new LoggingSpanExporter();
     }
 }
