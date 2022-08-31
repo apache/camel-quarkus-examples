@@ -12,7 +12,7 @@ https://quarkus.io/guides/datasource#dev-services[as described here].
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-NOTE: The Narayana `node.identifier` is very important when you scale up in the cloud environment. It must be unique for each node. You can set it by using `quarkus.transaction-manager.node-name` property which the default value is `1`.
+NOTE: The Narayana `node.identifier` is very important when you scale up in the cloud environment. It must be unique for each node. You can set it by using `quarkus.transaction-manager.node-name` property which the default value is `quarkus`.
 
 .Todo crash recovery issues
 - https://github.com/quarkiverse/quarkus-pooled-jms/issues/9[Add XA Recovery helper in quarkus-pooled-jms #9]
