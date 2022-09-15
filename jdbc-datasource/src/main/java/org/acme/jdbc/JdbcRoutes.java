@@ -24,10 +24,10 @@ public class JdbcRoutes extends RouteBuilder {
         from("timer://insertCamel?period=1000")
                 .log("Inserting Camel ${messageTimestamp}")
                 .setBody().simple("INSERT INTO Camel (timestamp) VALUES (${messageTimestamp})")
-                .to("jdbc:default")
+                .to("jdbc:camel-ds")
                 .log("Inserted Camel ${messageTimestamp}")
                 .setBody().simple("SELECT * FROM Camel")
-                .to("jdbc:default")
+                .to("jdbc:camel-ds")
                 .log("We have ${header[CamelJdbcRowCount]} camels in the database.")
                 .log("Camels found: ${body}");
     }
