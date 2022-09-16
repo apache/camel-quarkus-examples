@@ -17,12 +17,17 @@
 package org.acme;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.transaction.TransactionManager;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestParamType;
 
 @ApplicationScoped
 public class CamelRoutes extends RouteBuilder {
+    @Inject
+    TransactionManager transactionManager;
+
     @Override
     public void configure() {
         rest("/messages")
@@ -40,10 +45,13 @@ public class CamelRoutes extends RouteBuilder {
         from("direct:trans")
                 .transacted()
                 .setBody(simple("${headers.message}"))
+                .process(x -> {
+                    DummyXAResource xaResource = new DummyXAResource("crash".equals(x.getIn().getBody(String.class)));
+                    transactionManager.getTransaction().enlistResource(xaResource);
+                })
                 .to("bean:auditLog?method=createAuditLog(${body})")
                 .to("jpa:org.acme.AuditLog")
                 .setBody(simple("${headers.message}"))
-                .to("jms:outbound?disableReplyTo=true")
                 .choice()
                 .when(body().startsWith("fail"))
                 .log("Forced exception")
@@ -53,10 +61,5 @@ public class CamelRoutes extends RouteBuilder {
                 .otherwise()
                 .log("Message added: ${body}")
                 .endChoice();
-
-        from("jms:outbound")
-                .log("Message out: ${body}")
-                .to("bean:auditLog?method=createAuditLog(${body}-ok)")
-                .to("jpa:org.acme.AuditLog");
     }
 }

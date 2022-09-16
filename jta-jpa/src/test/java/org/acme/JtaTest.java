@@ -18,7 +18,6 @@ package org.acme;
 
 import java.util.UUID;
 
-import io.quarkus.artemis.test.ArtemisTestResource;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -29,7 +28,6 @@ import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
 @QuarkusTestResource(H2DatabaseTestResource.class)
-@QuarkusTestResource(ArtemisTestResource.class)
 public class JtaTest {
     @Test
     public void testXA() {
@@ -43,7 +41,7 @@ public class JtaTest {
                 .when().get("/api/messages")
                 .then()
                 .statusCode(200)
-                .body(is("[{message=" + body + "}, {message=" + body + "-ok}]"));
+                .body(is("[{message=" + body + "}]"));
     }
 
     @Test
