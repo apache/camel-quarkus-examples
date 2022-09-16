@@ -27,8 +27,6 @@
     <properties>
         <quarkus.platform.version>2.13.0.CR1</quarkus.platform.version>
         <camel-quarkus.platform.version>2.13.0-SNAPSHOT</camel-quarkus.platform.version>
-        <quarkus-artemis.version>1.2.0</quarkus-artemis.version>
-        <quarkus-pooled-jms.version>1.0.1</quarkus-pooled-jms.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
@@ -65,13 +63,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>io.quarkiverse.artemis</groupId>
-                <artifactId>quarkus-artemis-bom</artifactId>
-                <version>${quarkus-artemis.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -97,10 +88,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-jms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-jpa</artifactId>
         </dependency>
         <dependency>
@@ -120,15 +107,6 @@
             <artifactId>quarkus-jdbc-mysql</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.artemis</groupId>
-            <artifactId>quarkus-artemis-jms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.messaginghub</groupId>
-            <artifactId>quarkus-pooled-jms</artifactId>
-            <version>${quarkus-pooled-jms.version}</version>
-        </dependency>
-        <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
             <scope>test</scope>
@@ -136,11 +114,6 @@
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-test-h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.artemis</groupId>
-            <artifactId>quarkus-test-artemis</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

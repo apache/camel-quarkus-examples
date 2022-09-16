@@ -1,5 +1,5 @@
 = JTA and JPA: A Camel Quarkus example
-:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a message broker (Artemis).
+:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a simulate XAResource which can demonstrate the commit, rollback and crash recovery.
 
 {cq-description}
 
@@ -13,10 +13,6 @@ TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Ca
 and other general information.
 
 NOTE: The Narayana `node.identifier` is very important when you scale up in the cloud environment. It must be unique for each node. You can set it by using `quarkus.transaction-manager.node-name` property which the default value is `quarkus`.
-
-.Todo crash recovery issues
-- https://github.com/quarkiverse/quarkus-pooled-jms/issues/9[Add XA Recovery helper in quarkus-pooled-jms #9]
-- https://github.com/quarkusio/quarkus/issues/26160[Improve recovery manager in quarkus-narayana-jta extension #26160]
 
 == Start in the Development mode
 
@@ -55,14 +51,7 @@ docker exec -it db-mysql mysql -uroot -proot -e \
    FLUSH PRIVILEGES;"
 ----
 
-Start Artemis:
-[source, shell]
-----
-docker run --name artemis \
-  -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
-  -d -p 61616:61616 \
-  quay.io/artemiscloud/activemq-artemis-broker
-----
+
 
 ==== Prerequisites
 - Make sure `io.quarkus:quarkus-jdbc-mysql` has been added in `pom.xml`
@@ -77,11 +66,7 @@ $prod.quarkus.datasource.password=admin
 %prod.quarkus.datasource.jdbc.url=mysql://localhost:3306/testdb
 %prod.quarkus.datasource.jdbc.transactions=xa
 
-# Quarkus Artemis and Messaginghub Pooled JMS
-%prod.quarkus.artemis.url=tcp://localhost:61616
-%prod.quarkus.artemis.username=admin
-%prod.quarkus.artemis.password=admin
-quarkus.pooled-jms.xa.enabled=true
+%prod.quarkus.hibernate-orm.database.generation=none
 ----
 
 ==== JVM mode
@@ -135,7 +120,7 @@ curl $ADDRESS/api/messages
 You should get some results like
 [source]
 ----
-[{message=hello}, {message=hello-ok}]
+[{message=hello}]
 ----
 
 Test rollback by calling the service with "fail" content:
@@ -159,6 +144,88 @@ Source                                   ID                             Processo
 Stacktrace
 ---------------------------------------------------------------------------------------------------------------------------------------: java.lang.RuntimeException: fail
 
+----
+
+Test crash recovery by calling the service with "crash" content:
+[source,shell]
+----
+curl -X POST $ADDRESS/api/message/crash
+----
+The application should be crashed, and you can not see any response.
+[source]
+----
+curl: (52) Empty reply from server
+----
+Now restart the application, and wait about 10 seconds, then you can see the following messages that the application has recovered the transaction.
+[source]
+----
+2022-09-16 12:35:39,994 INFO  [io.quarkus] (main) camel-quarkus-examples-jta-jpa 2.13.0-SNAPSHOT on JVM (powered by Quarkus 2.13.0.CR1) started in 1.755s. Listening on: http://0.0.0.0:8080
+2022-09-16 12:35:39,994 INFO  [io.quarkus] (main) Profile prod activated.
+2022-09-16 12:35:39,994 INFO  [io.quarkus] (main) Installed features: [agroal, camel-attachments, camel-bean, camel-core, camel-direct, camel-jpa, camel-jta, camel-log, camel-microprofile-health, camel-platform-http, camel-rest, cdi, hibernate-orm, jdbc-h2, jdbc-mysql, narayana-jta, smallrye-context-propagation, smallrye-health, vertx]
+2022-09-16 12:35:49,251 INFO  [org.acm.DummyXAResourceRecovery] (Periodic Recovery) DummyXAResourceRecovery returning list of resources: [org.acme.DummyXAResource@35cdbf7a]
+2022-09-16 12:35:49,270 INFO  [org.acm.DummyXAResource] (Periodic Recovery) Committing DummyXAResource
+----
+check the audit_log table, you should see the message "crash" in the table.
+
+== Running with Artemis JMS
+If you want to use artemis-jms with XA support, you need to add the following dependency in `pom.xml`
+[source, xml]
+----
+<dependency>
+    <groupId>io.quarkiverse.artemis</groupId>
+    <artifactId>quarkus-artemis-jms</artifactId>
+    <version>1.2.0</version>
+</dependency>
+<dependency>
+    <groupId>io.quarkiverse.messaginghub</groupId>
+    <artifactId>quarkus-pooled-jms</artifactId>
+    <version>1.0.1</version>
+</dependency>
+----
+
+And you need to add the following configuration in `application.properties`
+[source, properties]
+----
+# Quarkus Artemis and Messaginghub Pooled JMS
+quarkus.artemis.url=tcp://localhost:61616
+quarkus.artemis.username=admin
+quarkus.artemis.password=admin
+quarkus.pooled-jms.xa.enabled=true
+----
+
+Start Artemis:
+[source, shell]
+----
+docker run --name artemis \
+  -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
+  -d -p 61616:61616 \
+  quay.io/artemiscloud/activemq-artemis-broker
+----
+
+Make some changes in `CamelRoutes` to use camel-quarkus-jms send and receive messages from Artemis.
+[source, java]
+----
+from("direct:trans")
+    .transacted()
+    .setBody(simple("${headers.message}"))
+    .to("bean:auditLog?method=createAuditLog(${body})")
+    .to("jpa:org.acme.AuditLog")
+    .setBody(simple("${headers.message}"))
+    .to("jms:outbound?disableReplyTo=true")
+    .choice()
+        .when(body().startsWith("fail"))
+        .log("Forced exception")
+        .process(x -> {
+            throw new RuntimeException("fail");
+        })
+        .otherwise()
+        .log("Message added: ${body}")
+    .endChoice();
+
+from("jms:outbound")
+    .log("Message out: ${body}")
+    .to("bean:auditLog?method=createAuditLog(${body}-ok)")
+    .to("jpa:org.acme.AuditLog");
 ----
 
 == Feedback
