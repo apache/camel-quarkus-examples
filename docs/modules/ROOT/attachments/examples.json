@@ -31,7 +31,7 @@
   },
   {
     "title": "JTA and JPA",
-    "description": "Shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a message broker (Artemis).",
+    "description": "Shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a simulate XAResource which can demonstrate the commit, rollback and crash recovery.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jta-jpa"
   },
   {
