@@ -17,7 +17,8 @@
     limitations under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>camel-quarkus-examples-cluster-leader-election</artifactId>
@@ -203,7 +204,8 @@
                             <kt>SLASHSTAR_STYLE</kt>
                         </mapping>
                         <headerDefinitions>
-                            <headerDefinition>${maven.multiModuleProjectDirectory}/license-properties-headerdefinition.xml</headerDefinition>
+                            <headerDefinition>${maven.multiModuleProjectDirectory}/license-properties-headerdefinition.xml
+                            </headerDefinition>
                         </headerDefinitions>
                     </configuration>
                 </plugin>
@@ -302,6 +304,32 @@
                 <dependency>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-container-image-jib</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes-client</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.camel.quarkus</groupId>
+                    <artifactId>camel-quarkus-microprofile-health</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>openshift</id>
+            <activation>
+                <property>
+                    <name>openshift</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-openshift</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes-client</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.camel.quarkus</groupId>
