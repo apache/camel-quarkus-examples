@@ -25,9 +25,13 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.cluster.CamelClusterService;
 import org.apache.camel.component.file.cluster.FileLockClusterService;
 import org.apache.camel.component.kubernetes.cluster.KubernetesClusterService;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class ClusterLockProducer {
+
+    @ConfigProperty(name = "cluster.leader.election.root.folder", defaultValue = "target/cluster")
+    String rootFolder;
 
     @Produces
     public CamelClusterService clusterService(CamelContext camelContext) {
@@ -38,7 +42,7 @@ public class ClusterLockProducer {
             return service;
         } else {
             FileLockClusterService service = new FileLockClusterService();
-            service.setRoot("target/cluster");
+            service.setRoot(rootFolder);
             service.setAcquireLockDelay(1, TimeUnit.SECONDS);
             service.setAcquireLockInterval(1, TimeUnit.SECONDS);
             return service;
