@@ -17,7 +17,9 @@
 package org.acme.kamelet;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("https://github.com/apache/camel-quarkus/issues/4111")
 @QuarkusIntegrationTest
 class ChuckNorrisIT extends ChuckNorrisTest {
 
