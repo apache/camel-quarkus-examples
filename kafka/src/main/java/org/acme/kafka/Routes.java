@@ -30,7 +30,7 @@ public class Routes extends RouteBuilder {
                 .routeId("FromTimer2Kafka")
                 .setBody().simple("Message #${exchangeProperty.CamelTimerCounter}")
                 .to("kafka:{{kafka.topic.name}}")
-                .log("Message sent correctly sent to the topic! : \"${body}\" ");
+                .log("Message correctly sent to the topic! : \"${body}\" ");
 
         // kafka consumer
         from("kafka:{{kafka.topic.name}}")
