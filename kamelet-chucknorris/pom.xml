@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Kamelet Chuck Norris</description>
 
     <properties>
-        <quarkus.platform.version>2.13.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.13.2.Final</quarkus.platform.version>
         <camel-quarkus.platform.version>2.14.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <!-- TODO: https://github.com/apache/camel-quarkus/issues/3156 -->

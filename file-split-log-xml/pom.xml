@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: File To Log XML DSL</description>
 
     <properties>
-        <quarkus.platform.version>2.13.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.13.2.Final</quarkus.platform.version>
         <camel-quarkus.platform.version>2.14.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
