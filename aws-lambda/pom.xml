@@ -27,7 +27,7 @@
     <description>Camel Quarkus Example :: Deploying a Camel Route in AWS Lambda</description>
 
     <properties>
-        <quarkus.platform.version>2.13.2.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.14.0.CR1</quarkus.platform.version>
         <camel-quarkus.platform.version>2.14.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
