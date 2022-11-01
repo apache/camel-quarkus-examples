@@ -108,10 +108,6 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy</artifactId>
         </dependency>
 
@@ -428,6 +424,21 @@
                 </dependency>
             </dependencies>
         </profile>
+        <!-- TODO: https://github.com/apache/camel-quarkus/issues/4231 -->
+        <profile>
+            <id>not-quarkus-snapshots</id>
+            <activation>
+                <property>
+                    <name>quarkus.platform.version</name>
+                    <value>!999-SNAPSHOT</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
-
 </project>
