@@ -19,7 +19,6 @@ package org.acme.health;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,7 +26,6 @@ import static org.hamcrest.CoreMatchers.is;
 @QuarkusTest
 public class HealthTest {
 
-    @Disabled("https://github.com/apache/camel-quarkus/issues/3989")
     @Test
     public void testHealth() throws InterruptedException {
         RestAssured.get("/q/health")
