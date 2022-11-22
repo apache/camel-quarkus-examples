@@ -1,9 +1,9 @@
 = JMS and JPA: A Camel Quarkus example
-:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on three external transactional resources: a database (MySQL), a messaging brokder (Artemis) and a simulate XAResource which can demonstrate the commit, rollback and crash recovery.
+:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on three external transactional resources: a database (MySQL), a messaging broker (Artemis) and a simulated XAResource which can demonstrate the commit, rollback and crash recovery.
 
 {cq-description}
 
-We use Narayana as standalone JTA Transaction Manager implementation, and Hibernate as JPA Adapter.
+We use Narayana as the standalone JTA Transaction Manager implementation, and Hibernate as the JPA Adapter.
 
 This example will connect to a database with the connection details defined in `application.properties`.
 If the example is run on Development mode and no database exists, Quarkus will create a matching database
