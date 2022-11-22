@@ -1,5 +1,5 @@
-= JTA and JPA: A Camel Quarkus example
-:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a simulate XAResource which can demonstrate the commit, rollback and crash recovery.
+= JMS and JPA: A Camel Quarkus example
+:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on three external transactional resources: a database (MySQL), a messaging brokder (Artemis) and a simulate XAResource which can demonstrate the commit, rollback and crash recovery.
 
 {cq-description}
 
@@ -51,9 +51,19 @@ docker exec -it db-mysql mysql -uroot -proot -e \
    FLUSH PRIVILEGES;"
 ----
 
+Start Artemis:
+[source, shell]
+----
+docker run --name artemis \
+  -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
+  -d -p 61616:61616 \
+  quay.io/artemiscloud/activemq-artemis-broker
+----
+
+
 ==== Prerequisites
 - Make sure `io.quarkus:quarkus-jdbc-mysql` has been added in `pom.xml`
-- Make sure `db-mysql` has been started and ready for servicing
+- Make sure `db-mysql` and `artemis` has been started and ready for servicing
 - Edit `src/main/resource/application.properties` to uncomment all `%prod` lines
 [source, properties]
 ----
@@ -65,6 +75,10 @@ $prod.quarkus.datasource.password=admin
 %prod.quarkus.datasource.jdbc.transactions=xa
 
 %prod.quarkus.hibernate-orm.database.generation=none
+
+%prod.quarkus.artemis.url=tcp://localhost:61616
+%prod.quarkus.artemis.username=admin
+%prod.quarkus.artemis.password=admin
 ----
 
 ==== JVM mode
@@ -118,7 +132,7 @@ curl $ADDRESS/api/messages
 You should get some results like
 [source]
 ----
-[{message=hello}]
+[{message=hello}, {message=hello-ok}]
 ----
 
 Test rollback by calling the service with "fail" content:
