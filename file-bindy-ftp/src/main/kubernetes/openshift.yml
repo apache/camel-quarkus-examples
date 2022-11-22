@@ -37,7 +37,7 @@ spec:
       containers:
         - name: openssh-server
           # Use a simple SFTP server implementation based on Apache Mina SSHD. Purely for testing only, NOT for production use
-          image: quay.io/jamesnetherton/sftp-server:0.1.0
+          image: quay.io/jamesnetherton/sftp-server:0.2.0
           ports:
             - containerPort: 2222
           env:
