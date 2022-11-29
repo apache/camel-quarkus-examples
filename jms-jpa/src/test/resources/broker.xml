@@ -24,19 +24,19 @@
         <large-messages-directory>./target/artemis/large-messages</large-messages-directory>
 
         <connectors>
-            <connector name="activemq">tcp://localhost:61616</connector>
+            <connector name="activemq">tcp://localhost:61617</connector>
         </connectors>
         <acceptors>
-            <acceptor name="activemq">tcp://localhost:61616</acceptor>
+            <acceptor name="activemq">tcp://localhost:61617</acceptor>
         </acceptors>
 
         <max-disk-usage>-1</max-disk-usage>
         <security-enabled>false</security-enabled>
 
         <addresses>
-            <address name="test-jms">
+            <address name="outbound">
                 <anycast>
-                    <queue name="test-jms"/>
+                    <queue name="outbound"/>
                 </anycast>
             </address>
         </addresses>

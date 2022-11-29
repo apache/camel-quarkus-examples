@@ -1,9 +1,9 @@
-= JTA and JPA: A Camel Quarkus example
-:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on two external transactional resources: a database (MySQL) and a simulate XAResource which can demonstrate the commit, rollback and crash recovery.
+= JMS and JPA: A Camel Quarkus example
+:cq-example-description: An example that shows how to run a Camel Quarkus application that supports JTA transactions on three external transactional resources: a database (MySQL), a messaging broker (Artemis) and a simulated XAResource which can demonstrate the commit, rollback and crash recovery.
 
 {cq-description}
 
-We use Narayana as standalone JTA Transaction Manager implementation, and Hibernate as JPA Adapter.
+We use Narayana as the standalone JTA Transaction Manager implementation, and Hibernate as the JPA Adapter.
 
 This example will connect to a database with the connection details defined in `application.properties`.
 If the example is run on Development mode and no database exists, Quarkus will create a matching database
@@ -51,9 +51,30 @@ docker exec -it db-mysql mysql -uroot -proot -e \
    FLUSH PRIVILEGES;"
 ----
 
+Create `audit_log` if it is needed:
+[source, shell]
+----
+docker exec -it db-mysql mysql -uadmin -padmin testdb -e \
+  "CREATE TABLE audit_log ( \
+      id bigint NOT NULL AUTO_INCREMENT, \
+      message varchar(255) DEFAULT NULL, \
+      PRIMARY KEY (id) \
+  );"
+----
+
+Start Artemis:
+[source, shell]
+----
+docker run --name artemis \
+  -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
+  -d -p 61616:61616 \
+  quay.io/artemiscloud/activemq-artemis-broker
+----
+
+
 ==== Prerequisites
 - Make sure `io.quarkus:quarkus-jdbc-mysql` has been added in `pom.xml`
-- Make sure `db-mysql` has been started and ready for servicing
+- Make sure `db-mysql` and `artemis` has been started and ready for servicing
 - Edit `src/main/resource/application.properties` to uncomment all `%prod` lines
 [source, properties]
 ----
@@ -65,6 +86,10 @@ $prod.quarkus.datasource.password=admin
 %prod.quarkus.datasource.jdbc.transactions=xa
 
 %prod.quarkus.hibernate-orm.database.generation=none
+
+%prod.quarkus.artemis.url=tcp://localhost:61616
+%prod.quarkus.artemis.username=admin
+%prod.quarkus.artemis.password=admin
 ----
 
 ==== JVM mode
@@ -107,7 +132,7 @@ curl $ADDRESS/api/messages
 Test with normal "hello" content:
 [source,shell]
 ----
-curl -X POST $ADDRESS/api/message/hello
+curl -X POST $ADDRESS/api/messages/hello
 ----
 
 Check the audit_log
@@ -118,13 +143,13 @@ curl $ADDRESS/api/messages
 You should get some results like
 [source]
 ----
-[{message=hello}]
+[{message=hello}, {message=hello-ok}]
 ----
 
 Test rollback by calling the service with "fail" content:
 [source,shell]
 ----
-curl -X POST $ADDRESS/api/message/fail
+curl -X POST $ADDRESS/api/messages/fail
 ----
 You should not find any trace of the message in the audit_log table. And some failures like
 [source]
@@ -147,7 +172,7 @@ Stacktrace
 Test crash recovery by calling the service with "crash" content:
 [source,shell]
 ----
-curl -X POST $ADDRESS/api/message/crash
+curl -X POST $ADDRESS/api/messages/crash
 ----
 The application should be crashed, and you can not see any response.
 [source]
