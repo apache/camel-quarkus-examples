@@ -56,26 +56,6 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 
 The tracing configuration for the application can be found within `application.properties`.
 
-The default configuration uses the OTLP exporter, but it can be easily switched to the Jaeger exporter by applying this change in `application.properties`:
-
-[source,shell]
-----
-- quarkus.opentelemetry.tracer.exporter.otlp.endpoint=http://localhost:4317
-+ quarkus.opentelemetry.tracer.exporter.jaeger.endpoint=http://localhost:14250
-----
-
-and this change in `pom.xml`:
-
-[source,xml]
-----
-        <dependency>
-            <groupId>io.quarkus</groupId>
--           <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
-+           <artifactId>quarkus-opentelemetry-exporter-jaeger</artifactId>
-        </dependency>
-----
-
-
 To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
 
 [source,shell]
@@ -83,7 +63,7 @@ To view tracing events, start a tracing server. A simple way of doing this is wi
 $ docker-compose up -d
 ----
 
-With the server running, browse to http://localhost:16686. Then choose 'camel-quarkus-observability' from the 'Service' drop down and click the 'Find Traces' button.
+With the server running, browse to http://localhost:16686. Then choose 'greeting-app' from the 'Service' drop down and click the 'Find Traces' button.
 
 The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
 a hierarchy of 3 spans showing the progression of the message exchange through each endpoint.
