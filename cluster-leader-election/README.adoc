@@ -43,7 +43,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package -Dquarkus.profile=local
+$ mvn clean package
 ----
 
 === Native mode
@@ -55,14 +55,14 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Pnative -Dquarkus.profile=local
+$ mvn clean package -Pnative
 ----
 
 == Local Playground
 
 The first example uses the traditional Camel route domain-specific language (DSL), where we incorporate the master component along with the timer component (see link:src/main/java/org/acme/master/CamelRoute.java[CamelRoute]).
 
-Although we will ultimately deploy this application out to a Kubernetes cluster, we want to demonstrate and test this functionality in our local environment. When doing so, we won't have access to the https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/lease-v1/[Kubernetes leases], so we will implement the locking using the camel-file component. Because of the environmental differences, we will leverage Quarkus profiles to produce the correct CamelClusterService implementation for our environment (see link:src/main/java/org/acme/master/ClusterLockProducer.java[ClusterLockProducer]).
+Although we will ultimately deploy this application out to a Kubernetes cluster, we want to demonstrate and test this functionality in our local environment. When doing so, we won't have access to the https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/lease-v1/[Kubernetes leases], so we will implement the locking using the camel-file component.
 
 If a new instance of the application is started locally, then the newly started application will not be able to obtain the locks and therefore will not run the timer component. If you kill the leader, the other application will check the lock, see that it's not locked, and subsequently obtain the lock and start processing. Additionally, we can apply settings to designate how often we want the service to check the locks and acquire the lock.
 
@@ -96,10 +96,9 @@ In a local environment, we used the FileLockClusterService. Now that we are read
 
 === Setup service account
 
-In this deployment, we have two replicas, but we want only one pod to run the processes. The configuration contains two items of note:
+In this deployment, we have two replicas, but we want only one pod to run the processes. The configuration note:
 
 * Notice the serviceAccountName in the deployment config. For this deployment, we need to set up a service account that specifically has access to the https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/lease-v1/[Kubernetes leases].
-* We are getting the kubernetes namespace from environment variable which is used to set up the `KubernetesClusterService` to point the same namespace as our application. This will tell the application to attempt to acquire the lease objects in the same namespace as our application.
 
 Before we deploy, we need to set up the service account and give it permissions to read and write to the lease objects:
 
@@ -113,7 +112,7 @@ kubectl apply -f src/main/kubernetes/service-account.yaml
 ==== Deploy
 [source,shell]
 ----
-mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dkubernetes
+mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dkubernetes -Dquarkus.camel.cluster.file.enabled=false -Dquarkus.camel.cluster.kubernetes.enabled=true
 ----
 
 Once we deploy the application into Kubernetes, the application will use the `KubernetesClusterService` implementation of the `CamelClusterService` to perform the leadership elections. To do this, the service will periodically query the lease information and attempt to update the information if the last update has not been performed in the designated lease time. The configuration for the timing of the leader election activity is more detailed, which should be expected; we are no longer simply checking a file lock, but rather working in more of a heartbeat monitoring pattern.
