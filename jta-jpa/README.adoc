@@ -60,7 +60,7 @@ docker exec -it db-mysql mysql -uroot -proot -e \
 # Production Datasource
 %prod.quarkus.datasource.db-kind=mysql
 %prod.quarkus.datasource.username=admin
-$prod.quarkus.datasource.password=admin
+%prod.quarkus.datasource.password=admin
 %prod.quarkus.datasource.jdbc.url=mysql://localhost:3306/testdb
 %prod.quarkus.datasource.jdbc.transactions=xa
 
@@ -147,7 +147,7 @@ Stacktrace
 Test crash recovery by calling the service with "crash" content:
 [source,shell]
 ----
-curl -X POST $ADDRESS/api/message/crash
+curl -X POST $ADDRESS/api/messages/crash
 ----
 The application should be crashed, and you can not see any response.
 [source]
