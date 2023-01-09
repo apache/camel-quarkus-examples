@@ -21,11 +21,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.camel.quarkus.examples</groupId>
     <artifactId>camel-quarkus-examples-jta-jpa</artifactId>
-    <version>2.13.0</version>
+    <version>2.13.1</version>
     <name>Camel Quarkus :: Examples :: JTA JPA</name>
     <description>Camel Quarkus Example :: JTA JPA</description>
     <properties>
-        <quarkus.platform.version>2.13.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>2.13.6.Final</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
