@@ -51,6 +51,17 @@ docker exec -it db-mysql mysql -uroot -proot -e \
    FLUSH PRIVILEGES;"
 ----
 
+Create `audit_log` if it is needed:
+[source, shell]
+----
+docker exec -it db-mysql mysql -uadmin -padmin testdb -e \
+  "CREATE TABLE audit_log ( \
+      id bigint NOT NULL AUTO_INCREMENT, \
+      message varchar(255) DEFAULT NULL, \
+      PRIMARY KEY (id) \
+  );"
+----
+
 ==== Prerequisites
 - Make sure `io.quarkus:quarkus-jdbc-mysql` has been added in `pom.xml`
 - Make sure `db-mysql` has been started and ready for servicing
@@ -107,7 +118,7 @@ curl $ADDRESS/api/messages
 Test with normal "hello" content:
 [source,shell]
 ----
-curl -X POST $ADDRESS/api/message/hello
+curl -X POST $ADDRESS/api/messages/hello
 ----
 
 Check the audit_log
@@ -124,7 +135,7 @@ You should get some results like
 Test rollback by calling the service with "fail" content:
 [source,shell]
 ----
-curl -X POST $ADDRESS/api/message/fail
+curl -X POST $ADDRESS/api/messages/fail
 ----
 You should not find any trace of the message in the audit_log table. And some failures like
 [source]
