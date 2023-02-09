@@ -20,9 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
-
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 

@@ -16,10 +16,9 @@
  */
 package org.acme.timer.log;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Named;
-
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
