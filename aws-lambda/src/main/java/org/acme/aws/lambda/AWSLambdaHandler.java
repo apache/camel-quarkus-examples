@@ -16,12 +16,11 @@
  */
 package org.acme.aws.lambda;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.apache.camel.ProducerTemplate;
 
 @Named("awsLambdaHandler")

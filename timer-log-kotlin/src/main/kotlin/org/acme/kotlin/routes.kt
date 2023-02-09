@@ -18,8 +18,8 @@ package org.acme.timer
 
 import org.apache.camel.Exchange
 import org.apache.camel.quarkus.kotlin.routes
-import javax.enterprise.context.ApplicationScoped
-import javax.enterprise.inject.Produces
+import jakarta.enterprise.context.ApplicationScoped
+import jakarta.enterprise.inject.Produces
 
 @ApplicationScoped
 class Routes {

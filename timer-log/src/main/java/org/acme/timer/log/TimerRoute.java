@@ -16,8 +16,7 @@
  */
 package org.acme.timer.log;
 
-import javax.enterprise.context.ApplicationScoped;
-
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.builder.RouteBuilder;
 
 @ApplicationScoped

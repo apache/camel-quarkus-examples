@@ -16,10 +16,9 @@
  */
 package org.acme.observability.tracing;
 
-import javax.enterprise.inject.Produces;
-
 import io.opentelemetry.exporter.logging.LoggingSpanExporter;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
+import jakarta.enterprise.inject.Produces;
 
 /**
  * Quarkus OpenTelemetry automatically discovers and configures SpanExporter beans at build time.

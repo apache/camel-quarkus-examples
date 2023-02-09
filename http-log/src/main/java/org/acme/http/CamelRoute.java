@@ -16,8 +16,7 @@
  */
 package org.acme.http;
 
-import javax.enterprise.context.ApplicationScoped;
-
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.builder.endpoint.EndpointRouteBuilder;
 
 @ApplicationScoped
