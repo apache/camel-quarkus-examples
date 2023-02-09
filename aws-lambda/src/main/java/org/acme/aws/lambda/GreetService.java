@@ -16,7 +16,7 @@
  */
 package org.acme.aws.lambda;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class GreetService {

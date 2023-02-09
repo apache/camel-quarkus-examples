@@ -16,8 +16,7 @@
  */
 package org.acme.timer.log;
 
-import javax.enterprise.inject.Produces;
-
+import jakarta.enterprise.inject.Produces;
 import org.apache.camel.Exchange;
 import org.apache.camel.component.log.LogComponent;
 import org.apache.camel.spi.ExchangeFormatter;
