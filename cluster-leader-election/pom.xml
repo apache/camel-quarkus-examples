@@ -257,7 +257,6 @@
     </build>
 
     <profiles>
-        <!-- TODO https://github.com/apache/camel-quarkus/issues/4357
         <profile>
             <id>native</id>
             <activation>
@@ -290,7 +289,6 @@
                 </plugins>
             </build>
         </profile>
-        -->
         <profile>
             <id>kubernetes</id>
             <activation>
