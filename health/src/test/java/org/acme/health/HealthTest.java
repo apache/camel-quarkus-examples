@@ -33,7 +33,7 @@ public class HealthTest {
                 .statusCode(503)
                 .body("status", is("DOWN"),
                         "checks.findAll { it.name == 'toolong' }.status", Matchers.contains("UP"),
-                        "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP"),
+                        "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP", "UP"),
                         "checks.findAll { it.name == 'camel-routes' }.status", Matchers.contains("DOWN"),
                         "checks.findAll { it.name == 'camel-consumers' }.status", Matchers.contains("DOWN"));
     }

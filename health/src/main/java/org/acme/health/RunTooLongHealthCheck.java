@@ -53,4 +53,9 @@ public class RunTooLongHealthCheck extends AbstractHealthCheck {
         // only liveness probe
         return false;
     }
+
+    @Override
+    public boolean isLiveness() {
+        return true;
+    }
 }
