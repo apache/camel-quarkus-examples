@@ -51,4 +51,9 @@ public class CustomLivenessCheck extends AbstractHealthCheck {
     public boolean isReadiness() {
         return false;
     }
+
+    @Override
+    public boolean isLiveness() {
+        return true;
+    }
 }
