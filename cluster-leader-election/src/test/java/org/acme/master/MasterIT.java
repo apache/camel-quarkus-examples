@@ -17,7 +17,9 @@
 package org.acme.master;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("https://github.com/apache/camel-quarkus/issues/4651")
 @QuarkusIntegrationTest
 class MasterIT extends MasterTest {
 }
