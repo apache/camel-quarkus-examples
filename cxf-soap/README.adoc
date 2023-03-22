@@ -1,0 +1,197 @@
+= Camel Quarkus CXF SOAP example
+:cq-example-description: An example that shows how to use Camel master component.
+
+{cq-description}
+
+In this example we will create two SOAP webservices with two different approaches. Both services will use Camel routes as service implementation exposed via CXF component.
+
+== WSDL first
+
+"WSDL first" approach assumes writing WSDL file manually at the beginning of SOAP service design (such wsdl can be found at `src/main/resources/wsdl/CustomerService.wsdl`). Then we can use the _quarkus-maven-plugin_ and its _generate-code_ goal (see `pom.xml`) which will generate Java classes for us. To configure the plugin, see `src/main/resources/application.properties` file (properties started with `quarkus.cxf.codegen.wsdl2java` prefix).
+
+The customer web service will be exposed via Camel route endpoint `cxf:bean:customer` and its logic implemented directly in the route with the help of `org.acme.cxf.soap.wsdl.repository.CustomerRepository`. It will enable two operations - _getCustomersByName_ and _updateCustomer_.
+
+NOTE: Generated classes can be directly used in your IDE (you can see usage eg. in `org.acme.cxf.soap.wsdl.repository.CustomerRepository`).
+
+TIP: More info about generating Java classes from WSDL can be found at https://quarkiverse.github.io/quarkiverse-docs/quarkus-cxf/dev/user-guide/first-soap-client.html#wsdl2java.
+
+== Java first
+
+On the other hand if we don't have the WSDL file, we can create SOAP service directly from Java interface (see `org.acme.cxf.soap.pojo.service.ContactService`) which is then processed by CXF (will create WSDL file as a benefit - how to obtain it will be shown later) and from that point we can implement the service in Camel fashion (see `org.acme.cxf.soap.pojo.MyPojoRouteBuilder`) as with "WSDL first" approach (but here we implement the logic in bean service - see `org.acme.cxf.soap.pojo.service.impl.ContactServiceInMemoryImpl` and not directly in route).
+
+The exposed contact web service will enable five operations - _addContact_, _getContact_, _getContacts_, _updateContact_, _removeContact_.
+
+TIP: If you would like to only generate WSDL from Java, you can follow https://quarkiverse.github.io/quarkiverse-docs/quarkus-cxf/dev/user-guide/generate-wsdl-from-java.html.
+
+---
+=== Binding (Advanced)
+
+For illustrating how other `wsdl2java` options could be applied to `quarkus.cxf.codegen.wsdl2java.additional-params` we have added `src/main/resources/binding.xml` which enables us to use `LocalDate` (more common in Java world) instead of default XML Date representation `XMLGregorianCalendar`. But in terms of this quickstart, it is not important at all and we could work with `XMLGregorianCalendar` as well.
+
+== Start in the Development mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
+workspace. Any modifications in your project will automatically take effect in the running application.
+
+To start playing with the example, go to section `Local playground`.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+== Playground [[playground]]
+
+We can first try to add some contact with:
+[source,shell]
+----
+curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/contact/add.xml http://localhost:8080/cxf/services/contact
+----
+Then verify it was added with:
+[source,shell]
+----
+$ curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/contact/getAll.xml http://localhost:8080/cxf/services/contact
+----
+Which should return:
+
+[source,xml]
+----
+<soap:Envelope
+	xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<ns2:getContactsResponse
+			xmlns:ns2="http://camel.apache.org/test/ContactService">
+			<return>
+				<contacts>
+					<name>Lukas</name>
+					<address>
+						<city>New York</city>
+						<street>Sky 1234</street>
+					</address>
+					<type>PERSONAL</type>
+				</contacts>
+			</return>
+		</ns2:getContactsResponse>
+	</soap:Body>
+</soap:Envelope>
+----
+
+We can also test our customer service:
+
+[source,shell]
+----
+$ curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/customer/getByName.xml http://localhost:8080/cxf/services/customer
+----
+
+You can observe that we have hardcoded `test` name at SOAPBody part in `src/main/resources/requests/customer/getByName.soap` as follows:
+[source, xml]
+----
+<cus:getCustomersByName>
+    <name>test</name>
+</cus:getCustomersByName>
+----
+
+We can try to alter it to non-valid request (validation is enabled with `schema-validation-enabled=true` at `org.acme.cxf.soap.wsdl.MyWsdlRouteBuilder`). So try to change `test` -> `t` and invoke it again, you should see following exception:
+
+[source, xml]
+----
+<soap:Envelope
+	xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<soap:Fault>
+			<faultcode>soap:Client</faultcode>
+			<faultstring>Unmarshalling Error: cvc-minLength-valid: Value 't' with length = '1' is not facet-valid with respect to minLength '2' for type '#AnonType_namegetCustomersByName'. </faultstring>
+		</soap:Fault>
+	</soap:Body>
+</soap:Envelope>
+----
+
+Last thing which could be tested, is trying to get non-existent customer (which `t` was obviously as well, but now we will pass through schema validation). So change the name to eg. `Non existent` and see result with `NoSuchCustomer`:
+
+[source, xml]
+----
+<soap:Envelope
+	xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+	<soap:Body>
+		<soap:Fault>
+			<faultcode>soap:Server</faultcode>
+			<faultstring>Customer not found</faultstring>
+			<detail>
+				<ns2:NoSuchCustomer
+					xmlns:ns2="http://customerservice.example.com/">
+					<customerName>Non existent</customerName>
+				</ns2:NoSuchCustomer>
+			</detail>
+		</soap:Fault>
+	</soap:Body>
+</soap:Envelope>
+----
+
+TIP: To obtain WSDLs for any exposed CXF service, you can query URL `http://<hostname>/<cxf-path>?wsdl`. It can be handy in tools like _SoapUI_.
+
+To discover WSDLs of our services, you can use:
+[source, shell]
+----
+$ curl "http://localhost:8080/cxf/services/contact?wsdl"
+$ curl "http://localhost:8080/cxf/services/customer?wsdl"
+----
+
+== Package and run the application
+
+Once you are done with playing/developing you may want to package and run the application for production usage.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+=== JVM mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+----
+
+=== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ mvn clean package -Pnative
+$ ./target/*-runner
+----
+
+== Kubernetes
+==== Deploy
+[source,shell]
+----
+$ mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dkubernetes
+----
+
+You should see one pod running:
+
+[source,shell]
+----
+camel-quarkus-examples-cxf-soap-cd9477f94-qb8vv   1/1     Running   0          43s
+----
+
+Then use following command to redirect the localhost network to the Kubernetes network:
+
+[source,shell]
+----
+$ kubectl port-forward service/camel-quarkus-examples-cxf-soap 8080:8080
+----
+
+Open another terminal and then follow instructions from <<playground>>.
+
+After playing, you can CTRL+C the process in port-forwarding terminal and shutdown the Kubernetes cluster.
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
