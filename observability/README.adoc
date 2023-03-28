@@ -60,8 +60,8 @@ The default configuration uses the OTLP exporter, but it can be easily switched 
 
 [source,shell]
 ----
-- quarkus.opentelemetry.tracer.exporter.otlp.endpoint=http://localhost:4317
-+ quarkus.opentelemetry.tracer.exporter.jaeger.endpoint=http://localhost:14250
+- quarkus.otel.exporter.otlp.traces.endpoint=http://localhost:4317
++ quarkus.otel.exporter.jaeger.traces.endpoint=http://localhost:14250
 ----
 
 and this change in `pom.xml`:
@@ -87,8 +87,6 @@ With the server running, browse to http://localhost:16686. Then choose 'camel-qu
 
 The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
 a hierarchy of 3 spans showing the progression of the message exchange through each endpoint.
-
-For convenience, tracing events are also logged to the application console.
 
 === Package and run the application
 
