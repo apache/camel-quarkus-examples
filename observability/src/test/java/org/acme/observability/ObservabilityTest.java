@@ -52,7 +52,7 @@ public class ObservabilityTest {
         long camelMetricCount = path.getMap("$.")
                 .keySet()
                 .stream()
-                .filter(key -> key.toString().startsWith("Camel"))
+                .filter(key -> key.toString().toLowerCase().startsWith("camel"))
                 .count();
 
         assertTrue(camelMetricCount > 0);
