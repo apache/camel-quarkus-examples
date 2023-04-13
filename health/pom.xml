@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Health Check</description>
 
     <properties>
-        <quarkus.platform.version>3.0.0.Beta1</quarkus.platform.version>
+        <quarkus.platform.version>3.0.0.Final</quarkus.platform.version>
         <camel-quarkus.platform.version>3.0.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
