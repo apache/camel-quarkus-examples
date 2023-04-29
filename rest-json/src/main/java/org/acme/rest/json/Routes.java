@@ -33,7 +33,7 @@ public class Routes extends RouteBuilder {
     public Routes() {
 
         /* Let's add some initial fruits */
-        this.fruits.add(new Fruit("Apple", "Winter fruit"));
+        this.fruits.add(new Fruit("Apples", "Winter fruit"));
         this.fruits.add(new Fruit("Pineapple", "Tropical fruit"));
 
         /* Let's add some initial legumes */
