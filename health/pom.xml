@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-health</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0-M2</version>
 
     <name>Camel Quarkus :: Examples :: Health</name>
     <description>Camel Quarkus Example :: Health Check</description>
