@@ -1,5 +1,10 @@
 [
   {
+    "title": "Camel Quarkus CXF SOAP example",
+    "description": "Shows how to use Camel CXF SOAP component.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cxf-soap"
+  },
+  {
     "title": "Connecting to a JDBC DataSource",
     "description": "Shows how to connect to a Database using Datastores.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jdbc-datasource"
