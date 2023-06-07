@@ -134,14 +134,17 @@ jobs:
           BUILD_FAILURES=()
 
           for MODULE in ${TEST_MODULES//,/ }; do
-            ./mvnw ${MAVEN_ARGS} clean verify \
+            cd ${MODULE}
+
+            ../mvnw ${MAVEN_ARGS} clean verify \
               -Dformatter.skip -Dimpsort.skip \
-              -Pnative,docker \
-              -f "${MODULE}/pom.xml"
+              -Pnative,docker
 
             if [[ $? -ne 0 ]]; then
               BUILD_FAILURES[${#BUILD_FAILURES[@]}]=${MODULE}
             fi
+
+            cd -
           done
 
           if [[ ${#BUILD_FAILURES[@]} -gt 0 ]]; then
@@ -185,7 +188,7 @@ jobs:
       - name: Integration Tests
         shell: bash
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} -Dskip-testcontainers-tests clean verify 
+          ./mvnw-for-each.sh ${MAVEN_ARGS} -Dskip-testcontainers-tests clean verify
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
