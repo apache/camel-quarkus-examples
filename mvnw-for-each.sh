@@ -11,7 +11,7 @@ do
     if [ -f "${pwd}/${moduleDir}/pom.xml" ]; then
         cd "${pwd}/${moduleDir}"
         ../mvnw "$@"
-        cp -t . ../eclipse-formatter-config.xml
+        cp ../eclipse-formatter-config.xml .
     fi
 done
 
