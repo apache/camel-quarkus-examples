@@ -35,6 +35,7 @@
 
         <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.9.0</impsort-maven-plugin.version>
+        <license-maven-plugin.version>4.2</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -43,7 +44,6 @@
         <maven.compiler.target>17</maven.compiler.target>
         <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
         <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
-        <mycila-license.version>3.0</mycila-license.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
@@ -182,7 +182,7 @@
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>${mycila-license.version}</version>
+                    <version>${license-maven-plugin.version}</version>
                     <configuration>
                         <failIfUnknown>true</failIfUnknown>
                         <header>${maven.multiModuleProjectDirectory}/header.txt</header>
