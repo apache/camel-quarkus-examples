@@ -46,11 +46,11 @@
         <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
         <groovy-maven-plugin.version>2.1.1</groovy-maven-plugin.version>
         <impsort-maven-plugin.version>1.9.0</impsort-maven-plugin.version>
+        <license-maven-plugin.version>4.2</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
-        <mycila-license.version>3.0</mycila-license.version>
     </properties>
 
     <dependencyManagement>
@@ -134,7 +134,7 @@
             <plugins>
                 <plugin>
                     <groupId>org.codehaus.gmaven</groupId>
-                    <artifactId>groovy-maven-plugin</artifactId>                
+                    <artifactId>groovy-maven-plugin</artifactId>
                     <version>${groovy-maven-plugin.version}</version>
                 </plugin>
 
@@ -206,7 +206,7 @@
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>${mycila-license.version}</version>
+                    <version>${license-maven-plugin.version}</version>
                     <configuration>
                         <failIfUnknown>true</failIfUnknown>
                         <header>${maven.multiModuleProjectDirectory}/header.txt</header>
