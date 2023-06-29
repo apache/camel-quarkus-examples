@@ -16,19 +16,38 @@
  */
 package org.acme.observability;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 
+@ApplicationScoped
 public class Routes extends RouteBuilder {
+
+    // Quarkus will inject this automatically for us
+    private final MeterRegistry registry;
+
+    public Routes(MeterRegistry registry) {
+        this.registry = registry;
+    }
+
+    private void countGreeting(Exchange exchange) {
+        // This is our custom metric: just counting how many times the method is called
+        registry.counter("org.acme.observability.greeting", "type", "events", "purpose", "example").increment();
+    }
 
     @Override
     public void configure() throws Exception {
         from("platform-http:/greeting")
                 .removeHeaders("*")
+                .process(this::countGreeting)
                 .to("http://localhost:{{greeting-provider-app.service.port}}/greeting-provider");
 
         from("platform-http:/greeting-provider")
                 // Random delay to simulate latency
+                .to("micrometer:counter:org.acme.observability.greeting-provider?tags=type=events,purpose=example")
                 .delay(simple("${random(1000, 5000)}"))
                 .setBody(constant("Hello From Camel Quarkus!"));
     }
+
 }
