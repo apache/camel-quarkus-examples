@@ -20,4 +20,10 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
 public class ObservabilityIT extends ObservabilityTest {
+
+    // Is run in prod mode
+    @Override
+    protected String getManagementPrefix() {
+        return "http://localhost:9000";
+    }
 }

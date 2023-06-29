@@ -14,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.acme.observability;
+package org.acme.observability.micrometer;
 
-import org.apache.camel.builder.RouteBuilder;
+import io.micrometer.core.annotation.Counted;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
-public class TimerRoute extends RouteBuilder {
+@ApplicationScoped
+@Named("timerCounter")
+public class TimerCounter {
 
-    @Override
-    public void configure() throws Exception {
-        from("timer:greeting?period=10000")
-                .bean("timerCounter", "count")
-                .to("http://{{greeting-app.service.host}}:{{greeting-app.service.port}}/greeting");
+    @Counted(value = "org.acme.observability.timer-counter", extraTags = { "purpose", "example" })
+    public void count() {
     }
 }
