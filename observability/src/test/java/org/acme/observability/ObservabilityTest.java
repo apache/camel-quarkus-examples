@@ -16,19 +16,23 @@
  */
 package org.acme.observability;
 
+import java.util.Arrays;
+
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
 public class ObservabilityTest {
+
+    // Management interface is listening on 9001
+    protected String getManagementPrefix() {
+        return "http://localhost:9001";
+    }
 
     @Test
     public void greeting() {
@@ -40,35 +44,28 @@ public class ObservabilityTest {
     @Test
     public void metrics() {
         // Verify Camel metrics are available
-        JsonPath path = given()
-                .when().accept(ContentType.JSON)
-                .get("/q/metrics")
+        String prometheusMetrics = RestAssured
+                .get(getManagementPrefix() + "/q/metrics")
                 .then()
                 .statusCode(200)
                 .extract()
-                .body()
-                .jsonPath();
+                .body().asString();
 
-        long camelMetricCount = path.getMap("$.")
-                .keySet()
-                .stream()
-                .filter(key -> key.toString().toLowerCase().startsWith("camel"))
-                .count();
-
-        assertTrue(camelMetricCount > 0);
+        assertEquals(3,
+                Arrays.stream(prometheusMetrics.split("\n")).filter(line -> line.contains("purpose=\"example\"")).count());
     }
 
     @Test
     public void health() {
         // Verify liveness
-        RestAssured.get("/q/health/live")
+        RestAssured.get(getManagementPrefix() + "/q/health/live")
                 .then()
                 .statusCode(200)
                 .body("status", is("UP"),
                         "checks.findAll { it.name == 'custom-liveness-check' }.status", Matchers.contains("UP"));
 
         // Verify readiness
-        RestAssured.get("/q/health/ready")
+        RestAssured.get(getManagementPrefix() + "/q/health/ready")
                 .then()
                 .statusCode(200)
                 .body("status", is("UP"),

@@ -19,17 +19,87 @@ workspace. Any modifications in your project will automatically take effect in t
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
+=== How to enable metrics
+To enable observability features in Camel Quarkus, we need to add some additional dependencies to the project's pom.xml file.
+The most important one (see link:pom.xml#L97-L100[pom.xml]):
+
+[source, xml]
+----
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-micrometer</artifactId>
+</dependency>
+----
+
+After adding this dependency, you can benefit from both https://camel.apache.org/components/next/micrometer-component.html[Camel Micrometer] and https://quarkus.io/guides/micrometer[Quarkus Micrometer] worlds.
+We are able to use multiple ways to achieve create meters for our custom metrics.
+
+First of them is using Camel micrometer component (see link:src/main/java/org/acme/observability/Routes.java[Routes.java]):
+
+[source, java]
+----
+.to("micrometer:counter:org.acme.observability.greeting-provider?tags=type=events,purpose=example")
+----
+
+which will count each call to `platform-http:/greeting-provider` endpoint.
+
+Second approach is to benefit from auto-injected `MeterRegistry` (see link:src/main/java/org/acme/observability/Routes.java#L28[injection]) and use it directly (see link:src/main/java/org/acme/observability/Routes.java#L36[registry call]):
+
+[source, java]
+----
+registry.counter("org.acme.observability.greeting", "type", "events", "purpose", "example").increment();
+----
+
+which will count each call to `from("platform-http:/greeting")` endpoint.
+
+Finally last approach is to use Micrometer annotations (see https://quarkus.io/guides/micrometer#does-micrometer-support-annotations[which] are supported by Quarkus) by defining bean link:src/main/java/org/acme/observability/micrometer/TimerCounter.java[TimerCounter.java] as follows:
+
+[source, java]
+----
+@ApplicationScoped
+@Named("timerCounter")
+public class TimerCounter {
+
+    @Counted(value = "org.acme.observability.timer-counter", extraTags = { "purpose", "example" })
+    public void count() {
+    }
+}
+----
+
+and invoking it from Camel via (see link:src/main/java/org/acme/observability/TimerRoute.java[TimerRoute.java]):
+
+[source, java]
+----
+.bean("timerCounter", "count")
+----
+It will count each time the timer is fired.
+
+How to explore our custom metrics will be shown in the next chapter.
 
 === Metrics endpoint
 
-Metrics are exposed on an HTTP endpoint at `/q/metrics`. You can also browse application specific metrics from the `/q/metrics/application` endpoint.
+Metrics are exposed on an HTTP endpoint at `/q/metrics` on port `9000`.
+
+NOTE: Note we are using different port (9000) for the management endpoint then our application (8080) is listening on.
+This is caused by using link:src/main/resources/application.properties#L22[`quarkus.management.enabled = true`] (see https://quarkus.io/guides/management-interface-reference for more information).
 
 To view all Camel metrics do:
 
 [source,shell]
 ----
-$ curl localhost:8080/q/metrics/application
+$ curl localhost:9000/q/metrics
 ----
+
+To view only our previously created metrics, use:
+
+[source,shell]
+----
+$ curl -s localhost:9000/q/metrics | grep -i 'purpose="example"'
+----
+
+and you should see 3 lines of different metrics (with the same value, as they are all triggered by the timer).
+
+NOTE: Maybe you've noticed the Prometheus output format. If you would rather use JSON format, please follow https://quarkus.io/guides/micrometer#management-interface.
 
 === Health endpoint
 
