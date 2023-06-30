@@ -29,7 +29,7 @@
     <description>Camel Quarkus Example :: CXF SOAP</description>
 
     <properties>
-        <quarkus.platform.version>3.1.0.Final</quarkus.platform.version>
+        <quarkus.platform.version>3.2.0.Final</quarkus.platform.version>
         <camel-quarkus.platform.version>3.0.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
