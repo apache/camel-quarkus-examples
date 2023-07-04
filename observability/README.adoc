@@ -124,27 +124,27 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 
 === Tracing
 
-The tracing configuration for the application can be found within `application.properties`.
+To be able to diagnose problems in Camel Quarkus applications, you can start tracing messages.
+We will use OpenTelemetry standard suited for cloud environments.
 
-The default configuration uses the OTLP exporter, but it can be easily switched to the Jaeger exporter by applying this change in `application.properties`:
+All you need is to add the `camel-quarkus-opentelemetry` dependency (see link:pom.xml#L101-L104[pom.xml]):
 
-[source,shell]
+[source, xml]
 ----
-- quarkus.otel.exporter.otlp.traces.endpoint=http://localhost:4317
-+ quarkus.otel.exporter.jaeger.traces.endpoint=http://localhost:14250
-----
-
-and this change in `pom.xml`:
-
-[source,xml]
-----
-        <dependency>
-            <groupId>io.quarkus</groupId>
--           <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
-+           <artifactId>quarkus-opentelemetry-exporter-jaeger</artifactId>
-        </dependency>
+<dependency>
+    <groupId>org.apache.camel.quarkus</groupId>
+    <artifactId>camel-quarkus-opentelemetry</artifactId>
+</dependency>
 ----
 
+and configure (we are using placeholder to be able to test this example in convenient way in cloud environment) the exporter (see link:src/main/resources/application.properties#L28[application.properties]) :
+
+[source, text]
+----
+quarkus.otel.exporter.otlp.traces.endpoint = http://${TELEMETRY_COLLECTOR_COLLECTOR_SERVICE_HOST:localhost}:4317
+----
+
+NOTE: For further information eg. about other exporters, please follow https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage[usage] part of Camel Quarkus Opentelemetry extension documentation.
 
 To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
 
@@ -156,7 +156,7 @@ $ docker-compose up -d
 With the server running, browse to http://localhost:16686. Then choose 'camel-quarkus-observability' from the 'Service' drop down and click the 'Find Traces' button.
 
 The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
-a hierarchy of 3 spans showing the progression of the message exchange through each endpoint.
+a hierarchy of 6 spans showing the progression of the message exchange through each endpoint.
 
 === Package and run the application
 
