@@ -32,7 +32,7 @@ The most important one (see link:pom.xml#L97-L100[pom.xml]):
 ----
 
 After adding this dependency, you can benefit from both https://camel.apache.org/components/next/micrometer-component.html[Camel Micrometer] and https://quarkus.io/guides/micrometer[Quarkus Micrometer] worlds.
-We are able to use multiple ways to achieve create meters for our custom metrics.
+We are able to use multiple ways of creating meters for our custom metrics.
 
 First of them is using Camel micrometer component (see link:src/main/java/org/acme/observability/Routes.java[Routes.java]):
 
@@ -50,7 +50,7 @@ Second approach is to benefit from auto-injected `MeterRegistry` (see link:src/m
 registry.counter("org.acme.observability.greeting", "type", "events", "purpose", "example").increment();
 ----
 
-which will count each call to `from("platform-http:/greeting")` endpoint.
+which will count each call to `platform-http:/greeting` endpoint.
 
 Finally last approach is to use Micrometer annotations (see https://quarkus.io/guides/micrometer#does-micrometer-support-annotations[which] are supported by Quarkus) by defining bean link:src/main/java/org/acme/observability/micrometer/TimerCounter.java[TimerCounter.java] as follows:
 
@@ -87,7 +87,7 @@ To view all Camel metrics do:
 
 [source,shell]
 ----
-$ curl localhost:9000/q/metrics
+$ curl -s localhost:9000/q/metrics
 ----
 
 To view only our previously created metrics, use:
@@ -103,16 +103,16 @@ NOTE: Maybe you've noticed the Prometheus output format. If you would rather use
 
 === Health endpoint
 
-Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/q/health/live` and `/q/health/ready` endpoints:
+Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/q/health/live` and `/q/health/ready` endpoints on port `9000`:
 
 [source,shell]
 ----
-$ curl -s localhost:8080/q/health/live
+$ curl -s localhost:9000/q/health/live
 ----
 
 [source,shell]
 ----
-$ curl -s localhost:8080/q/health/ready
+$ curl -s localhost:9000/q/health/ready
 ----
 
 The JSON output will contain a checks for verifying whether the `CamelContext` and each individual route is in the 'Started' state.
@@ -122,7 +122,7 @@ You'll see these listed in the health JSON as 'custom-liveness-check' and 'custo
 
 You can also directly leverage MicroProfile Health APIs to create checks. Class `CamelUptimeHealthCheck` demonstrates how to register a readiness check.
 
-==== Tracing
+=== Tracing
 
 The tracing configuration for the application can be found within `application.properties`.
 
