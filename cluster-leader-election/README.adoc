@@ -12,6 +12,7 @@ The quick solution to this problem is actually a fundamental characteristic of K
 This example shows you how to implement leader election in Kubernetes using Apache Camel.
 
 == Hot-warm with leader election
+
 To run an application as hot-warm means to have multiple instances of the application running and ready to serve requests, but only one instance actually doing the work. Within Kubernetes, this means having multiple pods ready at all times, but only one pod active for a particular process. In this scenario, the pods negotiate among themselves which one is active.
 
 Apache Camel has a component (called master) that is built exactly for this scenario. As the docs explain, the Camel-Master endpoint lets us ensure only a single consumer in a cluster consumes from a given endpoint, with automatic failover if that Java virtual machine (JVM) dies. To achieve this goal, the endpoint requires a shared resource and locking. The component has multiple implementations for the locking mechanism, including camel-kubernetes.
@@ -87,11 +88,12 @@ Depending on which one will start faster, you should first see similar output:
 INFO  [clustered] (Camel (camel-quarkus-examples-cluster-leader-election) thread #3 - timer://clustered) Clustered route (timer) e54cc6a7-7b5f-4aa3-a9f8-4c31536c3b75 ...
 ----
 
-In other terminal you should not see `Clustered route` message.
+In the other terminal you should not see `Clustered route` message.
 
 You can also close the application process with `CTRL+C` and watch the other terminal will take a lead and you should start seeing `Clustered route` messages.
 
 == Kubernetes
+
 In a local environment, we used the FileLockClusterService. Now that we are ready to deploy this application on Kubernetes, we will switch the implementation from using files to using https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/lease-v1/[Kubernetes leases]. To start, let’s take a look at the deployment manifest for the application.
 
 === Setup service account
@@ -110,6 +112,7 @@ kubectl apply -f src/main/kubernetes/service-account.yaml
 === Playground
 
 ==== Deploy
+
 [source,shell]
 ----
 mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dkubernetes -Dquarkus.camel.cluster.file.enabled=false -Dquarkus.camel.cluster.kubernetes.enabled=true

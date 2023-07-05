@@ -19,9 +19,10 @@ workspace. Any modifications in your project will automatically take effect in t
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
-=== How to enable metrics
+=== Enabling metrics
+
 To enable observability features in Camel Quarkus, we need to add some additional dependencies to the project's pom.xml file.
-The most important one (see link:pom.xml#L97-L100[pom.xml]):
+The most important one for metrics is `camel-quarkus-micrometer`:
 
 [source, xml]
 ----
@@ -31,28 +32,45 @@ The most important one (see link:pom.xml#L97-L100[pom.xml]):
 </dependency>
 ----
 
-After adding this dependency, you can benefit from both https://camel.apache.org/components/next/micrometer-component.html[Camel Micrometer] and https://quarkus.io/guides/micrometer[Quarkus Micrometer] worlds.
+After adding this dependency, you can benefit from both of the https://camel.apache.org/components/next/micrometer-component.html[Camel Micrometer] and https://quarkus.io/guides/micrometer[Quarkus Micrometer] worlds.
 We are able to use multiple ways of creating meters for our custom metrics.
 
-First of them is using Camel micrometer component (see link:src/main/java/org/acme/observability/Routes.java[Routes.java]):
+First using Camel micrometer component (see link:src/main/java/org/acme/observability/Routes.java[Routes.java]):
 
 [source, java]
 ----
 .to("micrometer:counter:org.acme.observability.greeting-provider?tags=type=events,purpose=example")
 ----
 
-which will count each call to `platform-http:/greeting-provider` endpoint.
+Which will count each call to the `platform-http:/greeting-provider` endpoint.
 
-Second approach is to benefit from auto-injected `MeterRegistry` (see link:src/main/java/org/acme/observability/Routes.java#L28[injection]) and use it directly (see link:src/main/java/org/acme/observability/Routes.java#L36[registry call]):
+The second approach is to benefit from CDI dependnecy injection of the `MeterRegistry`:
 
 [source, java]
 ----
-registry.counter("org.acme.observability.greeting", "type", "events", "purpose", "example").increment();
+@Inject
+MeterRegistry registry;
 ----
 
-which will count each call to `platform-http:/greeting` endpoint.
+Then using it directly in a Camel `Processor` method to publish metrics:
 
-Finally last approach is to use Micrometer annotations (see https://quarkus.io/guides/micrometer#does-micrometer-support-annotations[which] are supported by Quarkus) by defining bean link:src/main/java/org/acme/observability/micrometer/TimerCounter.java[TimerCounter.java] as follows:
+[source, java]
+----
+void countGreeting(Exchange exchange) {
+    registry.counter("org.acme.observability.greeting", "type", "events", "purpose", "example").increment();
+}
+----
+
+[source, java]
+----
+from("platform-http:/greeting")
+    .removeHeaders("*")
+    .process(this::countGreeting)
+----
+
+This counts each call to the `platform-http:/greeting` endpoint.
+
+Finally, the last approach is to use https://quarkus.io/guides/micrometer#does-micrometer-support-annotations[Micrometer annotations], by defining a bean link:src/main/java/org/acme/observability/micrometer/TimerCounter.java[TimerCounter.java] as follows:
 
 [source, java]
 ----
@@ -66,22 +84,21 @@ public class TimerCounter {
 }
 ----
 
-and invoking it from Camel via (see link:src/main/java/org/acme/observability/TimerRoute.java[TimerRoute.java]):
+It can then be invoked from Camel via the bean EIP (see link:src/main/java/org/acme/observability/TimerRoute.java[TimerRoute.java]):
 
 [source, java]
 ----
 .bean("timerCounter", "count")
 ----
-It will count each time the timer is fired.
 
-How to explore our custom metrics will be shown in the next chapter.
+It will increment the counter metric each time the Camel timer is fired.
 
-=== Metrics endpoint
+=== Browsing metrics
 
 Metrics are exposed on an HTTP endpoint at `/q/metrics` on port `9000`.
 
-NOTE: Note we are using different port (9000) for the management endpoint then our application (8080) is listening on.
-This is caused by using link:src/main/resources/application.properties#L22[`quarkus.management.enabled = true`] (see https://quarkus.io/guides/management-interface-reference for more information).
+NOTE: Note we are using a different port (9000) for the management endpoint then our application (8080) is listening on.
+This is configured in `applcation.properties` via link:src/main/resources/application.properties#L22[`quarkus.management.enabled = true`]. See the https://quarkus.io/guides/management-interface-reference[Quarkus management interface guide] for more information.
 
 To view all Camel metrics do:
 
@@ -99,7 +116,7 @@ $ curl -s localhost:9000/q/metrics | grep -i 'purpose="example"'
 
 and you should see 3 lines of different metrics (with the same value, as they are all triggered by the timer).
 
-NOTE: Maybe you've noticed the Prometheus output format. If you would rather use JSON format, please follow https://quarkus.io/guides/micrometer#management-interface.
+NOTE: Maybe you've noticed the Prometheus output format. If you would rather use the JSON format, please follow the Quarkus Micrometer management interface https://quarkus.io/guides/micrometer#management-interface[configuration guide].
 
 === Health endpoint
 
@@ -127,7 +144,7 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 To be able to diagnose problems in Camel Quarkus applications, you can start tracing messages.
 We will use OpenTelemetry standard suited for cloud environments.
 
-All you need is to add the `camel-quarkus-opentelemetry` dependency (see link:pom.xml#L101-L104[pom.xml]):
+All you need is to add the `camel-quarkus-opentelemetry` dependency to your project `pom.xml`:
 
 [source, xml]
 ----
@@ -137,14 +154,15 @@ All you need is to add the `camel-quarkus-opentelemetry` dependency (see link:po
 </dependency>
 ----
 
-and configure (we are using placeholder to be able to test this example in convenient way in cloud environment) the exporter (see link:src/main/resources/application.properties#L28[application.properties]) :
+Then configure the OpenTelemetry exporter in `application.properties`:
 
 [source, text]
 ----
+# We are using a property placeholder to be able to test this example in convenient way in a cloud environment
 quarkus.otel.exporter.otlp.traces.endpoint = http://${TELEMETRY_COLLECTOR_COLLECTOR_SERVICE_HOST:localhost}:4317
 ----
 
-NOTE: For further information eg. about other exporters, please follow https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage[usage] part of Camel Quarkus Opentelemetry extension documentation.
+NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus Opentelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
 
 To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
 

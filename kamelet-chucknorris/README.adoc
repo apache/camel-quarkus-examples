@@ -7,7 +7,7 @@ The kamelet is created as a YAML file in the `src/main/resources/kamelets` direc
 We have developed a Chuck Norris Kamelet that periodically gets a joke from the Chuck Norris internet database.
 
 A Camel route is coded in Java in the `src/main/java/org/acme/kamelet/MyRoute.java` file
-that uses the Kamelet, and log the result from the Kamelet to the console.
+that uses the Kamelet, and logs the result from the Kamelet to the console.
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.

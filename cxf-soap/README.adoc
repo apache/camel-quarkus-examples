@@ -50,18 +50,23 @@ TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
 [[playground]]
+
 == Playground
 
-We can first try to add some contact with:
+We can first try to add a contact with:
+
 [source,shell]
 ----
 curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/contact/add.xml http://localhost:8080/cxf/services/contact
 ----
+
 Then verify it was added with:
+
 [source,shell]
 ----
 $ curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/contact/getAll.xml http://localhost:8080/cxf/services/contact
 ----
+
 Which should return:
 
 [source,xml]
@@ -92,7 +97,8 @@ We can also test our customer service:
 $ curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/customer/getByName.xml http://localhost:8080/cxf/services/customer
 ----
 
-You can observe that we have hardcoded `test` name at SOAPBody part in `src/main/resources/requests/customer/getByName.soap` as follows:
+You can observe that we have hardcoded `test` as the name in the `SOAPBody` part in `src/main/resources/requests/customer/getByName.soap` as follows:
+
 [source, xml]
 ----
 <cus:getCustomersByName>
@@ -117,7 +123,7 @@ Once you invoke the service again, you should see the following exception:
 </soap:Envelope>
 ----
 
-Last thing which could be tested, is trying to get non-existent customer (which `t` was obviously as well, but now we will pass through schema validation). So change the name to eg. `Non existent` and see result with `NoSuchCustomer`:
+The last thing which could be tested, is trying to get a non-existent customer (which `t` was obviously as well, but now we will pass it through schema validation). So change the name to `Non existent` and see result with `NoSuchCustomer`:
 
 [source, xml]
 ----
@@ -140,6 +146,7 @@ Last thing which could be tested, is trying to get non-existent customer (which 
 TIP: To obtain WSDLs for any exposed CXF service, you can query URL `http://<hostname>/<cxf-path>?wsdl`. It can be handy in tools like _SoapUI_.
 
 To discover WSDLs of our services, you can use:
+
 [source, shell]
 ----
 $ curl "http://localhost:8080/cxf/services/contact?wsdl"
@@ -175,7 +182,9 @@ $ ./target/*-runner
 ----
 
 == Kubernetes
+
 ==== Deploy
+
 [source,shell]
 ----
 $ mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dkubernetes
@@ -197,7 +206,7 @@ $ kubectl port-forward service/camel-quarkus-examples-cxf-soap 8080:8080
 
 Open another terminal and then follow instructions from <<playground>>.
 
-To stop it you can CTRL+C the process in port-forwarding terminal and shutdown the Kubernetes cluster.
+To stop it you can CTRL+C the process in the port-forwarding terminal and shutdown the Kubernetes cluster.
 
 == Feedback
 

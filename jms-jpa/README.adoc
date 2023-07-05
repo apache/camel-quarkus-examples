@@ -37,6 +37,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 ==== External systems
 
 Start MySQL:
+
 [source, shell]
 ----
 docker run --name db-mysql \
@@ -52,6 +53,7 @@ docker exec -it db-mysql mysql -uroot -proot -e \
 ----
 
 Create `audit_log` if it is needed:
+
 [source, shell]
 ----
 docker exec -it db-mysql mysql -uadmin -padmin testdb -e \
@@ -63,6 +65,7 @@ docker exec -it db-mysql mysql -uadmin -padmin testdb -e \
 ----
 
 Start Artemis:
+
 [source, shell]
 ----
 docker run --name artemis \
@@ -73,9 +76,11 @@ docker run --name artemis \
 
 
 ==== Prerequisites
-- Make sure `io.quarkus:quarkus-jdbc-mysql` has been added in `pom.xml`
-- Make sure `db-mysql` and `artemis` has been started and ready for servicing
+
+- Make sure `io.quarkus:quarkus-jdbc-mysql` has been added to the project `pom.xml`
+- Make sure `db-mysql` and `artemis` has been started and are ready for servicing
 - Edit `src/main/resource/application.properties` to uncomment all `%prod` lines
+
 [source, properties]
 ----
 # Production Datasource
@@ -120,6 +125,7 @@ $ ./target/*-runner
 ----
 
 ==== How to run
+
 Test the service endpoint from another terminal:
 
 [source,shell]
@@ -130,28 +136,35 @@ curl $ADDRESS/api/messages
 ----
 
 Test with normal "hello" content:
+
 [source,shell]
 ----
 curl -X POST $ADDRESS/api/messages/hello
 ----
 
-Check the audit_log
+Check the audit_log:
+
 [source,shell]
 ----
 curl $ADDRESS/api/messages
 ----
-You should get some results like
+
+You should get some results like:
+
 [source]
 ----
 [{message=hello}, {message=hello-ok}]
 ----
 
 Test rollback by calling the service with "fail" content:
+
 [source,shell]
 ----
 curl -X POST $ADDRESS/api/messages/fail
 ----
-You should not find any trace of the message in the audit_log table. And some failures like
+
+You should not find any trace of the message in the audit_log table. And some failures like:
+
 [source]
 ----
 2022-07-01 11:03:10,257 INFO  [route2] (executor-thread-0) Forced exception
@@ -166,20 +179,24 @@ Source                                   ID                             Processo
 
 Stacktrace
 ---------------------------------------------------------------------------------------------------------------------------------------: java.lang.RuntimeException: fail
-
 ----
 
 Test crash recovery by calling the service with "crash" content:
+
 [source,shell]
 ----
 curl -X POST $ADDRESS/api/messages/crash
 ----
+
 The application should be crashed, and you can not see any response.
+
 [source]
 ----
 curl: (52) Empty reply from server
 ----
+
 Now restart the application, and wait about 10 seconds, then you can see the following messages that the application has recovered the transaction.
+
 [source]
 ----
 2022-09-16 12:35:39,994 INFO  [io.quarkus] (main) camel-quarkus-examples-jta-jpa 2.13.0-SNAPSHOT on JVM (powered by Quarkus 2.13.0.CR1) started in 1.755s. Listening on: http://0.0.0.0:8080
@@ -188,6 +205,7 @@ Now restart the application, and wait about 10 seconds, then you can see the fol
 2022-09-16 12:35:49,251 INFO  [org.acm.DummyXAResourceRecovery] (Periodic Recovery) DummyXAResourceRecovery returning list of resources: [org.acme.DummyXAResource@35cdbf7a]
 2022-09-16 12:35:49,270 INFO  [org.acm.DummyXAResource] (Periodic Recovery) Committing DummyXAResource
 ----
+
 check the audit_log table, you should see the message "crash" in the table.
 
 == Feedback
