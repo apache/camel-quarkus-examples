@@ -6,7 +6,7 @@
 In particular, it demonstrates the following:
 
 1. Defining a DataSource
-2. Querying the Database defined in the previous DataSource
+2. Querying the Database defined in the previous `DataSource`
 3. Usage of properties defined in `application.properties`
 4. No Java code required or used, the route defined in XML can still be compiled to native code.
 

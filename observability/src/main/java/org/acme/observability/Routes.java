@@ -18,18 +18,15 @@ package org.acme.observability;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 
 @ApplicationScoped
 public class Routes extends RouteBuilder {
 
-    // Quarkus will inject this automatically for us
-    private final MeterRegistry registry;
-
-    public Routes(MeterRegistry registry) {
-        this.registry = registry;
-    }
+    @Inject
+    MeterRegistry registry;
 
     private void countGreeting(Exchange exchange) {
         // This is our custom metric: just counting how many times the method is called

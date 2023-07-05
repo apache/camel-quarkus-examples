@@ -29,8 +29,8 @@ workspace. Any modifications in your project will automatically take effect in t
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
-Once the application has started it will wait 5 seconds and then read the file every 30 seconds. By default the row split
-is sequential however you can edit the properties file and set the parallel processing to true. The output should then be
+Once the application has started it will wait 5 seconds and then read the file every 30 seconds. By default, the row split
+is sequential, however, you can edit the properties file and set the parallel processing to true. The output should then be
 a little more out of order i.e. non-sequential processing of rows.
 
 === Package and run the application

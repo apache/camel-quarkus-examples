@@ -75,24 +75,24 @@ https://quarkus.io/guides/amazon-lambda#extra-build-generated-files[Please click
 == Deploying the Quarkus JVM application to AWS Lambda via AWS Web Console
 
 1. Go to AWS Web console and search for Lambda Service
- 
-2. Click Create Function and select Author From Scratch 
+
+2. Click Create Function and select Author From Scratch
 
 3. Give the name for your function which should be unique
 
-4. Select Java 11 (Corretto) as Runtime 
+4. Select Java 17 (Corretto) as Runtime
 
 5. Under Permission feel free to create / use existing role to give the required permission for your lambda function
 
-6. Once the function is created click the function name to upload the generated function.zip file and configure it. 
+6. Once the function is created click the function name to upload the generated function.zip file and configure it
 
-7. Scroll down and select the Code tab. Click the upload from dropdown on right-hand side of the screen and select .zip or .jar file 
+7. Scroll down and select the Code tab. Click the upload from dropdown on right-hand side of the screen and select .zip or .jar file
 
 8. Click upload and browse to the path where the generated zip file `target/function.zip` was created and select the function.zip file and click save
 
-9. Under the Code tab scroll down to the Runtime settings and click edit 
+9. Under the Code tab scroll down to the Runtime settings and click edit
 
-10. For the Handler details please provide the Quarkus Handler 
+10. For the Handler details please provide the Quarkus Handler
 
 [source,shell]
 ----
@@ -101,7 +101,7 @@ io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
 
 === Testing the AWS Lambda Function
 
-1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test 
+1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test
 
     {
      "name": "Ravishankar"
@@ -119,34 +119,34 @@ io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
 ====
 
 1. Go to AWS Web console and search for Lambda Service
- 
-2. Click Create Function and select Author From Scratch 
+
+2. Click Create Function and select Author From Scratch
 
 3. Give the name for your function which should be unique
 
-4. For Runtime please scroll down and Select Provide your own bootstrap on Amazon Linux 2 under Custom Runtime 
+4. For Runtime please scroll down and Select Provide your own bootstrap on Amazon Linux 2 under Custom Runtime
 
 5. Under Permission feel free to create / use existing role to give the required permission for your lambda function
 
-6. Once the function is created click the function name to upload the generated function.zip file and configure it. 
+6. Once the function is created click the function name to upload the generated function.zip file and configure it.
 
-7. Scroll down and select the Code tab. Click the upload from dropdown on right-hand side of the screen and select .zip or .jar file 
+7. Scroll down and select the Code tab. Click the upload from dropdown on right-hand side of the screen and select .zip or .jar file
 
 8. Click upload and browse to the path where the generated zip file `target/function.zip` was created and select the function.zip file and click save
 
-9. Under the Code tab scroll down to the Runtime settings and click edit 
+9. Under the Code tab scroll down to the Runtime settings and click edit
 
-10. For the Handler details please provide the below Handler 
+10. For the Handler details please provide the below Handler
 
         not.used.in.provided.runtime
 
-11. Then Select the Configuration tab and click Environment Variables 
+11. Then Select the Configuration tab and click Environment Variables
 
 12. For Key enter `DISABLE_SIGNAL_HANDLERS`	& for Value enter `true`
 
 === Testing the AWS Lambda Function
 
-1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test 
+1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test
 
     {
      "name": "Ravishankar"
