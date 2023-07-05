@@ -65,6 +65,7 @@ TIP: Find more details about the JVM mode and Native mode in the Package and run
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
 
 ==== Configure kafka client
+
 Uncomment the corresponding commented section in `src/main/resources/application.properties`.
 
 - The section Kafka instance without Authentication if no Authentication required.
@@ -73,6 +74,7 @@ Uncomment the corresponding commented section in `src/main/resources/application
 
 You need to set the corresponding environment variables:
 - Without Authentication
+
 [source,shell]
 ----
 $ export brokers=<YOUR_KAFKA_BROKERS_URL>
@@ -93,7 +95,8 @@ $ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
 $ export token=<YOUR_KAFKA_SASL_OAUTHBEARER_TOKEN_URL>
 ----
 
-If you want to deploy on Kubernetes or Openshift, you'd need to define those in a secret named `camel-kafka`. Set the needed values in the `kubefiles/secret-example.yml`, then add the secret :
+If you want to deploy on Kubernetes or Openshift, you'd need to define the above environment variables in a secret named `camel-kafka`. Set the needed values in the `kubefiles/secret-example.yml`, then add the secret :
+
 [source,shell]
 ----
 $ kubectl apply -f kubefiles/secret-example.yml
