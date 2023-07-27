@@ -348,6 +348,12 @@
                 <skipTests>true</skipTests>
             </properties>
         </profile>
+        <profile>
+            <id>ci</id>
+            <properties>
+                <quarkus.native.native-image-xmx>5g</quarkus.native.native-image-xmx>
+            </properties>
+        </profile>
     </profiles>
 
 </project>
