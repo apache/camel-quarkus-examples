@@ -138,7 +138,7 @@ jobs:
 
             ../mvnw ${MAVEN_ARGS} clean verify \
               -Dformatter.skip -Dimpsort.skip \
-              -Pnative,docker
+              -Pnative,docker,ci
 
             if [[ $? -ne 0 ]]; then
               BUILD_FAILURES[${#BUILD_FAILURES[@]}]=${MODULE}
