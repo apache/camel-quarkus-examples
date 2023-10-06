@@ -70,6 +70,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cluster-leader-election"
   },
   {
+    "title": "Message Bridge",
+    "description": "Shows how to configure AMQ and IBM MQ clients to use the connection pooling and XA transactions.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/message-bridge"
+  },
+  {
     "title": "Observability",
     "description": "Demonstrates how to add support for metrics, health checks and distributed tracing",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/observability"
