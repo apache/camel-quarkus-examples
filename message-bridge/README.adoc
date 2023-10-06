@@ -1,0 +1,247 @@
+= Message Bridge: A Camel Quarkus example
+:cq-example-description: An example that shows how to configure AMQ and IBM MQ clients to use the connection pooling and XA transactions.
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Overview
+
+In this example, a basic REST endpoint is provided for users to dispatch a message to the IBM MQ queue. Subsequently, all messages from the IBM MQ are relayed to an ActiveMQ queue within an XA transaction. To showcase the transaction functionality, a message containing the keyword "rollback" will initiate a transaction rollback. To demonstrate the process of a transaction recovery after a crash, send a message with the keyword "crash".
+
+Details regarding client configurations can be located in the `src/main/resources/application.properties` file.
+
+== Prerequisites
+
+First start the ActiveMQ broker:
+----
+docker run \
+  -d \
+  -e AMQ_USER=admin \
+  -e AMQ_PASSWORD=admin \
+  -p 61616:61616 \
+  quay.io/artemiscloud/activemq-artemis-broker
+----
+
+Then start the IBM MQ broker:
+----
+docker run \
+  -d \
+  -e LICENSE=accept \
+  -e MQ_QMGR_NAME=QM1 \
+  -e MQ_APP_PASSWORD=passw0rd \
+  -p 1414:1414 \
+  icr.io/ibm-messaging/mq:9.3.2.1-r1
+----
+
+== Start in the Development mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
+workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+After the application is started, you can send messages to the IBMMQ queue using the rest endpoint `/message`:
+
+----
+curl -X POST -H "Content-Type: text/plain" http://localhost:8080/message -d 'Hello World'
+----
+
+In the application logs you will see:
+
+----
+2023-10-11 08:10:52,782 INFO  [ibmmq] (executor-thread-1) Sending message to IBMMQ: Hello World
+2023-10-11 08:10:52,903 INFO  [ibmmq-amq] (Camel (camel-4) thread #7 - JmsConsumer[DEV.QUEUE.1]) Sending message from IBMMQ to ActiveMQ: Hello World
+2023-10-11 08:10:52,927 INFO  [amq] (Camel (camel-4) thread #8 - JmsConsumer[in]) ActiveMQ received: Hello World
+----
+
+The message is initially dispatched to an IBMMQ queue, then relayed to an ActiveMQ queue, and ultimately retrieved from the ActiveMQ queue and printed to the log without any issues.
+
+=== Transaction rollback
+
+If you wish to illustrate a rollback, simply send a message containing the `rollback` keyword.
+
+----
+curl -X POST -H "Content-Type: text/plain" http://localhost:8080/message -d 'Hello rollback'
+----
+The log could be divided into two segments. In this demonstration, the IBMMQ to ActiveMQ route is configured to simulate a transaction rollback following the dispatch of a message to the ActiveMQ queue. Due to the rollback, you'll notice that the message isn't fetched from the ActiveMQ queue and isn't logged:
+
+----
+2023-10-11 08:12:46,314 INFO  [ibmmq] (executor-thread-1) Sending message to IBMMQ: Hello rollback
+2023-10-11 08:12:46,453 INFO  [ibmmq-amq] (Camel (camel-4) thread #7 - JmsConsumer[DEV.QUEUE.1]) Sending message from IBMMQ to ActiveMQ: Hello rollback
+2023-10-11 08:12:46,457 WARN  [org.apa.cam.jta.TransactionErrorHandler] (Camel (camel-4) thread #7 - JmsConsumer[DEV.QUEUE.1]) Transaction rollback (0xea2b886) redelivered(false) for (MessageId: ID:414d5120514d312020202020202020206437266503e30040 on ExchangeId: 01C264F444F3A96-0000000000000003) caught: Simulated rollback
+2023-10-11 08:12:46,458 ERROR [org.apa.cam.jta.TransactionErrorHandler] (Camel (camel-4) thread #7 - JmsConsumer[DEV.QUEUE.1]) Failed delivery for (MessageId: ID:414d5120514d312020202020202020206437266503e30040 on ExchangeId: 01C264F444F3A96-0000000000000003). Exhausted after delivery attempt: 1 caught: java.lang.RuntimeException: Simulated rollback
+...
+<truncated exception from the simulated rollback>
+----
+
+Because the transaction was rolled back, the message wasn't successfully processed and stays in the input broker and is subsequently redelivered. In this instance, the delivery is successful and logged accordingly:
+
+----
+2023-10-11 08:12:46,561 INFO  [ibmmq-amq] (Camel (camel-4) thread #7 - JmsConsumer[DEV.QUEUE.1]) Redelivering message after rollback to ActiveMQ: Hello rollback
+2023-10-11 08:12:46,567 INFO  [org.apa.cam.jta.TransactionErrorHandler] (Camel (camel-4) thread #7 - JmsConsumer[DEV.QUEUE.1]) Transaction commit (0xea2b886) redelivered(true) for (MessageId: ID:414d5120514d312020202020202020206437266503e30040 on ExchangeId: 01C264F444F3A96-0000000000000004))
+2023-10-11 08:12:46,585 INFO  [amq] (Camel (camel-4) thread #8 - JmsConsumer[in]) ActiveMQ received: Hello rollback
+----
+
+In this example, a local file transaction storage is used, which is set up through the `quarkus.transaction-manager.object-store.directory` property. If you prefer to utilize a database for configuring the storage, please refer to the Quarkus transactions guide available at https://quarkus.io/guides/transaction#jdbcstore.
+
+=== Transaction recovery
+
+To trigger a JVM crash during the transaction, send a message containing the word `crash`.
+
+----
+curl -X POST -H "Content-Type: text/plain" http://localhost:8080/message -d 'Hello crash'
+----
+
+This will result in the JVM stopping abruptly:
+
+----
+2023-10-13 15:21:03,277 INFO  [ibmmq] (executor-thread-1) Sending message to IBMMQ: crash
+2023-10-13 15:21:03,429 INFO  [ibmmq-amq] (Camel (camel-1) thread #1 - JmsConsumer[DEV.QUEUE.1]) Sending message from IBMMQ to ActiveMQ: crash
+2023-10-13 15:21:03,449 INFO  [org.acm.mes.bri.DummyXAResource] (Camel (camel-1) thread #1 - JmsConsumer[DEV.QUEUE.1]) Preparing DummyXAResource
+2023-10-13 15:21:03,461 INFO  [org.acm.mes.bri.DummyXAResource] (Camel (camel-1) thread #1 - JmsConsumer[DEV.QUEUE.1]) Committing DummyXAResource
+2023-10-13 15:21:03,461 INFO  [org.acm.mes.bri.DummyXAResource] (Camel (camel-1) thread #1 - JmsConsumer[DEV.QUEUE.1]) Crashing the system
+----
+
+NOTE: If you previously used `mvn clean compile quarkus:dev` to run the application, when restarting, omit the `clean` step from the command. This is because the default location for transaction manager persistence is located in the `target` directory.
+
+Upon restarting the application, after a few seconds you will observe that the transaction has been restored, and the message has been successfully delivered to the ActiveMQ broker.
+
+----
+2023-10-13 15:21:36,458 INFO  [io.quarkus] (main) camel-quarkus-examples-message-bridge 3.5.0-SNAPSHOT on JVM (powered by Quarkus 3.5.0.CR1) started in 0.893s. Listening on: http://0.0.0.0:8080
+2023-10-13 15:21:36,459 INFO  [io.quarkus] (main) Profile prod activated.
+2023-10-13 15:21:36,459 INFO  [io.quarkus] (main) Installed features: [artemis-jms, camel-attachments, camel-core, camel-direct, camel-jms, camel-jta, camel-platform-http, camel-rest, cdi, messaginghub-pooled-jms, narayana-jta, smallrye-context-propagation, vertx]
+2023-10-13 15:21:46,386 INFO  [org.acm.mes.bri.DummyXAResourceRecovery] (Periodic Recovery) DummyXAResourceRecovery returning list of resources: [org.acme.message.bridge.DummyXAResource@3739f1f4, org.acme.message.bridge.DummyXAResource@7d2113fb]
+2023-10-13 15:21:46,391 WARN  [com.arj.ats.jta] (Periodic Recovery) ARJUNA016037: Could not find new XAResource to use for recovering non-serializable XAResource XAResourceRecord < resource:null, txid:< formatId=131077, gtrid_length=35, bqual_length=36, tx_uid=0:ffffc0a80136:8e8b:65294417:31, node_name=quarkus, branch_uid=0:ffffc0a80136:8e8b:65294417:33, subordinatenodename=null, eis_name=0 >, heuristic: TwoPhaseOutcome.FINISH_OK com.arjuna.ats.internal.jta.resources.arjunacore.XAResourceRecord@1d57754e >
+2023-10-13 15:21:46,483 INFO  [org.acm.mes.bri.DummyXAResourceRecovery] (Periodic Recovery) DummyXAResourceRecovery returning list of resources: [org.acme.message.bridge.DummyXAResource@24a51dd0, org.acme.message.bridge.DummyXAResource@4fc1b14d]
+2023-10-13 15:21:46,484 WARN  [com.arj.ats.jta] (Periodic Recovery) ARJUNA016038: No XAResource to recover < formatId=131077, gtrid_length=35, bqual_length=36, tx_uid=0:ffffc0a80136:8e8b:65294417:31, node_name=quarkus, branch_uid=0:ffffc0a80136:8e8b:65294417:33, subordinatenodename=null, eis_name=0 >
+2023-10-13 15:21:46,485 INFO  [org.acm.mes.bri.DummyXAResource] (Periodic Recovery) Committing DummyXAResource
+2023-10-13 15:21:46,512 INFO  [amq] (Camel (camel-1) thread #2 - JmsConsumer[in]) ActiveMQ received: crash
+----
+
+You may observe the warning messages related to the XAResource recovery in the logs. This is a known issue related to how we simulate the crash of the system and can be ignored.
+
+=== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+==== JVM mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+...
+[io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
+----
+
+=== Running on Kubernetes
+
+The quarkus-maven-plugin used in this example can generate the required resources for deploying the application on a Kubernetes cluster. The following steps assume you want to run the example on a minikube cluster. If you wish to deploy it on a different Kubernetes cluster, you can skip the minikube-specific commands.
+
+First, configure and start minikube, and then configure your Docker to connect to its Docker daemon:
+
+----
+minikube start --cpus <cpu> --memory <memory> --addons ingress
+eval $(minikube docker-env)
+----
+
+Next, deploy the message brokers and create a persistent volume claim:
+
+----
+kubectl create -f src/main/resources/resources.yml
+----
+
+After the broker pods are up and running, you can create the Docker image with the example and deploy it to the cluster:
+
+----
+mvn clean package -Pkubernetes -Dquarkus.kubernetes.deploy=true
+----
+
+NOTE: This works on minikube because you've previously configured your local Docker environment to use the Docker daemon inside minikube. However, on a different Kubernetes environment, you'll need to ensure that the image is accessible to the cluster through alternative methods.
+
+TIP: You can omit -Dquarkus.kubernetes.deploy=true to disable automatic deployment. Instead, you can deploy it manually using the target/kubernetes/kubernetes.yml file.
+
+Once the Ingress `camel-quarkus-examples-message-bridge` has been assigned an IP, you can start sending messages to the application:
+
+----
+curl -X POST -H "Content-Type: text/plain" http://$(oc get ingress camel-quarkus-examples-message-bridge -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/message -d 'Hello'
+----
+
+==== Clean up
+
+To remove the created resources, use the following commands:
+
+----
+kubectl delete -f target/kubernetes/kubernetes.yml
+kubectl delete -f src/main/resources/resources.yml
+----
+
+=== Running on OpenShift
+
+You can also deploy this example as an OpenShift pod using the capabilities of the quarkus-maven-plugin.
+
+Before doing so, make sure to deploy the AMQ and IBMMQ brokers:
+
+----
+oc new-app quay.io/artemiscloud/activemq-artemis-broker -e AMQ_USER=admin -e AMQ_PASSWORD=admin
+oc patch service/activemq-artemis-broker -p '{"spec":{"ports":[{"name":"61616-tcp", "port": 61616, "protocol": "TCP", "targetPort": 61616}]}}'
+----
+
+----
+oc new-app icr.io/ibm-messaging/mq:9.3.2.1-r1 -e MQ_QMGR_NAME=QM1 -e LICENSE=accept -e MQ_APP_PASSWORD=passw0rd
+----
+
+Next, create a `PersistentVolumeClaim` to serve as the storage for the transaction manager's object store. This example assumes that a persistent volume claim named `message-bridge` has already been set up. Keep in mind that the configuration of the persistent volume may require adjustments based on your specific OpenShift setup:
+
+----
+oc create -f - <<EOF
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: message-bridge
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+EOF
+----
+
+Then deploy this example using the `openshift` profile specified within this project:
+
+----
+mvn clean package -DskipTests -Popenshift
+----
+
+Once the pod is up and running successfully, you can send messages in a manner similar to local deployment:
+
+----
+curl -X POST -H "Content-Type: text/plain" http://$(oc get route camel-quarkus-examples-message-bridge -o jsonpath='{.spec.host}')/message -d 'Hello world'
+----
+
+==== Clean up
+
+If you'd like to clean up the namespace, you can use the following commands to do that:
+
+----
+oc delete all --selector app.kubernetes.io/name=camel-quarkus-examples-message-bridge
+oc delete all --selector app=mq
+oc delete all --selector app=activemq-artemis-broker
+oc delete pvc message-bridge
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
