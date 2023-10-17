@@ -160,6 +160,44 @@
 
     <profiles>
         <profile>
+            <id>kubernetes</id>
+            <activation>
+                <property>
+                    <name>kubernetes</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-container-image-jib</artifactId>
+                </dependency>
+            </dependencies>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>${quarkus.platform.group-id}</groupId>
+                        <artifactId>quarkus-maven-plugin</artifactId>
+                        <version>${quarkus.platform.version}</version>
+                        <configuration>
+                            <systemProperties>
+                                <quarkus.profile>kubernetes</quarkus.profile>
+                                <quarkus.container-image.build>true</quarkus.container-image.build>
+                                <quarkus.kubernetes.ingress.expose>true</quarkus.kubernetes.ingress.expose>
+                                <quarkus.kubernetes.pvc-volumes.storage.claim-name>message-bridge</quarkus.kubernetes.pvc-volumes.storage.claim-name>
+                                <quarkus.kubernetes.mounts.storage.path>/storage</quarkus.kubernetes.mounts.storage.path>
+                                <quarkus.kubernetes.image-pull-policy>IfNotPresent</quarkus.kubernetes.image-pull-policy>
+                            </systemProperties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>openshift</id>
             <activation>
                 <property>
