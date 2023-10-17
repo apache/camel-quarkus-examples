@@ -8,7 +8,7 @@ and other general information.
 
 == Overview
 
-In this example, a basic REST endpoint is provided for users to dispatch a message to the IBM MQ queue. Subsequently, all messages from the IBM MQ are relayed to an ActiveMQ queue within an XA transaction. To showcase the transaction functionality, a message containing the keyword "rollback" will initiate a transaction rollback. To demonstrate the process of a transaction recovery after a crash, send a message with they keyword "crash".
+In this example, a basic REST endpoint is provided for users to dispatch a message to the IBM MQ queue. Subsequently, all messages from the IBM MQ are relayed to an ActiveMQ queue within an XA transaction. To showcase the transaction functionality, a message containing the keyword "rollback" will initiate a transaction rollback. To demonstrate the process of a transaction recovery after a crash, send a message with the keyword "crash".
 
 Details regarding client configurations can be located in the `src/main/resources/application.properties` file.
 
