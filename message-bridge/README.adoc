@@ -145,6 +145,48 @@ $ java -jar target/quarkus-app/quarkus-run.jar
 [io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
 ----
 
+=== Running on Kubernetes
+
+The quarkus-maven-plugin used in this example can generate the required resources for deploying the application on a Kubernetes cluster. The following steps assume you want to run the example on a minikube cluster. If you wish to deploy it on a different Kubernetes cluster, you can skip the minikube-specific commands.
+
+First, configure and start minikube, and then configure your Docker to connect to its Docker daemon:
+
+----
+minikube start --cpus <cpu> --memory <memory> --addons ingress
+eval $(minikube docker-env)
+----
+
+Next, deploy the message brokers and create a persistent volume claim:
+
+----
+kubectl create -f src/main/resources/resources.yml
+----
+
+After the broker pods are up and running, you can create the Docker image with the example and deploy it to the cluster:
+
+----
+mvn clean package -Pkubernetes -Dquarkus.kubernetes.deploy=true
+----
+
+NOTE: This works on minikube because you've previously configured your local Docker environment to use the Docker daemon inside minikube. However, on a different Kubernetes environment, you'll need to ensure that the image is accessible to the cluster through alternative methods.
+
+TIP: You can omit -Dquarkus.kubernetes.deploy=true to disable automatic deployment. Instead, you can deploy it manually using the target/kubernetes/kubernetes.yml file.
+
+Once the Ingress `camel-quarkus-examples-message-bridge` has been assigned an IP, you can start sending messages to the application:
+
+----
+curl -X POST -H "Content-Type: text/plain" http://$(oc get ingress camel-quarkus-examples-message-bridge -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/message -d 'Hello'
+----
+
+==== Clean up
+
+To remove the created resources, use the following commands:
+
+----
+kubectl delete -f target/kubernetes/kubernetes.yml
+kubectl delete -f src/main/resources/resources.yml
+----
+
 === Running on OpenShift
 
 You can also deploy this example as an OpenShift pod using the capabilities of the quarkus-maven-plugin.
