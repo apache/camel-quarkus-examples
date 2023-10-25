@@ -21,18 +21,18 @@ metadata:
   name: camel-quarkus-examples-derby-database-deployment
   labels:
     app.kubernetes.io/name: camel-quarkus-examples-derby-database
-    app.kubernetes.io/version: 3.5.0-SNAPSHOT
+    app.kubernetes.io/version: 3.5.0
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: camel-quarkus-examples-derby-database
-      app.kubernetes.io/version: 3.5.0-SNAPSHOT
+      app.kubernetes.io/version: 3.5.0
   template:
     metadata:
       labels:
         app.kubernetes.io/name: camel-quarkus-examples-derby-database
-        app.kubernetes.io/version: 3.5.0-SNAPSHOT
+        app.kubernetes.io/version: 3.5.0
     spec:
       containers:
         - name: derby-database
@@ -67,7 +67,7 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: camel-quarkus-examples-derby-database
-    app.kubernetes.io/version: 3.5.0-SNAPSHOT
+    app.kubernetes.io/version: 3.5.0
   name: derby-database
 spec:
   ports:
@@ -76,7 +76,7 @@ spec:
       targetPort: 1527
   selector:
     app.kubernetes.io/name: camel-quarkus-examples-derby-database
-    app.kubernetes.io/version: 3.5.0-SNAPSHOT
+    app.kubernetes.io/version: 3.5.0
   type: ClusterIP
 ---
 apiVersion: v1
@@ -85,7 +85,7 @@ metadata:
   name: derby-database-init-script-config-map
   labels:
     app.kubernetes.io/name: camel-quarkus-examples-derby-database
-    app.kubernetes.io/version: 3.5.0-SNAPSHOT
+    app.kubernetes.io/version: 3.5.0
 data:
   init.sql: |
     CONNECT 'jdbc:derby:my-db;create=true';

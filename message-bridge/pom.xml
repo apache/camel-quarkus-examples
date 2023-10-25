@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-message-bridge</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.5.0-SNAPSHOT</version>
+    <version>3.5.0</version>
 
     <name>Camel Quarkus :: Examples :: Message Bridge</name>
     <description>Camel Quarkus Example :: Configure XA Transactions and connection pooling</description>

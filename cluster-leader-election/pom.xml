@@ -23,7 +23,7 @@
 
     <artifactId>camel-quarkus-examples-cluster-leader-election</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.5.0-SNAPSHOT</version>
+    <version>3.5.0</version>
 
     <name>Camel Quarkus :: Examples :: Cluster leader election</name>
     <description>Camel Quarkus Example :: Cluster leader election</description>
