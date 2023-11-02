@@ -19,14 +19,12 @@ package org.acme.jpa.idempotent.repository;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Named;
 import org.apache.camel.Handler;
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
-@RegisterForReflection
 @Named("costlyApiService")
 public class CostlyApiService {
 
