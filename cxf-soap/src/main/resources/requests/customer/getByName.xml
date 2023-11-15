@@ -20,7 +20,7 @@
    <soapenv:Header/>
    <soapenv:Body>
       <cus:getCustomersByName>
-         <name>Non existent</name>
+         <name>test</name>
       </cus:getCustomersByName>
    </soapenv:Body>
 </soapenv:Envelope>
