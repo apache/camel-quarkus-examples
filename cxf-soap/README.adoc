@@ -97,7 +97,7 @@ We can also test our customer service:
 $ curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/customer/getByName.xml http://localhost:8080/cxf/services/customer
 ----
 
-You can observe that we have hardcoded `test` as the name in the `SOAPBody` part in `src/main/resources/requests/customer/getByName.soap` as follows:
+You can observe that we have hardcoded `test` as the name in the `SOAPBody` part in `src/main/resources/requests/customer/getByName.xml` as follows:
 
 [source, xml]
 ----
