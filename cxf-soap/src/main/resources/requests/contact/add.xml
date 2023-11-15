@@ -21,12 +21,12 @@
    <soapenv:Body>
       <con:addContact>
          <arg0>
-            <name>Lukas</name>
-            <address>
-               <city>New York</city>
-               <street>Sky 1234</street>
-            </address>
-            <type>PERSONAL</type>
+            <con:name>Lukas</con:name>
+            <con:address>
+               <con:city>New York</con:city>
+               <con:street>Sky 1234</con:street>
+            </con:address>
+            <con:type>PERSONAL</con:type>
          </arg0>
       </con:addContact>
    </soapenv:Body>
