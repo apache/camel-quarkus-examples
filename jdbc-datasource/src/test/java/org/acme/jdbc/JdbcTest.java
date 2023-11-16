@@ -16,32 +16,29 @@
  */
 package org.acme.jdbc;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 
 import static org.awaitility.Awaitility.await;
 
 @QuarkusTest
-@QuarkusTestResource(H2DatabaseTestResource.class)
-public class JdbcDataSourceTest {
+@QuarkusTestResource(PostgresSourceDatabaseTestResource.class)
+@QuarkusTestResource(PostgresTargetDatabaseTestResource.class)
+public class JdbcTest {
+
     @Test
-    public void testCamelsInDatabase() throws Exception {
-        // Verify that camels are being inserted in the database:
-        await()
-                .atMost(10L, TimeUnit.SECONDS)
-                .pollDelay(1, TimeUnit.SECONDS)
-                .until(() -> {
-                    String log = new String(Files.readAllBytes(
-                            Paths.get("target/quarkus.log")),
-                            StandardCharsets.UTF_8);
-                    return log.contains("We have 2 camels in the database.");
-                });
+    public void etlBridgeShouldTransferValuesBetweenDatebases() {
+        await().atMost(30L, TimeUnit.SECONDS).pollDelay(500, TimeUnit.MILLISECONDS).until(() -> {
+            String hotelReviews = RestAssured
+                    .get("/getHotelReviews")
+                    .then()
+                    .extract().asString();
+
+            return "(\"Grand Hotel\",1)(\"Middle Hotel\",0)(\"Small Hotel\",-1)".equals(hotelReviews);
+        });
     }
 }

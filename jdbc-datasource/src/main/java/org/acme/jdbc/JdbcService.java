@@ -16,31 +16,35 @@
  */
 package org.acme.jdbc;
 
-import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.agroal.DataSource;
-import io.quarkus.runtime.StartupEvent;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
-import org.apache.camel.CamelContext;
+import jakarta.inject.Named;
 
+@Named("reviewService")
 @ApplicationScoped
-public class JdbcResource {
+@RegisterForReflection
+public class JdbcService {
 
     @Inject
-    @DataSource("camel-ds")
-    AgroalDataSource dataSource;
+    @DataSource("target_db")
+    AgroalDataSource targetDb;
 
-    void startup(@Observes StartupEvent event, CamelContext context) throws Exception {
-        try (Connection con = dataSource.getConnection()) {
-            try (Statement statement = con.createStatement()) {
-                con.setAutoCommit(true);
-                statement.execute("DROP TABLE IF EXISTS camel");
-                statement.execute("CREATE TABLE camel (id SERIAL PRIMARY KEY, timestamp VARCHAR(255))");
-            }
+    String getHotelReviews() throws SQLException {
+
+        StringBuilder sb = new StringBuilder();
+
+        ResultSet rs = targetDb.getConnection().createStatement().executeQuery("SELECT (hotel_name, review) FROM Target");
+
+        while (rs.next()) {
+            sb.append(rs.getString(1));
         }
+
+        return sb.toString();
     }
 }
