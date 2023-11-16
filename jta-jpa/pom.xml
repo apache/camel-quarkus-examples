@@ -25,7 +25,7 @@
     <name>Camel Quarkus :: Examples :: JTA JPA</name>
     <description>Camel Quarkus Example :: JTA JPA</description>
     <properties>
-        <quarkus.platform.version>3.5.1</quarkus.platform.version>
+        <quarkus.platform.version>3.6.0.CR1</quarkus.platform.version>
         <camel-quarkus.platform.version>3.6.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
