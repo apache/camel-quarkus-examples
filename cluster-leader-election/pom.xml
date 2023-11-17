@@ -29,7 +29,7 @@
     <description>Camel Quarkus Example :: Cluster leader election</description>
 
     <properties>
-        <quarkus.platform.version>3.5.1</quarkus.platform.version>
+        <quarkus.platform.version>3.6.0.CR1</quarkus.platform.version>
         <camel-quarkus.platform.version>3.6.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
@@ -257,7 +257,6 @@
     </build>
 
     <profiles>
-        <!-- TODO: https://github.com/apache/camel-quarkus/issues/5447
         <profile>
             <id>native</id>
             <activation>
@@ -290,7 +289,20 @@
                 </plugins>
             </build>
         </profile>
-        -->
+        <!-- TODO: https://github.com/apache/camel-quarkus/issues/5515 -->
+        <profile>
+            <id>native-disabled-github-ci</id>
+            <activation>
+                <property>
+                    <name>env.CI</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <quarkus.package.type>fast-jar</quarkus.package.type>
+                <skipITs>true</skipITs>
+            </properties>
+        </profile>
         <profile>
             <id>kubernetes</id>
             <activation>
