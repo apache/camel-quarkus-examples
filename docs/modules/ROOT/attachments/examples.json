@@ -5,11 +5,6 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cxf-soap"
   },
   {
-    "title": "Connecting to a JDBC DataSource",
-    "description": "Shows how to connect to a Database using Datastores.",
-    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jdbc-datasource"
-  },
-  {
     "title": "Custom `main()`",
     "description": "Shows how to start Camel from a custom `main()` method",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-main"
@@ -18,6 +13,11 @@
     "title": "Deploying a Camel Route in AWS Lambda ",
     "description": "Shows how to deploy a Camel Quarkus route as an AWS Lambda function",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws-lambda"
+  },
+  {
+    "title": "Extract, Transform and Load between two databases",
+    "description": "Shows how to extract, transform and load between two databases",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jdbc-datasource"
   },
   {
     "title": "File consumer with Bindy \u0026 FTP",
