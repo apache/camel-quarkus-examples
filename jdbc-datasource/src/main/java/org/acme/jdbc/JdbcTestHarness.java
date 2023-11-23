@@ -16,9 +16,12 @@
  */
 package org.acme.jdbc;
 
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import org.apache.camel.builder.RouteBuilder;
 
-@QuarkusIntegrationTest
-class JdbcDataSourceIT extends JdbcDataSourceTest {
-
+public class JdbcTestHarness extends RouteBuilder {
+    @Override
+    public void configure() throws Exception {
+        from("platform-http:/getHotelReviews")
+                .bean("reviewService", "getHotelReviews");
+    }
 }
