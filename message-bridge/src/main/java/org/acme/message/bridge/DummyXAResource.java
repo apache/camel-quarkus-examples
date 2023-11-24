@@ -31,12 +31,13 @@ import javax.transaction.xa.Xid;
 import com.arjuna.ats.arjuna.common.Uid;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.jboss.logging.Logger;
+import org.jboss.tm.FirstResource;
 
 /**
  * This class is used solely for simulating system crash.
  *
  */
-public class DummyXAResource implements XAResource {
+public class DummyXAResource implements XAResource, FirstResource {
     private static final Logger LOG = Logger.getLogger(DummyXAResource.class);
 
     private final boolean shouldCrash;

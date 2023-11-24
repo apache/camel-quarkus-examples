@@ -119,14 +119,9 @@ Upon restarting the application, after a few seconds you will observe that the t
 2023-10-13 15:21:36,459 INFO  [io.quarkus] (main) Profile prod activated.
 2023-10-13 15:21:36,459 INFO  [io.quarkus] (main) Installed features: [artemis-jms, camel-attachments, camel-core, camel-direct, camel-jms, camel-jta, camel-platform-http, camel-rest, cdi, messaginghub-pooled-jms, narayana-jta, smallrye-context-propagation, vertx]
 2023-10-13 15:21:46,386 INFO  [org.acm.mes.bri.DummyXAResourceRecovery] (Periodic Recovery) DummyXAResourceRecovery returning list of resources: [org.acme.message.bridge.DummyXAResource@3739f1f4, org.acme.message.bridge.DummyXAResource@7d2113fb]
-2023-10-13 15:21:46,391 WARN  [com.arj.ats.jta] (Periodic Recovery) ARJUNA016037: Could not find new XAResource to use for recovering non-serializable XAResource XAResourceRecord < resource:null, txid:< formatId=131077, gtrid_length=35, bqual_length=36, tx_uid=0:ffffc0a80136:8e8b:65294417:31, node_name=quarkus, branch_uid=0:ffffc0a80136:8e8b:65294417:33, subordinatenodename=null, eis_name=0 >, heuristic: TwoPhaseOutcome.FINISH_OK com.arjuna.ats.internal.jta.resources.arjunacore.XAResourceRecord@1d57754e >
-2023-10-13 15:21:46,483 INFO  [org.acm.mes.bri.DummyXAResourceRecovery] (Periodic Recovery) DummyXAResourceRecovery returning list of resources: [org.acme.message.bridge.DummyXAResource@24a51dd0, org.acme.message.bridge.DummyXAResource@4fc1b14d]
-2023-10-13 15:21:46,484 WARN  [com.arj.ats.jta] (Periodic Recovery) ARJUNA016038: No XAResource to recover < formatId=131077, gtrid_length=35, bqual_length=36, tx_uid=0:ffffc0a80136:8e8b:65294417:31, node_name=quarkus, branch_uid=0:ffffc0a80136:8e8b:65294417:33, subordinatenodename=null, eis_name=0 >
 2023-10-13 15:21:46,485 INFO  [org.acm.mes.bri.DummyXAResource] (Periodic Recovery) Committing DummyXAResource
 2023-10-13 15:21:46,512 INFO  [amq] (Camel (camel-1) thread #2 - JmsConsumer[in]) ActiveMQ received: crash
 ----
-
-You may observe the warning messages related to the XAResource recovery in the logs. This is a known issue related to how we simulate the crash of the system and can be ignored.
 
 === Package and run the application
 
