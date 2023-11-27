@@ -32,7 +32,7 @@ public class JdbcTest {
 
     @Test
     public void etlBridgeShouldTransferValuesBetweenDatebases() {
-        await().atMost(30L, TimeUnit.SECONDS).pollDelay(500, TimeUnit.MILLISECONDS).until(() -> {
+        await().atMost(10L, TimeUnit.SECONDS).pollDelay(100, TimeUnit.MILLISECONDS).until(() -> {
             String hotelReviews = RestAssured
                     .get("/getHotelReviews")
                     .then()

@@ -9,6 +9,10 @@ and other general information.
 == Start the source and target databases
 
 All the commands in this example are expected to be run from the example directory, at the same level than the `pom.xml` file.
+[source,shell]
+----
+cd jdbc-datasource
+----
 
 In a first terminal, let's start the source database by executing the command below:
 
@@ -106,7 +110,7 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 mvn package -Dnative -Dquarkus.native.container-build=true
 ----
 
-Either way, the resulting native executable could be start as below:
+Either way, the resulting native executable could be started as below:
 
 [source,shell]
 ----
