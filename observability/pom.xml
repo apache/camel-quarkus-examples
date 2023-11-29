@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-observability</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.6.0-SNAPSHOT</version>
+    <version>3.6.0</version>
 
     <name>Camel Quarkus :: Examples :: Observability</name>
     <description>Camel Quarkus Example :: Observability</description>
