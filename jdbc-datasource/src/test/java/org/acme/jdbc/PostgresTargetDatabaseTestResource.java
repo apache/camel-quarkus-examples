@@ -61,7 +61,9 @@ public class PostgresTargetDatabaseTestResource<T extends GenericContainer> impl
                 targetDbContainer.getMappedPort(POSTGRES_PORT), POSTGRES_TARGET_DB_NAME);
         LOG.info("The test target_db could be accessed through the following JDBC url: " + targetJbdcUrl);
 
-        return mapOf("quarkus.datasource.target_db.jdbc.url", targetJbdcUrl);
+        return mapOf("quarkus.datasource.target_db.jdbc.url", targetJbdcUrl,
+                "timer.period", "100",
+                "timer.delay", "0");
     }
 
     @Override

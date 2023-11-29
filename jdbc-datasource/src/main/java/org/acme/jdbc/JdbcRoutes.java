@@ -30,7 +30,7 @@ public class JdbcRoutes extends RouteBuilder {
         reviewMapping.put("good", 0);
         reviewMapping.put("worst", -1);
 
-        from("timer://insertCamel?period=1000&repeatCount={{etl.timer.repeatcount}}")
+        from("timer://insertCamel?delay={{etl.timer.delay}}&period={{etl.timer.period}}&repeatCount={{etl.timer.repeatcount}}")
                 .setBody().simple("DELETE FROM Target")
                 .to("jdbc:target_db")
                 .setBody().simple("SELECT * FROM Source")
