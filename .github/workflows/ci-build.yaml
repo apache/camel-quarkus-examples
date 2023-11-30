@@ -140,6 +140,7 @@ jobs:
 
             ../mvnw ${MAVEN_ARGS} clean verify \
               -Dformatter.skip -Dimpsort.skip \
+              -Dquarkus.native.builder-image.pull=missing \
               -Pnative,docker,ci
 
             if [[ $? -ne 0 ]]; then
