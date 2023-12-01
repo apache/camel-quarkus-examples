@@ -14,7 +14,7 @@ The example application requires a Kafka instance.
 You do not need to provide the Kafka instance yourself
 as long as you play with the example code in dev mode (a.k.a. `mvn quarkus:dev` - read more https://quarkus.io/guides/getting-started#development-mode[here]
 or as long as you only run the supplied tests (`mvn test`).
-In those situations, Quarkus tooling starts a Redpanda image for you via https://quarkus.io/guides/kafka-dev-services[Quarkus Dev Services]
+In those situations, Quarkus tooling starts a Strimzi image for you via https://quarkus.io/guides/kafka-dev-services[Quarkus Dev Services]
 and it also configures the application so that you do not need touch anything in `application.properties`.
 
 == Start in Development mode
