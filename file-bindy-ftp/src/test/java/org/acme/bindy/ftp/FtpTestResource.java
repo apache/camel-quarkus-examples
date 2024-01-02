@@ -30,7 +30,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class FtpTestResource implements QuarkusTestResourceLifecycleManager {
 
     private static final int FTP_PORT = 2222;
-    private static final String SSH_IMAGE = "quay.io/jamesnetherton/sftp-server:0.4.0";
+    private static final String SSH_IMAGE = "quay.io/jamesnetherton/sftp-server:0.5.0";
 
     private GenericContainer container;
 
@@ -54,7 +54,7 @@ public class FtpTestResource implements QuarkusTestResourceLifecycleManager {
             container.start();
 
             return CollectionHelper.mapOf(
-                    "ftp.host", container.getContainerIpAddress(),
+                    "ftp.host", container.getHost(),
                     "ftp.port", container.getMappedPort(FTP_PORT).toString(),
                     "timer.delay", "100");
         } catch (Exception e) {
