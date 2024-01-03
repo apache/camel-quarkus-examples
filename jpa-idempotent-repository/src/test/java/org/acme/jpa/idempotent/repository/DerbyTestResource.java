@@ -52,10 +52,12 @@ public class DerbyTestResource<T extends GenericContainer> implements QuarkusTes
             container.execInContainer("java", "-Djdbc.drivers=org.apache.derbbc.EmbeddedDriver",
                     "org.apache.derby.tools.ij", "/init.sql");
 
-            return CollectionHelper.mapOf("quarkus.datasource.jdbc.url",
-                    "jdbc:derby://localhost:" + container.getMappedPort(DERBY_PORT) + "/my-db", "timer.period", "100",
-                    "timer.delay",
-                    "0", "timer.repeatCount", "4");
+            String url = "jdbc:derby://%s:%d/my-db".formatted(container.getHost(), container.getMappedPort(DERBY_PORT));
+            return CollectionHelper.mapOf(
+                    "quarkus.datasource.jdbc.url", url,
+                    "timer.period", "100",
+                    "timer.delay", "0",
+                    "timer.repeatCount", "4");
         } catch (Exception e) {
             LOGGER.error("An error occurred while starting the derby container", e);
             throw new RuntimeException(e);
