@@ -140,6 +140,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws2-s3"
   },
   {
+    "title": "Variables",
+    "description": "Uses the Camel variables which can be configured from application.properties.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/variables"
+  },
+  {
     "title": "Vertx-Websocket Chat",
     "description": "Shows how to configure a WebSocket server and interact with connected peers.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/vertx-websocket-chat"
