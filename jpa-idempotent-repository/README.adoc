@@ -64,46 +64,23 @@ The camel application should produce logs as below:
 2023-09-15 15:48:20,804 INFO  [org.acm.jpa.ide.rep.CostlyApiService] (vert.x-worker-thread-1) Costly API has been called with new content => GOOD
 ----
 
-When running in dev mode, the idempotent consumer is storing the list of already processed messages in-memory, into a h2 database.
-Later on, another database will be used when we'll package and run the application.
-Indeed, the duplicate messages will then be stored in files, into a derby database.
+The idempotent consumer is storing the list of already processed messages into a MariaDB database.
 
-== Starting and initializing the derby database in a container
+If you're wondering how the database schema was created, it happens automatically thanks to `quarkus-flyway`. On application startup, it
+creates the `my-db` database and the required `CAMEL_MESSAGEPROCESSED` table. You can find the Flyway migration script at `src/main/resources/db/migration/V1.0.0__add_camel_message_processed.sql`.
+You can find more information about Flyway in the https://quarkus.io/guides/flyway[Quarkus Flyway guide].
 
-Before packaging and running the application in JVM mode, we need to start and initialize a derby database in a container.
-So, in a first shell, please launch a derby database container:
+== Starting and initializing the MariaDB database in a container
 
-[source,shell]
-----
-docker run -p 1527:1527 az82/docker-derby:10.16
-----
-
-And from a second shell, please run the commands below in order to initialize the derby database:
+Before packaging and running the application in JVM mode, we need to start and initialize a MariaDB database in a container.
+So, in a first shell, please launch a MariaDB database container:
 
 [source,shell]
 ----
-DERBY_DOCKER_ID=$(docker ps -q  --filter ancestor=az82/docker-derby)
-docker cp src/test/resources/init.sql ${DERBY_DOCKER_ID}:/init.sql
-docker exec -it ${DERBY_DOCKER_ID} java -Djdbc.drivers=org.apache.derbbc.EmbeddedDriver org.apache.derby.tools.ij /init.sql
+docker run -e MARIADB_USER=mariadb -e MARIADB_PASSWORD=mariadb -e MARIADB_DATABASE=my-db -e MARIADB_ROOT_PASSWORD=secret -p 3306:3306 docker.io/mariadb:10.11
 ----
 
-It should output some logs like below:
-
-[source,shell]
-----
-$ DERBY_DOCKER_ID=$(docker ps -q --filter ancestor=az82/docker-derby)
-
-$ docker cp src/test/resources/init.sql ${DERBY_DOCKER_ID}:/init.sql
-Successfully copied 2.05kB to c88edda502f7:/init.sql
-
-$ docker exec -it ${DERBY_DOCKER_ID} java -Djdbc.drivers=org.apache.derbbc.EmbeddedDriver org.apache.derby.tools.ij /init.sql
-ij version 10.16
-ij> CONNECT 'jdbc:derby:my-db;create=true';
-ij> CREATE TABLE CAMEL_MESSAGEPROCESSED ( processorName VARCHAR(255), messageId VARCHAR(100), createdAt TIMESTAMP, PRIMARY KEY (processorName, messageId) );
-0 rows inserted/updated/deleted
-ij> CREATE SEQUENCE CAMEL_MESSAGEPROCESSED_SEQ AS INT MAXVALUE 999999 CYCLE;
-0 rows inserted/updated/deleted
-----
+If successful, you should see the message `mariadbd: ready for connections` output to the console.
 
 === Package and run the application
 
@@ -120,26 +97,7 @@ mvn clean package -DskipTests
 java -jar target/quarkus-app/quarkus-run.jar
 ----
 
-Please, note that the shell running the derby database should react by printing some logs as below:
-
-[source,shell]
-----
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.16.1.1 - (1901046): instance a816c00e-018a-996e-54bf-00003e718008 
-on database directory /dbs/my-db with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@5c626da3 
-Loaded from file:/derby/lib/derby.jar
-java.vendor=Eclipse Adoptium
-java.runtime.version=17.0.4.1+1
-user.dir=/dbs
-os.name=Linux
-os.arch=amd64
-os.version=4.18.0-477.21.1.el8_8.x86_64
-derby.system.home=null
-derby.stream.error.field=java.lang.System.out
-Database Class Loader started - derby.database.classpath=''
-----
-
-Beyond that, notice how the application behaves the same way.
-The only variation compared to the dev mode is actually that the idempotent repository is now a derby database running in a container.
+As mentioned above, `quarkus-flyway` will automatically create the required database and tables for you.
 
 ==== Native mode
 
@@ -184,12 +142,14 @@ Check pods are running by executing:
 kubectl get pods
 ----
 
-We expect a list of two pods similar to below:
+We expect a list of three pods similar to below.
+Note that the `camel-quarkus-examples-jpa-idempotent-repository-flyway` pod will transition from `running` to `completed`, after it has completed initializing the MariaDB database.
 
 [source,shell]
 ----
 NAME                                                              READY   STATUS    RESTARTS      AGE
-camel-quarkus-examples-derby-database-deployment-76f6dc9bdnwwxn   1/1     Running   0             23s
+camel-quarkus-examples-mariadb-database-deployment-76f6dc9bdnwwxn   1/1     Running   0             23s
+camel-quarkus-examples-jpa-idempotent-repository-flyway-in2q5n5   0/1     Completed   0              23s
 camel-quarkus-examples-jpa-idempotent-repository-7c74b9cf5ph68r   1/1     Running   1 (18s ago)   23s
 ----
 
@@ -205,8 +165,8 @@ To clean up do:
 [source,shell]
 ----
 kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-jpa-idempotent-repository
-kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-derby-database
-kubectl delete configmap -l app.kubernetes.io/name=camel-quarkus-examples-derby-database
+kubectl delete all -l job-name=camel-quarkus-examples-jpa-idempotent-repository-flyway-init
+kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-mariadb-database
 ----
 
 [NOTE]

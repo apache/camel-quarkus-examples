@@ -18,77 +18,105 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: camel-quarkus-examples-derby-database-deployment
+  name: camel-quarkus-examples-mariadb-database-deployment
   labels:
-    app.kubernetes.io/name: camel-quarkus-examples-derby-database
+    app.kubernetes.io/name: camel-quarkus-examples-mariadb-database
     app.kubernetes.io/version: 3.7.0-SNAPSHOT
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: camel-quarkus-examples-derby-database
+      app.kubernetes.io/name: camel-quarkus-examples-mariadb-database
       app.kubernetes.io/version: 3.7.0-SNAPSHOT
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: camel-quarkus-examples-derby-database
+        app.kubernetes.io/name: camel-quarkus-examples-mariadb-database
         app.kubernetes.io/version: 3.7.0-SNAPSHOT
     spec:
       containers:
-        - name: derby-database
-          # Use a default configured derby database for example purpose, think twice before deploying to production
-          image: az82/docker-derby:10.16
+        - name: mariadb-database
+          image: docker.io/mariadb:10.11
           ports:
-            - containerPort: 1527
+            - containerPort: 3306
+          env:
+            - name: MARIADB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: db-user
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-secret
+                  key: db-password
+            - name: MARIADB_DATABASE
+              value: my-db
+            - name: MARIADB_RANDOM_ROOT_PASSWORD
+              value: generate
           volumeMounts:
-            # The /derby-init folder contains the SQL init script to create the database, the table and the sequence
-            - name: derby-database-init-script-volume
-              mountPath: /derby-init
-            # The /dbs folder is where the actual database content is stored
-            - name: derby-database-data-volume
-              mountPath: /dbs
-          lifecycle:
-            postStart:
-              # Execute the SQL init script after the derby container has started
-              exec:
-                command: ["java", "-Djdbc.drivers=org.apache.derbbc.EmbeddedDriver", "org.apache.derby.tools.ij", "/derby-init/init.sql"]
+            # The /var/lib/mysql folder is where the actual database content is stored
+            - name: mariadb-database-data-volume
+              mountPath: /var/lib/mysql
       volumes:
-        # Create a volume in order to store the SQL init file
-        - name: derby-database-init-script-volume
-          configMap:
-              name: derby-database-init-script-config-map
-              defaultMode: 0744
         # Explicitly create an empty dir volume in order to ensure read/write access needed to store database files
-        - name: derby-database-data-volume
+        - name: mariadb-database-data-volume
           emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/name: camel-quarkus-examples-derby-database
+    app.kubernetes.io/name: camel-quarkus-examples-mariadb-database
     app.kubernetes.io/version: 3.7.0-SNAPSHOT
-  name: derby-database
+  name: mariadb-database
 spec:
   ports:
-    - name: derby
-      port: 1527
-      targetPort: 1527
+    - name: mariadb
+      port: 3306
+      targetPort: 3306
   selector:
-    app.kubernetes.io/name: camel-quarkus-examples-derby-database
+    app.kubernetes.io/name: camel-quarkus-examples-mariadb-database
     app.kubernetes.io/version: 3.7.0-SNAPSHOT
   type: ClusterIP
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
-  name: derby-database-init-script-config-map
   labels:
-    app.kubernetes.io/name: camel-quarkus-examples-derby-database
+    app.kubernetes.io/name: camel-quarkus-examples-mariadb-database
     app.kubernetes.io/version: 3.7.0-SNAPSHOT
+  name: mariadb-secret
+type: Opaque
 data:
-  init.sql: |
-    CONNECT 'jdbc:derby:my-db;create=true';
-    CREATE TABLE CAMEL_MESSAGEPROCESSED ( processorName VARCHAR(255), messageId VARCHAR(100), createdAt TIMESTAMP, PRIMARY KEY (processorName, messageId) );
-    CREATE SEQUENCE CAMEL_MESSAGEPROCESSED_SEQ AS INT MAXVALUE 999999 CYCLE;
+  # mariadb
+  db-user: bWFyaWFkYg==
+  # s3cr3t
+  db-password: czNjcjN0
 ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: camel-quarkus-examples-jpa-idempotent-repository-flyway-init
+spec:
+  completionMode: NonIndexed
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: camel-quarkus-examples-jpa-idempotent-repository-flyway-init
+        app.kubernetes.io/version: 3.7.0-SNAPSHOT
+    spec:
+      containers:
+        - env:
+            - name: DB_HOSTNAME
+              value: mariadb-database
+            - name: JAVA_APP_JAR
+              value: /deployments/quarkus-run.jar
+            - name: QUARKUS_INIT_AND_EXIT
+              value: "true"
+            - name: QUARKUS_FLYWAY_ENABLED
+              value: "true"
+          image: camel-quarkus-examples-jpa-idempotent-repository:3.7.0-SNAPSHOT
+          name: camel-quarkus-examples-jpa-idempotent-repository-flyway-init
+      restartPolicy: OnFailure
+      serviceAccountName: camel-quarkus-examples-jpa-idempotent-repository
