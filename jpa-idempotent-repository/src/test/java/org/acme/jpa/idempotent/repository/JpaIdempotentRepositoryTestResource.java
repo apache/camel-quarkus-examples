@@ -16,28 +16,25 @@
  */
 package org.acme.jpa.idempotent.repository;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusTest;
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.Test;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import org.apache.camel.util.CollectionHelper;
 
-import static org.awaitility.Awaitility.await;
+/**
+ * Force timer configuration for faster test assertions
+ */
+public class JpaIdempotentRepositoryTestResource implements QuarkusTestResourceLifecycleManager {
+    @Override
+    public Map<String, String> start() {
+        return CollectionHelper.mapOf(
+                "timer.period", "100",
+                "timer.delay", "0",
+                "timer.repeatCount", "4");
+    }
 
-@QuarkusTest
-@QuarkusTestResource(JpaIdempotentRepositoryTestResource.class)
-public class JpaIdempotentRepositoryTest {
-    @Test
-    public void contentSetShouldStartWithOneThreeFive() {
-        await().atMost(30L, TimeUnit.SECONDS).pollDelay(500, TimeUnit.MILLISECONDS).until(() -> {
-            String contentSet = RestAssured
-                    .when()
-                    .get("/content-set")
-                    .then()
-                    .extract().asString();
-
-            return contentSet != null && contentSet.startsWith("1,3,5");
-        });
+    @Override
+    public void stop() {
+        // Noop
     }
 }
