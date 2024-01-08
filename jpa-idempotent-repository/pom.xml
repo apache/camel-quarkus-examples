@@ -100,16 +100,21 @@
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-timer</artifactId>
         </dependency>
-        <!-- Note we added a dependency to quarkus-h2 to have an in memory 
-            database during dev mode -->
+
+        <!-- Use MariaDB for the database -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-h2</artifactId>
+            <artifactId>quarkus-jdbc-mariadb</artifactId>
         </dependency>
-        <!-- While in test and prod we use a derby database -->
+
+        <!-- Flyway is used to set up the MariaDB database -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-jdbc-derby</artifactId>
+            <artifactId>quarkus-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-mysql</artifactId>
         </dependency>
 
         <!-- Test -->
