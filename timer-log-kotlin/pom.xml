@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Timer to Log Kotlin</description>
 
     <properties>
-        <quarkus.platform.version>3.7.1</quarkus.platform.version>
+        <quarkus.platform.version>3.8.0.CR1</quarkus.platform.version>
         <camel-quarkus.platform.version>3.8.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
