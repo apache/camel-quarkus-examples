@@ -1,0 +1,102 @@
+= Artemis to ElasticSearch: A Camel Quarkus example
+:cq-example-description: An example that shows how the message is consumed from the Apache Artemis broker using MQTT protocol, transformed and loaded into ElasticSearch
+
+{cq-description}
+
+This example shows how to connect ActiveMQ Broker to Elasticsearch service, create index and send data to it.
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Prerequisites:
+
+In order to send a message from Artemis Broker to Elasticsearch you need to start two services:
+
+1) ActiveMQ Artemis - message broker that is connected to a paho client.
+
+2) Elasticsearch - database that stores your data.
+
+You can also use podman instead of docker for all the steps below.
+
+== Run the containers:
+
+=== Run the Artemis container:
+
+[source,shell]
+----
+docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 61616:61616 -p 8161:8161 -p 1883:1883 --name artemis quay.io/artemiscloud/activemq-artemis-broker:1.0.26
+----
+
+Now you can access Artemis on localhost:8161
+
+=== Run the Elasticsearch container:
+
+[source,shell]
+----
+docker run -d --rm --name elasticsearch -p 9200:9200 -p 9300:9300 -it -m 4GB -e "discovery.type=single-node" -e "xpack.security.enabled=false" docker.io/elastic/elasticsearch:8.13.2
+----
+
+Now you can access Elasticsearch on localhost:9200
+
+
+== Start in the Development mode
+
+[source,shell]
+----
+mvn clean compile quarkus:dev
+----
+
+== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+=== JVM mode:
+
+[source,shell]
+----
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
+----
+
+=== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+mvn clean package -Pnative
+./target/*-runner
+----
+
+=== Send and retrieve messages:
+
+==== Send a message to the Artemis broker:
+
+----
+curl -d 'my cool device' -H 'Content-Type: text/plain' localhost:8080/devices
+----
+
+NOTE: You may need to wait a few seconds for the data to be persisted before it can be retrieved.
+
+==== Retrieve from Elasticsearch:
+
+----
+curl localhost:8080/devices
+----
+
+=== Stop the containers:
+
+----
+docker stop elasticsearch
+docker stop artemis
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
