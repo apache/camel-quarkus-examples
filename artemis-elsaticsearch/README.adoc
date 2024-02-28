@@ -1,0 +1,20 @@
+= Artemis to ElasticSearch
+:cq-example-description: An example that shows how the message is consumed from the Apache Artemis broker using MQTT protocol, transformed and loaded into ElasticSearch
+
+{cq-description}
+
+This example will connect to the Apache Artemis broker, consume the data,
+transform it and load into ElasticSearch database
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Start in the Development mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
