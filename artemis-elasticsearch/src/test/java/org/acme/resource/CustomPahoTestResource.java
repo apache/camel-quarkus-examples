@@ -42,9 +42,6 @@ public class CustomPahoTestResource implements QuarkusTestResourceLifecycleManag
         container.start();
 
         return Map.of(
-                //                "artemis.host", container.getHost(),
-                //                "artemis.admin.http", "http://" + container.getHost() + ":" + container.getMappedPort(8161),
-                //                "artemis.port.mqtt", String.valueOf(container.getMappedPort(1883)),
                 "camel.component.paho.brokerUrl", "tcp://" + container.getHost() + ":" + container.getMappedPort(1883));
 
     }

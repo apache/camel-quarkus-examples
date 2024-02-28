@@ -48,7 +48,7 @@ Now you can access Elasticsearch on localhost:9200
 
 == Start the quarkus application:
 
-=== In jvm mode:
+=== JVM mode:
 
 [source,shell]
 ----
@@ -60,12 +60,6 @@ mvn clean package
 java -Delasticsearch.host=localhost:9200 -jar target/quarkus-app/quarkus-run.jar
 ----
 
-=== In development mode:
-
-[source, shell]
-----
-mvn clean verify quarkus:dev
-----
 
 == Send and retrieve messages:
 
@@ -88,7 +82,6 @@ curl -X GET "localhost:9200/devices/_msearch?pretty" -H 'Content-Type: applicati
 == Stop the containers:
 
 ----
-docker stop kibana
 docker stop elasticsearch
 docker stop artemis
 ----

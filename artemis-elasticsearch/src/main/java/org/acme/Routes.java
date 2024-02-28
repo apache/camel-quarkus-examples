@@ -36,7 +36,6 @@ public class Routes extends RouteBuilder {
 
         //get message from pojo class
         String body = exchange.getMessage().getBody(String.class);
-        //System.out.println(body);
         map.put("devices", body);
 
         //convert map to json string
