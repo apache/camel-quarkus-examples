@@ -22,13 +22,13 @@
 
     <artifactId>camel-quarkus-examples-health</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.8.0</version>
+    <version>3.8.1</version>
 
     <name>Camel Quarkus :: Examples :: Health</name>
     <description>Camel Quarkus Example :: Health Check</description>
 
     <properties>
-        <quarkus.platform.version>3.8.1</quarkus.platform.version>
+        <quarkus.platform.version>3.8.3</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>

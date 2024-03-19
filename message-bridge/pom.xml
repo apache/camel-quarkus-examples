@@ -22,13 +22,13 @@
 
     <artifactId>camel-quarkus-examples-message-bridge</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.8.0</version>
+    <version>3.8.1</version>
 
     <name>Camel Quarkus :: Examples :: Message Bridge</name>
     <description>Camel Quarkus Example :: Configure XA Transactions and connection pooling</description>
 
     <properties>
-        <quarkus.platform.version>3.8.1</quarkus.platform.version>
+        <quarkus.platform.version>3.8.3</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>

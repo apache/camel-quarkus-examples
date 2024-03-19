@@ -22,17 +22,17 @@
 
     <artifactId>camel-quarkus-examples-timer-log-main</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.8.0</version>
+    <version>3.8.1</version>
 
     <name>Camel Quarkus :: Examples :: Timer Log Main</name>
     <description>Camel Quarkus Example :: Timer to Log Main</description>
 
     <properties>
-        <quarkus.platform.version>3.8.1</quarkus.platform.version>
+        <quarkus.platform.version>3.8.3</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <!-- TODO: https://github.com/apache/camel-quarkus/issues/3156 -->
-        <camel-quarkus.version>3.8.0</camel-quarkus.version>
+        <camel-quarkus.version>3.8.1</camel-quarkus.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
