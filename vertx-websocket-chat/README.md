@@ -1,0 +1,57 @@
+= Vertx-Websocket Chat: A Camel Quarkus example
+:cq-example-description: Demonstration of how to configure a WebSocket server and interact with connected peers.
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Start in the Development mode
+
+You can run your application in dev mode that enables live coding using:
+
+[source,shell]
+----
+$ mvn compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
+workspace. Any modifications in your project will automatically take effect in the running application.You can find the application running http://localhost:8080
+
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+As we run the example in Quarkus Dev Mode, you can connect to the websocket by providing a username.Once you connect, you can see a chat room where you can send/receive messages to a specific peer or all the peers connected.
+
+=== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+==== JVM mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+----
+
+==== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ mvn clean package -Pnative
+$ ./target/*-runner
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

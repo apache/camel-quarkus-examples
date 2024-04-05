@@ -1,0 +1,201 @@
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Vert.x WebSocket Chat Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div id="toast-body" class="toast-body">
+                Chat session already exists for this user!
+            </div>
+        </div>
+    </div>
+
+    <div class="container" style="margin-top: 30px">
+        <div class="container">
+            <h4>Camel Quarkus Vert.x WebSocket Chat</h4>
+        </div>
+
+        <div class="container" id="connect-dialog">
+            <div class="mb-3">
+                <div class="mb-3">
+                    <label for="userName" class="col-form-label">Enter your chat user name</label>
+                    <input type="text" class="form-control" id="userName" maxlength="50" style="width:25%"/>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" id="connect" onclick="startSession()">Connect</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="chat-dialog" class="container d-none">
+            <div class="mb-3">
+                <div class="col-auto">
+                    <textarea class="form-control"  rows="10" cols="100" readonly id="chat"></textarea>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="mb-3">
+                    <label for="message" class="col-form-label">Message</label>
+                    <input type="text" class="form-control"  id="message" style="width:50%"/>
+                </div>
+                <div class="dropdown">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="sending" onclick="listUsers()">Send</button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="userList">
+        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <script>
+        const userName = $("#userName");
+        const chat = $("#chat");
+        const message = $("#message");
+        const connectDialog = $("#connect-dialog");
+        const chatDialog = $("#chat-dialog");
+
+        userName.val("");
+        chat.val("");
+        message.val("");
+
+        $(userName).keypress(function(event){
+            if(event.keyCode == 13 || event.which == 13) {
+                startSession();
+            }
+        });
+
+        $(message).keypress(function(event){
+            if(event.keyCode == 13 || event.which == 13) {
+                sendMessage();
+            }
+        });
+
+        function startSession() {
+            const userNameValue = userName.val().trim();
+            if (userNameValue.length) {
+                socket = new WebSocket("ws://" + location.host + "/chat/" + userNameValue);
+                socket.addEventListener("message", (event) => {
+                    if (!event.data.toString().startsWith("<<<<< " + userName.val() + ":")) {
+                        chat.val(chat.val() + event.data + "\n");
+                        scrollChat();
+                    }
+                });
+
+                socket.addEventListener("error", (event) => {
+                  console.log("WebSocket error: ", event);
+                });
+
+                socket.addEventListener("open", (event) => {
+                    connectDialog.addClass('d-none');
+                    chatDialog.removeClass('d-none');
+                });
+
+                socket.addEventListener("close", (event) => {
+                    if (event.reason === 'SESSION_ALREADY_EXISTS') {
+                        connectDialog.removeClass('d-none');
+                        chatDialog.addClass('d-none');
+                        bootstrap.Toast.getOrCreateInstance($('#liveToast')).show();
+                    }
+                });
+            }
+        }
+
+        function sendMessage() {
+            if (message.val().length) {
+                socket.send(message.val());
+                chat.val(chat.val() + ">>>>> " + userName.val() + ": " + message.val() + "\n");
+                message.val("");
+                scrollChat();
+            }
+        }
+
+        function sendDM(user){
+            let recipient = user;
+
+            let data = {
+            recipientName: recipient,
+            messageContent: message.val()
+            };
+
+            if (recipient.length && message.length) {
+                socket.send(JSON.stringify(data));
+                chat.val(chat.val() + ">>>>> " + userName.val() + ": " + message.val() + "\n");
+                message.val("");
+                scrollChat();
+            }
+        }
+
+        async function getConnectedUsers() {
+            try{
+                const response = await fetch('/peers');
+                const peers = await response.json();
+                return peers;
+            }catch(error){
+                console.log('Error',error);
+                throw error;
+            }
+        }
+        
+        async function listUsers() {
+            const currentUser = userName.val().trim();
+            let userList = document.getElementById("userList");
+            userList.innerHTML = ""; 
+            try {
+                let connectedUsers = await getConnectedUsers();
+                connectedUsers.forEach(function(user) {
+                    if (user !== currentUser){
+                        let listItem = document.createElement("button");
+                        listItem.classList.add("dropdown-item");
+                        listItem.innerText = user;
+                        listItem.addEventListener("click", function() {
+                            sendDM(user);
+                        });
+                        userList.appendChild(listItem);
+                    }
+                });
+
+                let sendAll = document.createElement("button");
+                sendAll.classList.add("dropdown-item");
+                sendAll.innerText = "Send All";
+                sendAll.addEventListener("click", sendMessage);
+                userList.appendChild(sendAll);
+            } catch(error) {
+                console.error('Error populating user list:', error);
+            }
+        }
+
+        function scrollChat() {
+            chat.scrollTop($(chat)[0].scrollHeight);
+        }
+    </script>
+</body>
+</html>
