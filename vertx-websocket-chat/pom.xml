@@ -22,22 +22,19 @@
 
     <artifactId>camel-quarkus-examples-vertx-websocket-chat</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.9.0</version>
+    <version>3.10.0-SNAPSHOT</version>
 
     <name>Camel Quarkus :: Examples :: Vertx-Websocket chat</name>
-    <description>Camel Quarkus Example ::Implementing Websocket</description>
+    <description>Camel Quarkus Example :: Implementing Websocket</description>
 
     <properties>
-        <quarkus.platform.version>3.9.1</quarkus.platform.version>
-        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
+        <quarkus.platform.version>3.9.0</quarkus.platform.version>
+        <camel-quarkus.platform.version>3.10.0-SNAPSHOT</camel-quarkus.platform.version>
 
-        <!-- TODO: https://github.com/apache/camel-quarkus/issues/3156 -->
-        <camel-quarkus.version>3.9.0</camel-quarkus.version>
-
-        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <camel-quarkus.platform.group-id>${quarkus.platform.group-id}</camel-quarkus.platform.group-id>
-        <camel-quarkus.platform.artifact-id>quarkus-camel-bom</camel-quarkus.platform.artifact-id>
+        <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
+        <camel-quarkus.platform.artifact-id>camel-quarkus-bom</camel-quarkus.platform.artifact-id>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -53,8 +50,6 @@
         <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
-
-        <quarkus.runner>${project.build.directory}/quarkus-app/quarkus-run.jar</quarkus.runner>
     </properties>
 
     <dependencyManagement>
@@ -71,13 +66,6 @@
                 <groupId>${camel-quarkus.platform.group-id}</groupId>
                 <artifactId>${camel-quarkus.platform.artifact-id}</artifactId>
                 <version>${camel-quarkus.platform.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel.quarkus</groupId>
-                <artifactId>camel-quarkus-bom-test</artifactId>
-                <version>${camel-quarkus.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -157,27 +145,16 @@
                     </configuration>
                 </plugin>
 
-                <!-- Move surefire:test to integration-test phase to be able to execute the runner JAR from a test -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>default-test</id>
-                            <goals>
-                                <goal>test</goal>
-                            </goals>
-                            <phase>integration-test</phase>
-                            <configuration>
-                                <failIfNoTests>false</failIfNoTests>
-                                <systemPropertyVariables>
-                                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                                    <quarkus.runner>${quarkus.runner}</quarkus.runner>
-                                </systemPropertyVariables>
-                            </configuration>
-                        </execution>
-                    </executions>
+                    <configuration>
+                        <failIfNoTests>false</failIfNoTests>
+                        <systemPropertyVariables>
+                            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        </systemPropertyVariables>
+                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -282,7 +259,6 @@
             </activation>
             <properties>
                 <quarkus.package.type>native</quarkus.package.type>
-                <quarkus.runner>${project.build.directory}/${project.artifactId}-${project.version}-runner</quarkus.runner>
             </properties>
             <build>
                 <plugins>
@@ -298,7 +274,6 @@
                                 <configuration>
                                     <systemPropertyVariables>
                                         <quarkus.package.type>${quarkus.package.type}</quarkus.package.type>
-                                        <quarkus.runner>${quarkus.runner}</quarkus.runner>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>

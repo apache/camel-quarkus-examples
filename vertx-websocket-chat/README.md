@@ -15,14 +15,13 @@ You can run your application in dev mode that enables live coding using:
 $ mvn compile quarkus:dev
 ----
 
-The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
-workspace. Any modifications in your project will automatically take effect in the running application.You can find the application running http://localhost:8080
-
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your workspace. Any modifications in your project will automatically take effect in the running application.You can find the application running http://localhost:8080
 
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
-As we run the example in Quarkus Dev Mode, you can connect to the websocket by providing a username.Once you connect, you can see a chat room where you can send/receive messages to a specific peer or all the peers connected.
+As we run the example in Quarkus Dev Mode, you can connect to the websocket by providing a username.Once you connect, you can see a chat room where you can send/receive messages.
+You can write your message in the message section and you will be able to send the message either to a specific peer or to all of the users conncected by clicking the dropdown of the send button.You can click on the peer of your choice from the list to send the message only to that speicific peer.On clicking Send All,you can send your message to all of the users connected locally.You'll also be able to see the conversation on your window.
 
 === Package and run the application
 
