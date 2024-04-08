@@ -100,8 +100,8 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/file-split-log-xml"
   },
   {
-    "title": "Vertx-Websocket chat",
-    "description": "Demonstration of how to configure a WebSocket server and interact with connected peers.",
+    "title": "Vertx-Websocket Chat",
+    "description": "Shows how to configure a WebSocket server and interact with connected peers.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/vertx-websocket-chat"
   }
 ]
