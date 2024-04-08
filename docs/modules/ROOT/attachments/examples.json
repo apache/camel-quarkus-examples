@@ -98,5 +98,10 @@
     "title": "Tokenize a CSV file",
     "description": "Shows how to define a Camel route in XML for tokenizing a CSV a file.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/file-split-log-xml"
+  },
+  {
+    "title": "Vertx-Websocket Chat",
+    "description": "Shows how to configure a WebSocket server and interact with connected peers.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/vertx-websocket-chat"
   }
 ]
