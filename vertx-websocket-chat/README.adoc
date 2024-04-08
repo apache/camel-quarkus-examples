@@ -1,5 +1,5 @@
 = Vertx-Websocket Chat: A Camel Quarkus example
-:cq-example-description: Demonstration of how to configure a WebSocket server and interact with connected peers.
+:cq-example-description: An example that shows how to configure a WebSocket server and interact with connected peers.
 
 {cq-description}
 
