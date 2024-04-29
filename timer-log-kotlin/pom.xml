@@ -297,7 +297,7 @@
                 </property>
             </activation>
             <properties>
-                <quarkus.package.type>native</quarkus.package.type>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
             </properties>
             <build>
                 <plugins>
@@ -312,7 +312,7 @@
                                 </goals>
                                 <configuration>
                                     <systemPropertyVariables>
-                                        <quarkus.package.type>${quarkus.package.type}</quarkus.package.type>
+                                        <quarkus.native.enabled>${quarkus.native.enabled}</quarkus.native.enabled>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>

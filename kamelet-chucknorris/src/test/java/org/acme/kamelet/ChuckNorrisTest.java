@@ -34,7 +34,7 @@ import static org.awaitility.Awaitility.await;
 @QuarkusTest
 public class ChuckNorrisTest {
 
-    private static final String PACKAGE_TYPE = System.getProperty("quarkus.package.type");
+    private static final String NATIVE_ENABLED = System.getProperty("quarkus.native.enabled");
 
     @Test
     public void testTimerLogMain() throws IOException {
@@ -85,7 +85,7 @@ public class ChuckNorrisTest {
     }
 
     private static boolean isNative() {
-        return PACKAGE_TYPE != null && PACKAGE_TYPE.equals("native");
+        return NATIVE_ENABLED != null && NATIVE_ENABLED.equals("true");
     }
 
     static final class QuarkusRunnerExecutor extends QuarkusProcessExecutor {
