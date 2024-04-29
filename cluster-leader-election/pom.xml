@@ -269,7 +269,7 @@
                 </property>
             </activation>
             <properties>
-                <quarkus.package.type>native</quarkus.package.type>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
             </properties>
             <build>
                 <plugins>
@@ -284,7 +284,7 @@
                                 </goals>
                                 <configuration>
                                     <systemPropertyVariables>
-                                        <quarkus.package.type>${quarkus.package.type}</quarkus.package.type>
+                                        <quarkus.native.enabled>${quarkus.native.enabled}</quarkus.native.enabled>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>
@@ -292,20 +292,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <!-- TODO: https://github.com/apache/camel-quarkus/issues/5515 -->
-        <profile>
-            <id>native-disabled-github-ci</id>
-            <activation>
-                <property>
-                    <name>env.CI</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <properties>
-                <quarkus.package.type>fast-jar</quarkus.package.type>
-                <skipITs>true</skipITs>
-            </properties>
         </profile>
         <profile>
             <id>kubernetes</id>
