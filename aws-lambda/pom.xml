@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.camel.quarkus.examples</groupId>
     <artifactId>camel-quarkus-examples-aws-lambda</artifactId>
-    <version>3.10.0-SNAPSHOT</version>
+    <version>3.10.0</version>
 
     <name>Camel Quarkus :: Examples :: AWS Lambda</name>
     <description>Camel Quarkus Example :: Deploying a Camel Route in AWS Lambda</description>

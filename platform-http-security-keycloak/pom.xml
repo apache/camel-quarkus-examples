@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-platform-http-security-keycloak</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.10.0-SNAPSHOT</version>
+    <version>3.10.0</version>
 
     <name>Camel Quarkus :: Examples :: Platform HTTP Security Keycloak</name>
     <description>Camel Quarkus Example :: Platform HTTP Security Keycloak</description>
