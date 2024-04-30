@@ -28,8 +28,8 @@
     <description>Camel Quarkus Example :: Timer to Log Main</description>
 
     <properties>
-        <quarkus.platform.version>3.10.0.CR1</quarkus.platform.version>
-        <camel-quarkus.platform.version>3.10.0-SNAPSHOT</camel-quarkus.platform.version>
+        <quarkus.platform.version>3.10.0</quarkus.platform.version>
+        <camel-quarkus.platform.version>3.11.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <!-- TODO: https://github.com/apache/camel-quarkus/issues/3156 -->
         <camel-quarkus.version>${camel-quarkus.platform.version}</camel-quarkus.version>
