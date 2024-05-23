@@ -80,6 +80,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/observability"
   },
   {
+    "title": "OpenAPI Contract First",
+    "description": "Shows how to run with Contract First OpenAPI.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/openapi-contract-first"
+  },
+  {
     "title": "Platform HTTP security with Keycloak",
     "description": "Shows how to secure platform HTTP with Keycloak",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/platform-http-security-keycloak"
