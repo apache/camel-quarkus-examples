@@ -44,7 +44,7 @@
         <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
 
         <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
-        <impsort-maven-plugin.version>1.9.0</impsort-maven-plugin.version>
+        <impsort-maven-plugin.version>1.10.0</impsort-maven-plugin.version>
         <license-maven-plugin.version>4.5</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
@@ -52,7 +52,7 @@
         <maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
 
         <quarkus-artemis-jms.version>3.3.0</quarkus-artemis-jms.version>
-        <assertj.version>3.25.3</assertj.version>
+        <assertj.version>3.26.0</assertj.version>
     </properties>
 
     <dependencyManagement>
