@@ -22,22 +22,22 @@
 
     <artifactId>camel-quarkus-examples-kamelet-chucknorris</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.11.0</version>
+    <version>3.12.0-SNAPSHOT</version>
 
     <name>Camel Quarkus :: Examples :: Kamelet Chuck Norris</name>
     <description>Camel Quarkus Example :: Kamelet Chuck Norris</description>
 
     <properties>
         <quarkus.platform.version>3.11.0</quarkus.platform.version>
-        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
+        <camel-quarkus.platform.version>3.12.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <!-- TODO: https://github.com/apache/camel-quarkus/issues/3156 -->
-        <camel-quarkus.version>3.11.0</camel-quarkus.version>
+        <camel-quarkus.version>${camel-quarkus.platform.version}</camel-quarkus.version>
 
-        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <camel-quarkus.platform.group-id>${quarkus.platform.group-id}</camel-quarkus.platform.group-id>
-        <camel-quarkus.platform.artifact-id>quarkus-camel-bom</camel-quarkus.platform.artifact-id>
+        <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
+        <camel-quarkus.platform.artifact-id>camel-quarkus-bom</camel-quarkus.platform.artifact-id>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
