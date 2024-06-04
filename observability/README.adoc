@@ -44,7 +44,7 @@ First using Camel micrometer component (see link:src/main/java/org/acme/observab
 
 Which will count each call to the `platform-http:/greeting-provider` endpoint.
 
-The second approach is to benefit from CDI dependnecy injection of the `MeterRegistry`:
+The second approach is to benefit from CDI dependency injection of the `MeterRegistry`:
 
 [source, java]
 ----
@@ -162,7 +162,7 @@ Then configure the OpenTelemetry exporter in `application.properties`:
 quarkus.otel.exporter.otlp.traces.endpoint = http://${TELEMETRY_COLLECTOR_COLLECTOR_SERVICE_HOST:localhost}:4317
 ----
 
-NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus Opentelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
+NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus OpenTelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
 
 To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
 
