@@ -49,6 +49,7 @@ updates:
       - "/openapi-contract-first"
       - "/platform-http-security-keycloak"
       - "/rest-json"
+      - "/saga"
       - "/timer-log-kotlin"
       - "/timer-log-main"
       - "/timer-log"

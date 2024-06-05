@@ -22,7 +22,7 @@ int groupId = 0
 
 // Distribute example projects across a bounded set of test groups and output as JSON
 new File(".").eachFileRecurse { file ->
-    if (file.getName() == "pom.xml") {
+    if (file.getName() == "pom.xml" && file.getParentFile().getParentFile().getName() == ".") {
         if (GROUPS[groupId] == null) {
             GROUPS[groupId] = [:]
             GROUPS[groupId].name = "group-${String.format("%02d", groupId + 1)}"

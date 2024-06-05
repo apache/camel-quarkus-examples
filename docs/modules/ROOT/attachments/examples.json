@@ -95,6 +95,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/rest-json"
   },
   {
+    "title": "Saga and LRA",
+    "description": "Shows how to use saga and lra",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/saga"
+  },
+  {
     "title": "Timer Hello World",
     "description": "Uses the Camel timer component to output a Hello world message to the console",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log"
