@@ -46,6 +46,7 @@ updates:
       - "/kamelet-chucknorris"
       - "/message-bridge"
       - "/observability"
+      - "/openapi-contract-first"
       - "/platform-http-security-keycloak"
       - "/rest-json"
       - "/timer-log-kotlin"
