@@ -44,7 +44,7 @@
         <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
         <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
 
-        <formatter-maven-plugin.version>2.24.0</formatter-maven-plugin.version>
+        <formatter-maven-plugin.version>2.24.1</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.10.0</impsort-maven-plugin.version>
         <license-maven-plugin.version>4.5</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
