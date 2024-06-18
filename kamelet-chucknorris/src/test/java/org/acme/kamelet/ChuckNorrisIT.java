@@ -16,8 +16,10 @@
  */
 package org.acme.kamelet;
 
+import io.quarkus.test.junit.DisabledOnIntegrationTest;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
+@DisabledOnIntegrationTest("https://github.com/apache/camel-quarkus/issues/6204")
 @QuarkusIntegrationTest
 class ChuckNorrisIT extends ChuckNorrisTest {
 
