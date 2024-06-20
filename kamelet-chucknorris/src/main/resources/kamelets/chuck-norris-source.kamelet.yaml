@@ -54,6 +54,6 @@ spec:
         period: "{{period}}"
       steps:
         - to: "https://api.chucknorris.io/jokes/random?category=dev"
-        - set-body:
+        - setBody:
             jsonpath: "$.value"
         - to: "kamelet:sink"
