@@ -49,7 +49,7 @@
         <impsort-maven-plugin.version>1.10.0</impsort-maven-plugin.version>
         <license-maven-plugin.version>4.5</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>3.4.1</maven-jar-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.3.0</maven-surefire-plugin.version>
     </properties>
