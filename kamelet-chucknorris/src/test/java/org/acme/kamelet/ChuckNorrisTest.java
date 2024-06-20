@@ -26,13 +26,11 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import org.apache.camel.quarkus.test.support.process.QuarkusProcessExecutor;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.zeroturnaround.exec.StartedProcess;
 
 import static org.awaitility.Awaitility.await;
 
-@Disabled("https://github.com/apache/camel-quarkus/issues/6204")
 @QuarkusTest
 public class ChuckNorrisTest {
 
