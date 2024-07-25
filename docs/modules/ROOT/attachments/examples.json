@@ -115,6 +115,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/file-split-log-xml"
   },
   {
+    "title": "Unstructured Data Extraction with LangChain4j",
+    "description": "Shows how to convert unstructured text data to structured Java objects helped with a Large Language Model and LangChain4j",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/data-extract-langchain4j"
+  },
+  {
     "title": "Vertx-Websocket Chat",
     "description": "Shows how to configure a WebSocket server and interact with connected peers.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/vertx-websocket-chat"
