@@ -18,7 +18,7 @@ package org.acme.jpa.idempotent.repository;
 
 import java.util.concurrent.TimeUnit;
 
-import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 import static org.awaitility.Awaitility.await;
 
 @QuarkusTest
-@QuarkusTestResource(JpaIdempotentRepositoryTestResource.class)
+@WithTestResource(JpaIdempotentRepositoryTestResource.class)
 public class JpaIdempotentRepositoryTest {
     @Test
     public void contentSetShouldStartWithOneThreeFive() {
