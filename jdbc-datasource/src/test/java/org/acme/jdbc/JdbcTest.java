@@ -18,7 +18,7 @@ package org.acme.jdbc;
 
 import java.util.concurrent.TimeUnit;
 
-import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import static org.awaitility.Awaitility.await;
 
 @QuarkusTest
-@QuarkusTestResource(PostgresSourceDatabaseTestResource.class)
-@QuarkusTestResource(PostgresTargetDatabaseTestResource.class)
+@WithTestResource(PostgresSourceDatabaseTestResource.class)
+@WithTestResource(PostgresTargetDatabaseTestResource.class)
 public class JdbcTest {
 
     @Test
