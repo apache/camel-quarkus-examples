@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-vertx-websocket-chat</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.13.0-SNAPSHOT</version>
+    <version>3.13.0</version>
 
     <name>Camel Quarkus :: Examples :: Vertx-Websocket chat</name>
     <description>Camel Quarkus Example :: Implementing Websocket</description>

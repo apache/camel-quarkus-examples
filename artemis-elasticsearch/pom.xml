@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-artemis-elasticsearch</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.12.0</version>
+    <version>3.13.0</version>
 
     <name>Camel Quarkus :: Examples :: Artemis ElasticSearch</name>
     <description>Camel Quarkus Example :: Artemis ElasticSearch</description>
