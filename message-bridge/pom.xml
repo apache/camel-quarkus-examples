@@ -125,12 +125,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.artemis</groupId>
-            <artifactId>quarkus-test-artemis</artifactId>
-            <version>${quarkus-artemis-jms.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
             <scope>test</scope>
