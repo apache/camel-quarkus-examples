@@ -20,7 +20,7 @@ package org.acme;
 import java.io.IOException;
 import java.time.Duration;
 
-import io.quarkus.test.common.WithTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.acme.resource.CustomPahoTestResource;
 import org.acme.resource.ElasticSearchTestResource;
@@ -31,8 +31,8 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
-@WithTestResource(CustomPahoTestResource.class)
-@WithTestResource(ElasticSearchTestResource.class)
+@QuarkusTestResource(CustomPahoTestResource.class)
+@QuarkusTestResource(ElasticSearchTestResource.class)
 class ElasticSearchTest {
 
     @Test

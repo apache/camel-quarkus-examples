@@ -19,7 +19,7 @@ package org.acme;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import io.quarkus.test.common.WithTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import org.awaitility.Awaitility;
@@ -29,7 +29,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
-@WithTestResource(H2DatabaseTestResource.class)
+@QuarkusTestResource(H2DatabaseTestResource.class)
 public class JtaTest {
     @Test
     public void testXA() {
