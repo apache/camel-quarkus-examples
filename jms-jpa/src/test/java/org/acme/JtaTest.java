@@ -19,7 +19,6 @@ package org.acme;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import io.quarkus.artemis.test.ArtemisTestResource;
 import io.quarkus.test.common.WithTestResource;
 import io.quarkus.test.h2.H2DatabaseTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -31,7 +30,6 @@ import static org.hamcrest.Matchers.is;
 
 @QuarkusTest
 @WithTestResource(H2DatabaseTestResource.class)
-@WithTestResource(ArtemisTestResource.class)
 public class JtaTest {
     @Test
     public void testXA() {

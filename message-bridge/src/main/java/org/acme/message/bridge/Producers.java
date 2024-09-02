@@ -90,7 +90,7 @@ public class Producers {
      * @return    a new JmsComponent instance
      */
     @Identifier("amq")
-    JmsComponent amq(@Identifier("amqConnectionFactory") ConnectionFactory cf, JtaTransactionManager tm) {
+    JmsComponent amq(ConnectionFactory cf, JtaTransactionManager tm) {
         JmsComponent amq = new JmsComponent();
         amq.setConnectionFactory(cf);
         amq.setTransactionManager(tm);
