@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
-import io.quarkus.test.common.WithTestResource;
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import org.acme.message.bridge.resource.IBMMQTestResource;
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @QuarkusIntegrationTest
-@WithTestResource(IBMMQTestResource.class)
+@QuarkusTestResource(IBMMQTestResource.class)
 // The crash test will kill the app, so it must be executed last as there is no way to restart the application
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MessageBridgeITCase {
