@@ -30,7 +30,7 @@
     <description>Camel Quarkus Example :: JPA Idempotent Repository</description>
 
     <properties>
-        <quarkus.platform.version>3.14.0</quarkus.platform.version>
+        <quarkus.platform.version>3.14.1</quarkus.platform.version>
         <camel-quarkus.platform.version>3.15.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
