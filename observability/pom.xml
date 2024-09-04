@@ -103,8 +103,8 @@
             <artifactId>camel-quarkus-opentelemetry</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
