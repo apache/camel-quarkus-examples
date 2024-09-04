@@ -25,9 +25,11 @@ import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.WebSocket;
+import io.vertx.core.http.WebSocketClient;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 public class WebSocketRoutesTest {
@@ -43,21 +45,21 @@ public class WebSocketRoutesTest {
         CountDownLatch messageLatch = new CountDownLatch(2);
 
         Vertx vertx = Vertx.vertx();
-        HttpClient client = vertx.createHttpClient();
+        WebSocketClient client = vertx.createWebSocketClient();
         try {
             AtomicReference<WebSocket> bobWebSocketAtomicReference = new AtomicReference<>();
-            client.webSocket(userBob.getPort(), userBob.getHost(), userBob.getPath()).onSuccess(webSocket -> {
+            client.connect(userBob.getPort(), userBob.getHost(), userBob.getPath()).onSuccess(webSocket -> {
                 bobWebSocketAtomicReference.set(webSocket);
                 connectLatch.countDown();
             });
 
             AtomicReference<WebSocket> amyWebSocketAtomicReference = new AtomicReference<>();
-            client.webSocket(userAmy.getPort(), userAmy.getHost(), userAmy.getPath()).onSuccess(webSocket -> {
+            client.connect(userAmy.getPort(), userAmy.getHost(), userAmy.getPath()).onSuccess(webSocket -> {
                 amyWebSocketAtomicReference.set(webSocket);
                 connectLatch.countDown();
             });
 
-            connectLatch.await(5, TimeUnit.SECONDS);
+            assertTrue(connectLatch.await(5, TimeUnit.SECONDS));
 
             WebSocket bobWebSocket = bobWebSocketAtomicReference.get();
             bobWebSocket.handler(message -> {
@@ -76,7 +78,7 @@ public class WebSocketRoutesTest {
             bobWebSocket.write(Buffer.buffer("Hi Amy"));
             amyWebSocket.write(Buffer.buffer("Hi Bob"));
 
-            messageLatch.await(5, TimeUnit.SECONDS);
+            assertTrue(messageLatch.await(5, TimeUnit.SECONDS));
         } finally {
             if (client != null) {
                 client.close();
