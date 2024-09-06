@@ -78,13 +78,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>io.quarkiverse.artemis</groupId>
-                <artifactId>quarkus-artemis-bom</artifactId>
-                <version>${quarkiverse-artemis.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -112,6 +105,7 @@
         <dependency>
             <groupId>io.quarkiverse.artemis</groupId>
             <artifactId>quarkus-artemis-jms</artifactId>
+            <version>${quarkiverse-artemis.version}</version>
         </dependency>
 
         <!-- Test -->
