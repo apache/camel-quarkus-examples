@@ -51,7 +51,7 @@
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
 
-        <quarkus-artemis-jms.version>3.4.2</quarkus-artemis-jms.version>
+        <quarkiverse-artemis.version>3.4.2</quarkiverse-artemis.version>
         <assertj.version>3.26.3</assertj.version>
     </properties>
 
@@ -110,7 +110,7 @@
         <dependency>
             <groupId>io.quarkiverse.artemis</groupId>
             <artifactId>quarkus-artemis-jms</artifactId>
-            <version>${quarkus-artemis-jms.version}</version>
+            <version>${quarkiverse-artemis.version}</version>
         </dependency>
 
         <!-- Test -->
