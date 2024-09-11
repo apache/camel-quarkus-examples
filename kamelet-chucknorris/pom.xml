@@ -31,9 +31,6 @@
         <quarkus.platform.version>3.14.2</quarkus.platform.version>
         <camel-quarkus.platform.version>3.15.0-SNAPSHOT</camel-quarkus.platform.version>
 
-        <!-- TODO: https://github.com/apache/camel-quarkus/issues/3156 -->
-        <camel-quarkus.version>${camel-quarkus.platform.version}</camel-quarkus.version>
-
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
@@ -53,8 +50,6 @@
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
-
-        <quarkus.runner>${project.build.directory}/quarkus-app/quarkus-run.jar</quarkus.runner>
     </properties>
 
     <dependencyManagement>
@@ -119,12 +114,6 @@
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-integration-tests-process-executor-support</artifactId>
-            <version>${camel-quarkus.version}</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -166,27 +155,16 @@
                     </configuration>
                 </plugin>
 
-                <!-- Move surefire:test to integration-test phase to be able to execute the runner JAR from a test -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>default-test</id>
-                            <goals>
-                                <goal>test</goal>
-                            </goals>
-                            <phase>integration-test</phase>
-                            <configuration>
-                                <failIfNoTests>false</failIfNoTests>
-                                <systemPropertyVariables>
-                                    <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-                                    <quarkus.runner>${quarkus.runner}</quarkus.runner>
-                                </systemPropertyVariables>
-                            </configuration>
-                        </execution>
-                    </executions>
+                    <configuration>
+                        <failIfNoTests>false</failIfNoTests>
+                        <systemPropertyVariables>
+                            <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                        </systemPropertyVariables>
+                    </configuration>
                 </plugin>
 
                 <plugin>
@@ -291,7 +269,6 @@
             </activation>
             <properties>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
-                <quarkus.runner>${project.build.directory}/${project.artifactId}-${project.version}-runner</quarkus.runner>
             </properties>
             <build>
                 <plugins>
@@ -307,7 +284,6 @@
                                 <configuration>
                                     <systemPropertyVariables>
                                         <quarkus.native.enabled>${quarkus.native.enabled}</quarkus.native.enabled>
-                                        <quarkus.runner>${quarkus.runner}</quarkus.runner>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>
