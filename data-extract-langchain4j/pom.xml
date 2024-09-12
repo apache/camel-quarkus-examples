@@ -54,8 +54,9 @@
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
-        <quarkus-langchain4j-version>0.17.2</quarkus-langchain4j-version>
-        <wiremock-version>3.9.1</wiremock-version>
+
+        <quarkus-langchain4j.version>0.17.2</quarkus-langchain4j.version>
+        <wiremock.version>3.9.1</wiremock.version>
     </properties>
 
     <dependencyManagement>
@@ -64,7 +65,7 @@
             <dependency>
                 <groupId>io.quarkiverse.langchain4j</groupId>
                 <artifactId>quarkus-langchain4j-bom</artifactId>
-                <version>${quarkus-langchain4j-version}</version>
+                <version>${quarkus-langchain4j.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -131,7 +132,7 @@
         <dependency>
             <groupId>org.wiremock</groupId>
             <artifactId>wiremock-standalone</artifactId>
-            <version>${wiremock-version}</version>
+            <version>${wiremock.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
