@@ -65,11 +65,6 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kamelet-chucknorris"
   },
   {
-    "title": "Kotlin Hello World",
-    "description": "Shows how to define Camel routes using Kotlin programming language",
-    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-kotlin"
-  },
-  {
     "title": "Leader election in Kubernetes: A Camel Quarkus Master example",
     "description": "Shows how to use Camel master component.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cluster-leader-election"
