@@ -59,8 +59,7 @@ Let's atomically copy/move the transcript files to the input folder named `targe
 
 [source,shell]
 ----
-cp -rf src/test/resources/transcripts/ target/transcripts-tmp
-mv target/transcripts-tmp/*.json target/transcripts/
+./send-conversations-to-camel-route.sh
 ----
 
 The Camel route should output a log as below:
