@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Configure XA Transactions and connection pooling</description>
 
     <properties>
-        <quarkus.platform.version>3.15.0</quarkus.platform.version>
+        <quarkus.platform.version>3.15.1</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
