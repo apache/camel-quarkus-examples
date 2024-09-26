@@ -22,10 +22,11 @@ import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.DockerImageName;
 
 public class IBMMQTestResource implements QuarkusTestResourceLifecycleManager {
-    private static final String IMAGE_NAME = "icr.io/ibm-messaging/mq:9.3.2.1-r1";
+    private static final String IMAGE_NAME = "icr.io/ibm-messaging/mq:9.4.0.5-r1";
     private static final int PORT = 1414;
     private static final String QUEUE_MANAGER_NAME = "QM1";
     private static final String USER = "app";
@@ -39,8 +40,9 @@ public class IBMMQTestResource implements QuarkusTestResourceLifecycleManager {
                 .withExposedPorts(PORT)
                 .withEnv(Map.of(
                         "LICENSE", ConfigProvider.getConfig().getValue("ibm.mq.container.license", String.class),
-                        "MQ_QMGR_NAME", QUEUE_MANAGER_NAME,
-                        "MQ_APP_PASSWORD", PASSWORD))
+                        "MQ_QMGR_NAME", QUEUE_MANAGER_NAME))
+                .withCopyToContainer(Transferable.of(PASSWORD), "/run/secrets/mqAdminPassword")
+                .withCopyToContainer(Transferable.of(PASSWORD), "/run/secrets/mqAppPassword")
                 // AMQ5806I is a message code for queue manager start
                 .waitingFor(Wait.forLogMessage(".*AMQ5806I.*", 1));
         container.start();
