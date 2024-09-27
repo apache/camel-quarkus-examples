@@ -35,8 +35,7 @@ public class Routes extends RouteBuilder {
         // Consumes file documents that contain conversation transcripts (JSON format)
         from("file:target/transcripts")
                 .log("A document has been received by the camel-quarkus-file extension: ${body}")
-                // Retrieves the conversation content from the JSON field named "content"
-                .setBody(jsonpath("$.content"))
+                .setHeader("expectedDateFormat", constant("YYYY-MM-DD"))
                 // The CustomPojoExtractionService transforms the conversation transcript into a CustomPojoExtractionService.CustomPojo
                 .bean(customPojoExtractionService)
                 // Store extracted CustomPojoExtractionService.CustomPojos objects into the CustomPojoStore for later inspection
