@@ -22,19 +22,19 @@
 
     <artifactId>camel-quarkus-examples-fhir</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.15.0</version>
+    <version>3.16.0-SNAPSHOT</version>
 
     <name>Camel Quarkus :: Examples :: FHIR</name>
     <description>Camel Quarkus Example :: FHIR</description>
 
     <properties>
         <quarkus.platform.version>3.15.1</quarkus.platform.version>
-        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
+        <camel-quarkus.platform.version>3.16.0-SNAPSHOT</camel-quarkus.platform.version>
 
-        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <camel-quarkus.platform.group-id>${quarkus.platform.group-id}</camel-quarkus.platform.group-id>
-        <camel-quarkus.platform.artifact-id>quarkus-camel-bom</camel-quarkus.platform.artifact-id>
+        <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
+        <camel-quarkus.platform.artifact-id>camel-quarkus-bom</camel-quarkus.platform.artifact-id>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -44,14 +44,15 @@
         <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
 
         <formatter-maven-plugin.version>2.24.1</formatter-maven-plugin.version>
+        <groovy-maven-plugin.version>2.1.1</groovy-maven-plugin.version>
         <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
         <license-maven-plugin.version>4.5</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.1</maven-surefire-plugin.version>
         
-        <hapi-structures-v24-version>2.3</hapi-structures-v24-version>
+        <hapi-structures-v24.version>2.5.1</hapi-structures-v24.version>
     </properties>
 
     <dependencyManagement>
@@ -79,10 +80,10 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
-<!--        <dependency>
+        <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-bean</artifactId>
-        </dependency>-->
+            <artifactId>camel-quarkus-direct</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-fhir</artifactId>
@@ -93,26 +94,19 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-direct</artifactId>
+            <artifactId>camel-quarkus-hl7</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>ca.uhn.hapi</groupId>
             <artifactId>hapi-structures-v24</artifactId>
-            <version>${hapi-structures-v24-version}</version>
+            <version>${hapi-structures-v24.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-hl7</artifactId>
-        </dependency>
-        
+
         <!-- Test -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-test-infra-fhir</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-junit5</artifactId>
@@ -128,11 +122,21 @@
             <artifactId>rest-assured</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.codehaus.gmaven</groupId>
+                    <artifactId>groovy-maven-plugin</artifactId>
+                    <version>${groovy-maven-plugin.version}</version>
+                </plugin>
 
                 <plugin>
                     <groupId>net.revelc.code.formatter</groupId>
@@ -215,8 +219,13 @@
                             <exclude>**/NOTICE</exclude>
                             <exclude>**/README</exclude>
                             <exclude>**/pom.xml.versionsBackup</exclude>
+                            <exclude>**/*.patient</exclude>
                         </excludes>
                         <mapping>
+                            <Dockerfile.jvm>CAMEL_PROPERTIES_STYLE</Dockerfile.jvm>
+                            <Dockerfile.legacy-jar>CAMEL_PROPERTIES_STYLE</Dockerfile.legacy-jar>
+                            <Dockerfile.native>CAMEL_PROPERTIES_STYLE</Dockerfile.native>
+                            <Dockerfile.native-micro>CAMEL_PROPERTIES_STYLE</Dockerfile.native-micro>
                             <java>SLASHSTAR_STYLE</java>
                             <properties>CAMEL_PROPERTIES_STYLE</properties>
                             <kt>SLASHSTAR_STYLE</kt>
@@ -270,6 +279,44 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sync-k8s-resource-versions</id>
+                        <inherited>false</inherited>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <phase>process-sources</phase>
+                        <configuration>
+                            <source>
+                                import java.util.regex.Matcher
+                                import java.util.regex.Pattern
+
+                                Pattern pattern = Pattern.compile("app.kubernetes.io/version: .*")
+
+                                ["kubernetes", "openshift"].each { k8sResource -&gt;
+                                    String sanitizedBasedir = project.basedir.path.replace('\\', '/')
+                                    File file = new File("${sanitizedBasedir}/src/main/kubernetes/${k8sResource}.yml")
+                                    String content = file.text
+                                    Matcher matcher = pattern.matcher(content)
+
+                                    if (matcher.find()) {
+                                        String updatedContent = matcher.replaceAll("app.kubernetes.io/version: ${project.version}")
+                                        if (updatedContent != content) {
+                                            log.info("Updating app.kubernetes.io/version label to ${project.version} in ${file.path}")
+                                            file.write(updatedContent)
+                                        }
+                                    }
+                                }
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -306,6 +353,49 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>kubernetes</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>kubernetes</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-container-image-jib</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>openshift</id>
+            <activation>
+                <property>
+                    <name>openshift</name>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-openshift</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>skip-testcontainers-tests</id>
+            <activation>
+                <property>
+                    <name>skip-testcontainers-tests</name>
+                </property>
+            </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
     </profiles>
-
 </project>

@@ -19,5 +19,5 @@ package org.acme.fhir;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
-class MyCamelApplicationIT extends MyCamelApplicationTest {
+class FHIRIT extends FHIRTest {
 }
