@@ -23,32 +23,30 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.ollama.OllamaContainer;
 
 import static java.lang.String.format;
+
+import static org.eclipse.microprofile.config.ConfigProvider.getConfig;
 
 public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaTestResource.class);
 
-    // LangChain4j offers only latest tag for ollama-codellama, hence we do use latest until more tags are introduced
-    private static final String OLLAMA_IMAGE = "langchain4j/ollama-codellama:latest";
+    private static final String OLLAMA_IMAGE = "ollama/ollama:0.3.12";
     private static final int OLLAMA_SERVER_PORT = 11434;
-
-    private GenericContainer<?> ollamaContainer;
-
-    private WireMockServer wireMockServer;
-    private String baseUrl;
 
     private static final String MODE_MOCK = "mock";
     private static final String MODE_RECORDING = "record";
     private static final String MODE_CONTAINER = "container";
 
+    private OllamaContainer ollamaContainer;
+    private WireMockServer wireMockServer;
+    private String baseUrl;
+
     /**
-     * The testMode value could be defined, for instance by invoking:
-     * mvn clean test -DtestMode=mock.
+     * The testMode value could be defined, for instance by invoking: mvn clean test -DtestMode=mock.
      *
      * With the default value "mock", the LLM is faked based on the last recorded run.
      * With the value "record", tests are run against a containerized LLM while the HTTP interactions are recorded.
@@ -64,36 +62,42 @@ public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
     @Override
     public Map<String, String> start() {
 
-        // Check the test running mode
-        String testMode = System.getProperty("testMode", MODE_MOCK);
-        isMockMode = MODE_MOCK.equals(testMode);
-        isRecordingMode = MODE_RECORDING.equals(testMode);
-        isContainerMode = MODE_CONTAINER.equals(testMode);
-        if (!isMockMode && !isRecordingMode && !isContainerMode) {
-            throw new IllegalArgumentException(
-                    "testMode value should be one of " + Arrays.asList(MODE_MOCK, MODE_RECORDING, MODE_CONTAINER));
-        }
-
-        if (isMockMode) {
-            LOG.info("Starting a fake Ollama server backed by wiremock");
-            initWireMockServer();
-        } else {
-            LOG.info("Starting an Ollama server backed by testcontainers");
-            ollamaContainer = new GenericContainer<>(OLLAMA_IMAGE)
-                    .withExposedPorts(OLLAMA_SERVER_PORT)
-                    .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("basicAuthContainer"))
-                    .waitingFor(Wait.forLogMessage(".* msg=\"inference compute\" .*", 1));
-            ollamaContainer.start();
-
-            baseUrl = format(BASE_URL_FORMAT, ollamaContainer.getHost(), ollamaContainer.getMappedPort(OLLAMA_SERVER_PORT));
-
-            if (isRecordingMode) {
-                LOG.info("Recording interactions with the Ollama server backed by testcontainers");
-                initWireMockServer();
+        try {
+            // Check the test running mode
+            String testMode = System.getProperty("testMode", MODE_MOCK);
+            isMockMode = MODE_MOCK.equals(testMode);
+            isRecordingMode = MODE_RECORDING.equals(testMode);
+            isContainerMode = MODE_CONTAINER.equals(testMode);
+            if (!isMockMode && !isRecordingMode && !isContainerMode) {
+                throw new IllegalArgumentException(
+                        "testMode value should be one of " + Arrays.asList(MODE_MOCK, MODE_RECORDING, MODE_CONTAINER));
             }
-        }
 
-        return Map.of("quarkus.langchain4j.ollama.base-url", baseUrl);
+            if (isMockMode) {
+                LOG.info("Starting a fake Ollama server backed by wiremock");
+                initWireMockServer();
+            } else {
+                LOG.info("Starting an Ollama server backed by testcontainers");
+                ollamaContainer = new OllamaContainer(OLLAMA_IMAGE)
+                        .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("basicAuthContainer"));
+                ollamaContainer.start();
+
+                String ollamaModelId = getConfig().getValue("quarkus.langchain4j.ollama.chat-model.model-id", String.class);
+
+                ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
+
+                baseUrl = format(BASE_URL_FORMAT, ollamaContainer.getHost(), ollamaContainer.getMappedPort(OLLAMA_SERVER_PORT));
+
+                if (isRecordingMode) {
+                    LOG.info("Recording interactions with the Ollama server backed by testcontainers");
+                    initWireMockServer();
+                }
+            }
+
+            return Map.of("quarkus.langchain4j.ollama.base-url", baseUrl);
+        } catch (Exception ex) {
+            throw new RuntimeException("An issue occurred while starting ollama container", ex);
+        }
     }
 
     private void initWireMockServer() {
@@ -113,7 +117,7 @@ public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
                 ollamaContainer.stop();
             }
         } catch (Exception ex) {
-            LOG.error("An issue occurred while stopping " + ollamaContainer.getNetworkAliases(), ex);
+            LOG.error("An issue occurred while stopping ollama container", ex);
         }
 
         if (isMockMode) {
