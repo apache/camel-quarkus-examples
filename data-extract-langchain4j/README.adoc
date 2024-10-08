@@ -22,21 +22,40 @@ Finally, we'll invoke the AiService extraction method via the https://camel.apac
 
 === Start the Large Language Model
 
-Let's start a container to serve the LLM with Ollama:
+Let's start a container to serve the LLM with Ollama, in a first shell type:
 
 [source,shell]
 ----
-docker run -p11434:11434 langchain4j/ollama-codellama:latest
+docker run --rm -it -v cqex-data-extract-ollama:/root/.ollama -p 11434:11434 --name cqex-data-extract-ollama ollama/ollama:0.3.12
 ----
 
 After a moment, a log like below should be output:
 
 [source,shell]
 ----
-time=2024-09-03T08:03:15.532Z level=INFO source=types.go:98 msg="inference compute" id=0 library=cpu compute="" driver=0.0 name="" total="62.5 GiB" available="54.4 GiB"
+time=2024-10-08T12:43:43.329Z level=INFO source=types.go:107 msg="inference compute" id=0 library=cpu variant=avx2 compute="" driver=0.0 name="" total="62.5 GiB" available="52.4 GiB"
+----
+
+Then, download the codellama model, in a second shell type:
+
+[source,shell]
+----
+docker exec -it cqex-data-extract-ollama ollama pull codellama
+----
+
+After a moment, log like below should be output:
+
+[source,shell]
+----
+pulling manifest 
+...
+verifying sha256 digest 
+writing manifest 
+success 
 ----
 
 That's it, the LLM is now ready to serve our data extraction requests.
+The second shell could be reused, however the first one need to stay up while running this example.
 
 === Package and run the application
 
