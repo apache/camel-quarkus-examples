@@ -308,6 +308,10 @@
                                 ["kubernetes", "openshift"].each { k8sResource -&gt;
                                     String sanitizedBasedir = project.basedir.path.replace('\\', '/')
                                     File file = new File("${sanitizedBasedir}/src/main/kubernetes/${k8sResource}.yml")
+                                    if (!file.exists()) {
+                                        return
+                                    }
+
                                     String content = file.text
                                     Matcher matcher = pattern.matcher(content)
 
