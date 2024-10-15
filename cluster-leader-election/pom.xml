@@ -342,7 +342,7 @@
                 </dependency>
                 <dependency>
                     <groupId>org.apache.camel.quarkus</groupId>
-                    <artifactId>camel-quarkus-kubernetes-cluster-service</artifactId>
+                    <artifactId>camel-quarkus-file-cluster-service</artifactId>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.camel.quarkus</groupId>
