@@ -23,25 +23,22 @@ import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.model.v24.message.ORU_R01;
 import ca.uhn.hl7v2.model.v24.segment.PID;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.fhir.FhirJsonDataFormat;
 import org.apache.http.ProtocolException;
-import org.hl7.fhir.r4.model.CapabilityStatement;
-import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.IdType;
 import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Resource;
 
-@RegisterForReflection(targets = { Patient.class, CapabilityStatement.class, MethodOutcome.class, Resource.class,
-        HumanName.class })
 @ApplicationScoped
 public class Routes extends RouteBuilder {
     @Inject
+    @Named("R4")
     FhirContext fhirContext;
 
     @Override
@@ -65,6 +62,10 @@ public class Routes extends RouteBuilder {
                 .setBody(simple("FHIR Server ${{camel.component.fhir.server-url}} not found"))
                 .end()
                 .setHeader(Exchange.HTTP_RESPONSE_CODE).constant(404);
+
+        // Must set FhirContext to ensure native mode support
+        FhirJsonDataFormat fhirJson = new FhirJsonDataFormat();
+        fhirJson.setFhirContext(fhirContext);
 
         // Simple REST API to create / read patient data
         rest("/api/patients")
@@ -91,7 +92,7 @@ public class Routes extends RouteBuilder {
                     exchange.getIn().setBody(patient);
                 })
                 // marshall to JSON for logging
-                .marshal().fhirJson("{{camel.component.fhir.fhir-version}}")
+                .marshal(fhirJson)
                 .convertBodyTo(String.class)
                 .log("Inserting Patient: ${body}")
                 // create Patient in our FHIR server
