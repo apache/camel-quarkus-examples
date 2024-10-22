@@ -33,7 +33,7 @@ public class Routes extends RouteBuilder {
     public void configure() {
 
         // Consumes file documents that contain conversation transcripts (JSON format)
-        from("file:target/transcripts")
+        from("file:target/transcripts?sortBy=file:name")
                 .log("A document has been received by the camel-quarkus-file extension: ${body}")
                 .setHeader("expectedDateFormat", constant("YYYY-MM-DD"))
                 // The CustomPojoExtractionService transforms the conversation transcript into a CustomPojoExtractionService.CustomPojo
