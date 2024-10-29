@@ -15,7 +15,7 @@ In this example, we'll convert those text conversations into Java Objects that c
 image::schema.png[]
 
 In order to achieve this extraction, we'll need a https://en.wikipedia.org/wiki/Large_language_model[Large Language Model (LLM)] that natively supports JSON output.
-Here, we arbitrarily choose https://ollama.com/library/codellama[codellama] served through https://ollama.com/[ollama].
+Here, we choose https://ollama.com/library/granite3-dense[granite3-dense] served through https://ollama.com/[ollama] as it seems compute friendly and under Apache V2 license.
 In order to request inference to the served model, we'll use the high-level LangChain4j APIs like https://docs.langchain4j.dev/tutorials/ai-services[AiServices].
 More precisely, we'll setup the https://docs.quarkiverse.io/quarkus-langchain4j/dev/index.html[Quarkus LangChain4j extension] to register an AiService bean.
 Finally, we'll invoke the AiService extraction method via the https://camel.apache.org/camel-quarkus/latest/reference/extensions/bean.html[Camel Quarkus bean extension] .
@@ -26,7 +26,7 @@ Let's start a container to serve the LLM with Ollama, in a first shell type:
 
 [source,shell]
 ----
-docker run --rm -it -v cqex-data-extract-ollama:/root/.ollama -p 11434:11434 --name cqex-data-extract-ollama ollama/ollama:0.3.12
+docker run --rm -it -v cqex-data-extract-ollama:/root/.ollama -p 11434:11434 --name cqex-data-extract-ollama ollama/ollama:0.4.0-rc5
 ----
 
 After a moment, a log like below should be output:
@@ -40,7 +40,7 @@ Then, download the codellama model, in a second shell type:
 
 [source,shell]
 ----
-docker exec -it cqex-data-extract-ollama ollama pull codellama
+docker exec -it cqex-data-extract-ollama ollama pull granite3-dense
 ----
 
 After a moment, log like below should be output:
@@ -106,7 +106,7 @@ At the end, we are provided with a Plain Old Java Object (POJO) handling the ext
     "customerSatisfied": "true",
     "customerName": "Sarah London",
     "customerBirthday": "10 July 1986",
-    "summary": "Declare an accident on main vehicle and receive reimbursement for expenses."
+    "summary": "The customer, Sarah London, called to declare an accident on her main vehicle and was informed that all expenses related to the accident would be reimbursed."
 }
 ----
 
