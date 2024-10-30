@@ -23,10 +23,12 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.Container.ExecResult;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.ollama.OllamaContainer;
 
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 
 import static org.eclipse.microprofile.config.ConfigProvider.getConfig;
 
@@ -84,7 +86,16 @@ public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
 
                 String ollamaModelId = getConfig().getValue("quarkus.langchain4j.ollama.chat-model.model-id", String.class);
 
-                ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
+                ExecResult result = ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
+                long pullBegin = currentTimeMillis();
+                while ((currentTimeMillis() - pullBegin < 10000)
+                        && (result.getStderr() == null || !result.getStderr().contains("success"))) {
+                    LOG.info("Will retry ollama pull after sleeping 250ms");
+
+                    Thread.sleep(250);
+
+                    result = ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
+                }
 
                 baseUrl = format(BASE_URL_FORMAT, ollamaContainer.getHost(), ollamaContainer.getMappedPort(OLLAMA_SERVER_PORT));
 
