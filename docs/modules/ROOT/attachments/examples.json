@@ -25,11 +25,6 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jdbc-datasource"
   },
   {
-    "title": "FHIR",
-    "description": "Shows how to use Camel FHIR with Quarkus.",
-    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/fhir"
-  },
-  {
     "title": "File consumer with Bindy \u0026 FTP",
     "description": "Shows how to consume CSV files, marshal \u0026 unmarshal the data and send it onwards via FTP",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/file-bindy-ftp"
