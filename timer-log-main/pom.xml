@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-timer-log-main</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.16.0-SNAPSHOT</version>
+    <version>3.16.0</version>
 
     <name>Camel Quarkus :: Examples :: Timer Log Main</name>
     <description>Camel Quarkus Example :: Timer to Log Main</description>

@@ -21,7 +21,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.camel.quarkus.examples</groupId>
     <artifactId>camel-quarkus-examples-jta-jpa</artifactId>
-    <version>3.16.0-SNAPSHOT</version>
+    <version>3.16.0</version>
     <name>Camel Quarkus :: Examples :: JTA JPA</name>
     <description>Camel Quarkus Example :: JTA JPA</description>
     <properties>
