@@ -27,7 +27,7 @@ public class CustomPahoTestResource implements QuarkusTestResourceLifecycleManag
     private static final String IMAGE_NAME = "quay.io/artemiscloud/activemq-artemis-broker:1.0.26";
     private static final String AMQ_USER = "admin";
     private static final String AMQ_PASSWORD = "admin";
-    private static final String AMQ_JOLOKIA = "--relax-jolokia";
+    private static final String AMQ_EXTRA_ARGS = "--relax-jolokia --no-autotune --mapped --no-fsync --java-options=-Dbrokerconfig.maxDiskUsage=-1";
     private GenericContainer<?> container;
 
     @Override
@@ -36,8 +36,8 @@ public class CustomPahoTestResource implements QuarkusTestResourceLifecycleManag
                 .withExposedPorts(61616, 8161, 1883)
                 .withEnv("AMQ_USER", AMQ_USER)
                 .withEnv("AMQ_PASSWORD", AMQ_PASSWORD)
-                .withEnv("AMQ_EXTRA_ARGS", AMQ_JOLOKIA);
-        //.withPrivilegedMode(true);
+                .withEnv("AMQ_EXTRA_ARGS", AMQ_EXTRA_ARGS)
+                .withLogConsumer(outputFrame -> System.out.print(outputFrame.getUtf8String()));
 
         container.start();
 
