@@ -29,7 +29,7 @@
     <description>Camel Quarkus Example :: Cluster leader election</description>
 
     <properties>
-        <quarkus.platform.version>3.17.0</quarkus.platform.version>
+        <quarkus.platform.version>3.17.2</quarkus.platform.version>
         <camel-quarkus.platform.version>3.17.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
