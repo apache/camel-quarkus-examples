@@ -17,6 +17,7 @@
 package org.acme.extraction;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
@@ -45,7 +46,7 @@ public interface CustomPojoExtractionService {
                 + "}\n";
 
         public String toString() {
-            return String.format(FORMAT, this.customerSatisfied, this.customerName, this.customerBirthday,
+            return String.format(Locale.US, FORMAT, this.customerSatisfied, this.customerName, this.customerBirthday,
                     this.customerBirthday, this.customerBirthday, this.summary);
         }
     }
