@@ -56,7 +56,7 @@
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
 
         <quarkus-langchain4j.version>0.22.0</quarkus-langchain4j.version>
-        <wiremock.version>3.9.2</wiremock.version>
+        <wiremock.version>3.10.0</wiremock.version>
     </properties>
 
     <dependencyManagement>
