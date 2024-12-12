@@ -24,7 +24,7 @@
 
     <artifactId>camel-quarkus-examples-data-extract-langchain4j</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.17.0-SNAPSHOT</version>
+    <version>3.17.0</version>
 
     <name>Camel Quarkus :: Examples :: Data Extract LangChain4j Repository</name>
     <description>Camel Quarkus Example :: Data Extract LangChain4j Repository</description>
