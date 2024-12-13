@@ -24,9 +24,6 @@ import org.apache.camel.builder.RouteBuilder;
 public class Routes extends RouteBuilder {
 
     @Inject
-    CustomPojoExtractionService customPojoExtractionService;
-
-    @Inject
     CustomPojoStore customPojoStore;
 
     @Override
@@ -37,7 +34,7 @@ public class Routes extends RouteBuilder {
                 .log("A document has been received by the camel-quarkus-file extension: ${body}")
                 .setHeader("expectedDateFormat", constant("YYYY-MM-DD"))
                 // The CustomPojoExtractionService transforms the conversation transcript into a CustomPojoExtractionService.CustomPojo
-                .bean(customPojoExtractionService)
+                .bean(CustomPojoExtractionService.class)
                 // Store extracted CustomPojoExtractionService.CustomPojos objects into the CustomPojoStore for later inspection
                 .bean(customPojoStore);
 
