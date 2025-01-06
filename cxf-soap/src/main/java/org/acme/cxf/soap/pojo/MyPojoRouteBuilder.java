@@ -17,7 +17,6 @@
 package org.acme.cxf.soap.pojo;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import org.acme.cxf.soap.pojo.service.ContactService;
@@ -31,7 +30,7 @@ import org.apache.camel.component.cxf.jaxws.CxfEndpoint;
 public class MyPojoRouteBuilder extends RouteBuilder {
 
     @Produces
-    @SessionScoped
+    @ApplicationScoped
     @Named
     CxfEndpoint contact() {
         CxfEndpoint contactEndpoint = new CxfEndpoint();
