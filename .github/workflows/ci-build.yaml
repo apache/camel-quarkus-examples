@@ -102,7 +102,7 @@ jobs:
         run: |
           sudo apt install groovy -y --no-install-recommends
           TEST_GROUPS=$(groovy .github/generate-test-groups.groovy)
-          echo "::set-output name=matrix::${TEST_GROUPS}"
+          echo "matrix=${TEST_GROUPS}" >> $GITHUB_OUTPUT
 
   integration-tests:
     name: Integration Tests - ${{matrix.name}}
