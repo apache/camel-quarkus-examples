@@ -17,7 +17,7 @@ To run the application in development, from the runnable JAR or as a native appl
  docker run -ti -e hapi.fhir.fhir_version=R4 \
                 -e hapi.fhir.allow_multiple_delete=true -e \
                 -e hapi.fhir.reuse_cached_search_results_millis=-1 \
-                -p 8080:8080 docker.io/hapiproject/hapi:v7.4.0
+                -p 8080:8080 mirror.gcr.io/hapiproject/hapi:v7.4.0
 ----
 
 Note that the container startup can take up to 30 seconds to complete.
