@@ -36,7 +36,7 @@ spec:
     spec:
       containers:
         - name: mariadb-database
-          image: docker.io/mariadb:10.11
+          image: mirror.gcr.io/mariadb:10.11
           ports:
             - containerPort: 3306
           env:
