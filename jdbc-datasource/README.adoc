@@ -23,7 +23,7 @@ docker run -p 5432:5432 \
 -e POSTGRES_PASSWORD=1234567@8_source \
 -e POSTGRES_DB=source_db \
 -v ${PWD}/src/test/resources/init-source-db.sql:/docker-entrypoint-initdb.d/init-source-db.sql \
-docker.io/postgres:15.0
+mirror.gcr.io/postgres:15.0
 ----
 
 In a second terminal, let's start the target database:
@@ -35,7 +35,7 @@ docker run -p 5433:5432 \
 -e POSTGRES_PASSWORD=1234567@8_target \
 -e POSTGRES_DB=target_db \
 -v ${PWD}/src/test/resources/init-target-db.sql:/docker-entrypoint-initdb.d/init-target-db.sql \
-docker.io/postgres:15.0
+mirror.gcr.io/postgres:15.0
 ----
 
 == Running the application in dev mode

@@ -33,7 +33,7 @@ Now you can access Artemis on localhost:8161
 
 [source,shell]
 ----
-docker run -d --rm --name elasticsearch -p 9200:9200 -p 9300:9300 -it -m 4GB -e "discovery.type=single-node" -e "xpack.security.enabled=false" docker.io/elastic/elasticsearch:8.13.2
+docker run -d --rm --name elasticsearch -p 9200:9200 -p 9300:9300 -it -m 4GB -e "discovery.type=single-node" -e "xpack.security.enabled=false" mirror.gcr.io/elastic/elasticsearch:8.13.2
 ----
 
 Now you can access Elasticsearch on localhost:9200

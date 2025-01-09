@@ -29,7 +29,7 @@ public class FHIRTestResource implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public Map<String, String> start() {
-        container = new GenericContainer<>("docker.io/hapiproject/hapi:v7.4.0")
+        container = new GenericContainer<>("mirror.gcr.io/hapiproject/hapi:v7.4.0")
                 .withExposedPorts(CONTAINER_PORT)
                 .withEnv("hapi.fhir.fhir_version", "R4")
                 .withEnv("hapi.fhir.allow_multiple_delete", "true")

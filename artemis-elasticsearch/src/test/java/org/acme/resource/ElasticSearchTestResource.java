@@ -29,7 +29,7 @@ import org.testcontainers.utility.DockerImageName;
 public class ElasticSearchTestResource implements QuarkusTestResourceLifecycleManager {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticSearchTestResource.class);
 
-    private static final String IMAGE_NAME = "docker.io/elastic/elasticsearch:8.13.2";
+    private static final String IMAGE_NAME = "mirror.gcr.io/elastic/elasticsearch:8.13.2";
     private ElasticsearchContainer container;
 
     @Override
