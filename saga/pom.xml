@@ -29,7 +29,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <quarkus.platform.version>3.17.4</quarkus.platform.version>
+        <quarkus.platform.version>3.18.0.CR1</quarkus.platform.version>
         <camel-quarkus.platform.version>3.18.0-SNAPSHOT</camel-quarkus.platform.version>
         <quarkiverse-artemis.version>3.6.0</quarkiverse-artemis.version>
 
