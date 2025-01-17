@@ -1,0 +1,24 @@
+{
+  "id" : "fe938c62-23dc-4814-8d9a-9833afc2be3d",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite3-dense\",\n  \"messages\" : [ {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the text delimited by triple backticks: ```Operator: Hello, how may I help you ?\\nCustomer: Hello, I'm calling because I need to declare an accident on my main vehicle.\\nOperator: Ok, can you please give me your name ?\\nCustomer: My name is Sarah London.\\nOperator: Could you please give me your birth date ?\\nCustomer: 1986, July the 10th.\\nOperator: Ok, I've got your contract and I'm happy to share with you that we'll be able to reimburse all expenses linked to this accident.\\nCustomer: Oh great, many thanks.```.The customerBirthday field should be formatted as YYYY-MM-DD.The summary field should concisely relate the customer main ask.\\nYou must answer strictly in the following JSON format: {\\n\\\"customerSatisfied\\\": (type: boolean),\\n\\\"customerName\\\": (type: string),\\n\\\"customerBirthday\\\": (type: date string (2023-12-31)),\\n\\\"summary\\\": (type: string)\\n}\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 40,\n    \"top_p\" : 0.9\n  },\n  \"format\" : \"json\",\n  \"stream\" : false\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite3-dense\",\"created_at\":\"2025-01-17T10:38:23.380035411Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n\\\"customerSatisfied\\\": true,\\n\\\"customerName\\\": \\\"Sarah London\\\",\\n\\\"customerBirthday\\\": \\\"1986-07-10\\\",\\n\\\"summary\\\": \\\"The customer, Sarah London, called to declare an accident on her main vehicle and was informed that all expenses related to the accident would be reimbursed.\\\"\\n}\"},\"done_reason\":\"stop\",\"done\":true,\"total_duration\":14820763929,\"load_duration\":522730436,\"prompt_eval_count\":271,\"prompt_eval_duration\":10481000000,\"eval_count\":80,\"eval_duration\":3766000000}",
+    "headers" : {
+      "Date" : "Fri, 17 Jan 2025 10:38:23 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "fe938c62-23dc-4814-8d9a-9833afc2be3d",
+  "persistent" : true,
+  "insertionIndex" : 120
+}
