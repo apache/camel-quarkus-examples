@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Timer to Log Main</description>
 
     <properties>
-        <quarkus.platform.version>3.15.2</quarkus.platform.version>
+        <quarkus.platform.version>3.15.3</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
