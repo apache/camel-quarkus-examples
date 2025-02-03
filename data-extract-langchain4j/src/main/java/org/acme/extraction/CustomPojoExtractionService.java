@@ -16,7 +16,7 @@
  */
 package org.acme.extraction;
 
-import java.time.LocalDate;
+import java.time.Month;
 import java.util.Locale;
 
 import dev.langchain4j.service.UserMessage;
@@ -24,7 +24,6 @@ import io.quarkiverse.langchain4j.RegisterAiService;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.Handler;
-import org.apache.camel.Header;
 import org.apache.camel.jsonpath.JsonPath;
 
 @RegisterAiService
@@ -35,24 +34,34 @@ public interface CustomPojoExtractionService {
     static class CustomPojo {
         public boolean customerSatisfied;
         public String customerName;
-        public LocalDate customerBirthday;
+        public CustomDate customerBirthday;
         public String summary;
 
         private final static String FORMAT = "\n{\n"
                 + "\t\"customerSatisfied\": \"%s\",\n"
                 + "\t\"customerName\": \"%s\",\n"
-                + "\t\"customerBirthday\": \"%td %tB %tY\",\n"
+                + "\t\"customerBirthday\": \"%s\",\n"
                 + "\t\"summary\": \"%s\"\n"
                 + "}\n";
 
         public String toString() {
             return String.format(Locale.US, FORMAT, this.customerSatisfied, this.customerName, this.customerBirthday,
-                    this.customerBirthday, this.customerBirthday, this.summary);
+                    this.summary);
+        }
+    }
+
+    @RegisterForReflection
+    static class CustomDate {
+        int year;
+        int month;
+        int day;
+
+        public String toString() {
+            return String.format("%d %s %d", day, Month.of(month), year);
         }
     }
 
     static final String CUSTOM_POJO_EXTRACT_PROMPT = "Extract information about a customer from the text delimited by triple backticks: ```{text}```."
-            + "The customerBirthday field should be formatted as {dateFormat}."
             + "The summary field should concisely relate the customer main ask.";
 
     /**
@@ -61,11 +70,11 @@ public interface CustomPojoExtractionService {
      * the pom.xml file. Without -parameters, one would need to use the @V annotation like in the method signature
      * proposed below: extractFromText(@dev.langchain4j.service.V("text") String text);
      *
-     * Notice how Camel maps the incoming exchange to the method parameters with annotations like @JsonPath and @Header.
+     * Notice how Camel maps the incoming exchange to the method parameters with annotations like @JsonPath.
      * More information on the Camel bean parameter binding feature could be found here:
      * https://camel.apache.org/manual/bean-binding.html#_parameter_binding
      */
     @UserMessage(CUSTOM_POJO_EXTRACT_PROMPT)
     @Handler
-    CustomPojo extractFromText(@JsonPath("$.content") String text, @Header("expectedDateFormat") String dateFormat);
+    CustomPojo extractFromText(@JsonPath("$.content") String text);
 }
