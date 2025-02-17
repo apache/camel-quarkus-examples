@@ -46,7 +46,7 @@
         <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
         <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
 
-        <formatter-maven-plugin.version>2.24.1</formatter-maven-plugin.version>
+        <formatter-maven-plugin.version>2.25.0</formatter-maven-plugin.version>
         <groovy-maven-plugin.version>2.1.1</groovy-maven-plugin.version>
         <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
         <license-maven-plugin.version>4.6</license-maven-plugin.version>
@@ -56,7 +56,7 @@
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
 
         <quarkus-langchain4j.version>0.23.3</quarkus-langchain4j.version>
-        <wiremock.version>3.11.0</wiremock.version>
+        <wiremock.version>3.12.0</wiremock.version>
     </properties>
 
     <dependencyManagement>
