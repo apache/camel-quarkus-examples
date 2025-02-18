@@ -45,7 +45,7 @@ public class ObservabilityTest {
     public void metrics() {
         // Verify Camel metrics are available
         String prometheusMetrics = RestAssured
-                .get(getManagementPrefix() + "/q/metrics")
+                .get(getManagementPrefix() + "/observe/metrics")
                 .then()
                 .statusCode(200)
                 .extract()
@@ -58,14 +58,14 @@ public class ObservabilityTest {
     @Test
     public void health() {
         // Verify liveness
-        RestAssured.get(getManagementPrefix() + "/q/health/live")
+        RestAssured.get(getManagementPrefix() + "/observe/health/live")
                 .then()
                 .statusCode(200)
                 .body("status", is("UP"),
                         "checks.findAll { it.name == 'custom-liveness-check' }.status", Matchers.contains("UP"));
 
         // Verify readiness
-        RestAssured.get(getManagementPrefix() + "/q/health/ready")
+        RestAssured.get(getManagementPrefix() + "/observe/health/ready")
                 .then()
                 .statusCode(200)
                 .body("status", is("UP"),
