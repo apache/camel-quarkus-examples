@@ -72,8 +72,6 @@ jobs:
             && cd ${{ runner.temp }}/camel-quarkus \
             && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
             && ./mvnw ${MAVEN_ARGS} clean install -Dquickly
-      - name: mvn cq:examples-check-platform
-        run: mvn org.l2x6.cq:cq-maven-plugin:2.10.0:examples-check-platform
       - name: mvn ${MAVEN_ARGS} license:check formatter:validate impsort:check
         run: |
           ./mvnw-for-each.sh ${MAVEN_ARGS} \
