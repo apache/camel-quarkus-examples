@@ -19,13 +19,13 @@ package org.acme.message.bridge;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import org.acme.message.bridge.resource.IBMMQTestResource;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.awaitility.Awaitility;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.MethodOrderer;
@@ -45,7 +45,7 @@ public class MessageBridgeITCase {
     @Test
     @Order(1)
     public void shouldSendMessageToActiveMQTest() {
-        final String message = RandomStringUtils.randomAlphabetic(8);
+        final String message = UUID.randomUUID().toString();
         RestAssured
                 .given()
                 .body(message)
@@ -58,7 +58,7 @@ public class MessageBridgeITCase {
     @Test
     @Order(2)
     public void shouldRollbackMessageTest() {
-        final String message = RandomStringUtils.randomAlphabetic(8) + " rollback";
+        final String message = UUID.randomUUID() + "-rollback";
         RestAssured
                 .given()
                 .body(message)
@@ -76,7 +76,7 @@ public class MessageBridgeITCase {
     @Test
     @Order(3)
     public void shouldCrashTest() {
-        final String message = RandomStringUtils.randomAlphabetic(8) + " crash";
+        final String message = UUID.randomUUID() + "-crash";
         RestAssured
                 .given()
                 .body(message)
