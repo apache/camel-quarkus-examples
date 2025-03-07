@@ -1,0 +1,24 @@
+{
+  "id" : "c96be704-f8f2-42b8-859a-b5c337504399",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite3.2:2b\",\n  \"messages\" : [ {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the text delimited by triple backticks: ```Operator: Hello, how may I help you ?\\nCustomer: Hello, I'm calling because I need to declare an accident on my main vehicle.\\nOperator: Ok, can you please give me your name ?\\nCustomer: My name is Sarah London.\\nOperator: Could you please give me your birth date ?\\nCustomer: 1986, July the 10th.\\nOperator: Ok, I've got your contract and I'm happy to share with you that we'll be able to reimburse all expenses linked to this accident.\\nCustomer: Oh great, many thanks.```.The summary field should concisely relate the customer main ask.\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 40,\n    \"top_p\" : 0.9\n  },\n  \"format\" : {\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"customerSatisfied\" : {\n      \"type\" : \"boolean\"\n    },\n    \"customerName\" : {\n      \"type\" : \"string\"\n    },\n    \"customerBirthday\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"year\" : {\n          \"type\" : \"integer\"\n        },\n        \"month\" : {\n          \"type\" : \"integer\"\n        },\n        \"day\" : {\n          \"type\" : \"integer\"\n        }\n      },\n      \"required\" : [ \"year\", \"month\", \"day\" ]\n    },\n    \"summary\" : {\n      \"type\" : \"string\"\n    }\n  },\n  \"required\" : [ \"customerSatisfied\", \"customerName\", \"customerBirthday\", \"summary\" ]\n},\n  \"stream\" : false\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite3.2:2b\",\"created_at\":\"2025-03-07T09:11:22.771772185Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 1986, \\\"month\\\": 7, \\\"day\\\": 10},\\n  \\\"summary\\\": \\\"Customer Sarah London confirmed that she wants to declare an accident involving her main vehicle and is pleased to hear that all related expenses will be reimbursed.\\\"\\n}\"},\"done_reason\":\"stop\",\"done\":true,\"total_duration\":6842646663,\"load_duration\":766510090,\"prompt_eval_count\":199,\"prompt_eval_duration\":2058000000,\"eval_count\":93,\"eval_duration\":4016000000}",
+    "headers" : {
+      "Date" : "Fri, 07 Mar 2025 09:11:22 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "c96be704-f8f2-42b8-859a-b5c337504399",
+  "persistent" : true,
+  "insertionIndex" : 6
+}
