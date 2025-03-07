@@ -168,6 +168,30 @@ With the server running, browse to http://localhost:16686. Then choose 'camel-qu
 The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
 a hierarchy of 6 spans showing the progression of the message exchange through each endpoint.
 
+=== Jolokia & Hawtio
+
+It can be useful to leverage Camel's JMX management features to manage and introspect the application.
+
+You can interact with the https://jolokia.org[Jolokia] endpoint using cURL. For example to fetch information about the `CamelContext`.
+
+[source,shell]
+----
+$ curl -s 'http://localhost:8778/jolokia/read/org.apache.camel:context=*,type=context,name=*' | jq
+----
+
+https://hawt.io/[Hawtio] can be used to visualize your Camel routes. https://www.jbang.dev/[JBang] is a convenient way to get started.
+
+[source,shell]
+----
+$ jbang app install hawtio@hawtio/hawtio
+$ hawtio --port 8085
+----
+
+When this example project is run in dev mode, it will be discoverable from Hawtio via the 'Discover' tab.
+When running the application from the runnable JAR or native binary, you'll need to choose 'Add Connection' from the 'Remote' tab and add a connection for http://localhost:8778/jolokia/.
+
+When deploying to Kubernetes or Openshift, you can use https://github.com/hawtio/hawtio-online[Hawtio Online]. The `camel-quarkus-jolokia` extension will automatically configure the application to be discoverable from the Hawtio Online console.
+
 === Package and run the application
 
 Once you are done with developing you may want to package and run the application.
