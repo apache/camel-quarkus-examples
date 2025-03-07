@@ -29,7 +29,7 @@
 
     <properties>
 
-        <quarkus.platform.version>3.19.1</quarkus.platform.version>
+        <quarkus.platform.version>3.19.2</quarkus.platform.version>
         <camel-quarkus.platform.version>3.20.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
