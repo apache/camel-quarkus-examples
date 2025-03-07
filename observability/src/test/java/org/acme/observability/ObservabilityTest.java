@@ -20,10 +20,13 @@ import java.util.Arrays;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
@@ -74,5 +77,18 @@ public class ObservabilityTest {
                         "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP"),
                         "checks.findAll { it.name == 'camel-routes' }.status", Matchers.contains("UP"),
                         "checks.findAll { it.name == 'camel-consumers' }.status", Matchers.contains("UP"));
+    }
+
+    @Test
+    public void jolokia() {
+        String applicationName = ConfigProvider.getConfig().getValue("quarkus.application.name", String.class);
+        RestAssured.given()
+                .get(getManagementPrefix() + "/q/jolokia/")
+                .then()
+                .statusCode(200)
+                .body(
+                        "status", equalTo(200),
+                        "value.config.agentDescription", equalTo(applicationName),
+                        "value.details.url", matchesPattern("http://.*:8778/jolokia/"));
     }
 }
