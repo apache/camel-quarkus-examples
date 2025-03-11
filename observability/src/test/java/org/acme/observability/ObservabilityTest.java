@@ -16,10 +16,12 @@
  */
 package org.acme.observability;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import org.awaitility.Awaitility;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -47,15 +49,16 @@ public class ObservabilityTest {
     @Test
     public void metrics() {
         // Verify Camel metrics are available
-        String prometheusMetrics = RestAssured
-                .get(getManagementPrefix() + "/observe/metrics")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body().asString();
-
-        assertEquals(3,
-                Arrays.stream(prometheusMetrics.split("\n")).filter(line -> line.contains("purpose=\"example\"")).count());
+        Awaitility.await().pollInterval(Duration.ofSeconds(5)).atMost(Duration.ofMinutes(1)).untilAsserted(() -> {
+            String prometheusMetrics = RestAssured
+                    .get(getManagementPrefix() + "/observe/metrics")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body().asString();
+            assertEquals(3,
+                    Arrays.stream(prometheusMetrics.split("\n")).filter(line -> line.contains("purpose=\"example\"")).count());
+        });
     }
 
     @Test
