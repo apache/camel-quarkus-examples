@@ -40,7 +40,7 @@ public class CustomLivenessCheck extends AbstractHealthCheck {
         int hits = hitCount.incrementAndGet();
 
         // Flag the check as DOWN on every 5th invocation (but not on Kubernetes), else it is UP
-        if (hits % 5 == 0 && System.getenv("KUBERNETES_NAMESPACE") == null) {
+        if (hits % 5 == 0 && System.getenv("KUBERNETES_PORT") == null) {
             builder.down();
         } else {
             builder.up();
