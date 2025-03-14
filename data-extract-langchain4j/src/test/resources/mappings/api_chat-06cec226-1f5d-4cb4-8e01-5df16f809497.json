@@ -1,0 +1,24 @@
+{
+  "id" : "06cec226-1f5d-4cb4-8e01-5df16f809497",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite3.2:2b\",\n  \"messages\" : [ {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the text delimited by triple backticks: ```Operator: Hello, how may I help you ?\\nCustomer: Hello, I'm calling because I need to declare an accident on my main vehicle.\\nOperator: Ok, can you please give me your name ?\\nCustomer: My name is Sarah London.\\nOperator: Could you please give me your birth date ?\\nCustomer: 1986, July the 10th.\\nOperator: Ok, I've got your contract and I'm happy to share with you that we'll be able to reimburse all expenses linked to this accident.\\nCustomer: Oh great, many thanks.```.The customerBirthday field should be formatted as YYYY-MM-DD.The summary field should concisely relate the customer main ask.\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 40,\n    \"top_p\" : 0.9\n  },\n  \"format\" : {\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"customerSatisfied\" : {\n      \"type\" : \"boolean\"\n    },\n    \"customerName\" : {\n      \"type\" : \"string\"\n    },\n    \"customerBirthday\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"year\" : {\n          \"type\" : \"integer\"\n        },\n        \"month\" : {\n          \"type\" : \"integer\"\n        },\n        \"day\" : {\n          \"type\" : \"integer\"\n        }\n      },\n      \"required\" : [ \"year\", \"month\", \"day\" ]\n    },\n    \"summary\" : {\n      \"type\" : \"string\"\n    }\n  },\n  \"required\" : [ \"customerSatisfied\", \"customerName\", \"customerBirthday\", \"summary\" ]\n},\n  \"stream\" : false\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite3.2:2b\",\"created_at\":\"2025-03-14T09:02:50.38627784Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 1986, \\\"month\\\": 7, \\\"day\\\": 10},\\n  \\\"summary\\\": \\\"The customer, Sarah London, called to declare an accident on her main vehicle. The operator confirmed they would reimburse all expenses related to the incident.\\\"\\n}\"},\"done_reason\":\"stop\",\"done\":true,\"total_duration\":6711765216,\"load_duration\":766761722,\"prompt_eval_count\":214,\"prompt_eval_duration\":2159000000,\"eval_count\":92,\"eval_duration\":3783000000}",
+    "headers" : {
+      "Date" : "Fri, 14 Mar 2025 09:02:50 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "06cec226-1f5d-4cb4-8e01-5df16f809497",
+  "persistent" : true,
+  "insertionIndex" : 6
+}

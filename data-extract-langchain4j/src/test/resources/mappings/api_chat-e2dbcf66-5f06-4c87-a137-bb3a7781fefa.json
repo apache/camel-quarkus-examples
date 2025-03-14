@@ -1,0 +1,24 @@
+{
+  "id" : "e2dbcf66-5f06-4c87-a137-bb3a7781fefa",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite3.2:2b\",\n  \"messages\" : [ {\n    \"role\" : \"assistant\",\n    \"content\" : \"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 1986, \\\"month\\\": 7, \\\"day\\\": 10},\\n  \\\"summary\\\": \\\"The customer, Sarah London, called to declare an accident on her main vehicle. The operator confirmed they would reimburse all expenses related to the incident.\\\"\\n}\"\n  }, {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the text delimited by triple backticks: ```Operator: Hello, how may I help you ?\\nCustomer: Hello, I'm John. I need to share a problem with you. Actually, the insurance has reimbursed only half the money I have spent due to the accident.\\nOperator: Hello John, could you please give me your last name so that I can find your contract.\\nCustomer: Sure, my surname is Doe.\\nOperator: And last thing, I need to know the date you were born.\\nCustomer: Yes, so I was born in 2001, actually during the first day of November.\\nOperator: Great, I see your contract now. Actually, the full reimbursement option has been cancelled automatically by our system. This explain the half reimbursement.\\nCustomer: Ah damn, this is not acceptable. I've not even been notified about this automatic change.\\nOperator: Oh, I'm sorry to hear that but the full reimbursement option was free for one year and at the time of subscription you were not interested in automatic renewal.\\nCustomer: I don't discuss that. The important fact is that I should have been notified.\\nOperator: Sure, I understand your resentment. The best I can do is to inform my manager.\\nCustomer: OK, let's do that. Good bye.\\nOperator: Good bye. And again let me apologize for the issue.```.The customerBirthday field should be formatted as YYYY-MM-DD.The summary field should concisely relate the customer main ask.\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 40,\n    \"top_p\" : 0.9\n  },\n  \"format\" : {\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"customerSatisfied\" : {\n      \"type\" : \"boolean\"\n    },\n    \"customerName\" : {\n      \"type\" : \"string\"\n    },\n    \"customerBirthday\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"year\" : {\n          \"type\" : \"integer\"\n        },\n        \"month\" : {\n          \"type\" : \"integer\"\n        },\n        \"day\" : {\n          \"type\" : \"integer\"\n        }\n      },\n      \"required\" : [ \"year\", \"month\", \"day\" ]\n    },\n    \"summary\" : {\n      \"type\" : \"string\"\n    }\n  },\n  \"required\" : [ \"customerSatisfied\", \"customerName\", \"customerBirthday\", \"summary\" ]\n},\n  \"stream\" : false\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite3.2:2b\",\"created_at\":\"2025-03-14T09:03:02.662428274Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": false,\\n  \\\"customerName\\\": \\\"John Doe\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 2001, \\\"month\\\": 11, \\\"day\\\": 1},\\n  \\\"summary\\\": \\\"Customer John Doe expressed dissatisfaction with the insurance company's automatic cancellation of a full reimbursement option for his vehicle accident claim. He felt uninformed about this change and requested that the operator inform their manager to address the issue.\\\"\\n}\"},\"done_reason\":\"stop\",\"done\":true,\"total_duration\":12231399028,\"load_duration\":4274733,\"prompt_eval_count\":483,\"prompt_eval_duration\":7384000000,\"eval_count\":104,\"eval_duration\":4785000000}",
+    "headers" : {
+      "Date" : "Fri, 14 Mar 2025 09:03:02 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "e2dbcf66-5f06-4c87-a137-bb3a7781fefa",
+  "persistent" : true,
+  "insertionIndex" : 5
+}
