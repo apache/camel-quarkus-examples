@@ -225,7 +225,9 @@
                             <java>SLASHSTAR_STYLE</java>
                             <properties>CAMEL_PROPERTIES_STYLE</properties>
                             <Dockerfile.jvm>CAMEL_PROPERTIES_STYLE</Dockerfile.jvm>
+                            <Dockerfile.legacy-jar>CAMEL_PROPERTIES_STYLE</Dockerfile.legacy-jar>
                             <Dockerfile.native>CAMEL_PROPERTIES_STYLE</Dockerfile.native>
+                            <Dockerfile.native-micro>CAMEL_PROPERTIES_STYLE</Dockerfile.native-micro>
                         </mapping>
                         <headerDefinitions>
                             <headerDefinition>${maven.multiModuleProjectDirectory}/license-properties-headerdefinition.xml</headerDefinition>
