@@ -42,9 +42,9 @@
         <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
         <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
 
-        <formatter-maven-plugin.version>2.25.0</formatter-maven-plugin.version>
+        <formatter-maven-plugin.version>2.26.0</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
-        <license-maven-plugin.version>4.6</license-maven-plugin.version>
+        <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
