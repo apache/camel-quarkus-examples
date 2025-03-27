@@ -20,7 +20,7 @@ TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
 Then look at the log output in the console. There are 2 log messages. One generated from a route defined using the Java DSL in class `TimerRoute` and
-another defined using the XML DSL in `src/main/resources/routes/my-routes.xml`.
+another defined using the YAML DSL in `src/main/resources/camel/my-routes.yaml`.
 
 As we run the example in Quarkus Dev Mode, you can edit the source code and have live updates.
 For example, try to change the default greeting message in `GreetingBean` to `Bye World`.
