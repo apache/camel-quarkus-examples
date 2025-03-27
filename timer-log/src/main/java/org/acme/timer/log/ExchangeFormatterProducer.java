@@ -57,8 +57,8 @@ public class ExchangeFormatterProducer {
                 switch (toEndpoint) {
                 case "log://timer":
                     return LogColor.BLUE.apply("Java DSL: " + body);
-                case "log://timer-xml":
-                    return LogColor.YELLOW.apply("XML DSL: " + body);
+                case "log://timer-yaml":
+                    return LogColor.YELLOW.apply("YAML DSL: " + body);
                 default:
                     return body;
                 }
