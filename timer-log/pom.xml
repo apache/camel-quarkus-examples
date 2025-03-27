@@ -90,10 +90,10 @@
             <artifactId>camel-quarkus-timer</artifactId>
         </dependency>
 
-        <!-- To demonstrate an XML route -->
+        <!-- To demonstrate a YAML route -->
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-xml-io-dsl</artifactId>
+            <artifactId>camel-quarkus-yaml-dsl</artifactId>
         </dependency>
 
         <!-- Test -->
