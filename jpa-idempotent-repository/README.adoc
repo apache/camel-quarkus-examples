@@ -115,65 +115,6 @@ mvn clean package -DskipTests -Pnative
 The compilation is a bit slower. Beyond that, notice how the application behaves the same way.
 The only variation compared to the JVM mode is actually that the application was packaged as a native executable.
 
-==== Deploying to Kubernetes
-
-You can build a container image for the application like this. Refer to the https://quarkus.io/guides/deploying-to-kubernetes[Quarkus Kubernetes guide] for options around customizing image names, registries etc.
-
-[source,shell]
-----
-mvn clean package -DskipTests -Dquarkus.container-image.build=true
-----
-
-If you are using a local development cluster like Kind or k3s, you can use host the container image on your local host. Or, with minikube, use the Docker daemon from the cluster virtual machine `eval $(minikube docker-env)`. Otherwise, you'll need to push the image to a registry of your choosing.
-
-Next apply the necessary resources to the cluster if needed:
-
-[source,shell]
-----
-kubectl apply -f target/kubernetes/kubernetes.yml
-----
-
-TIP: You can build & deploy in one single step by doing `mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true`
-
-Check pods are running by executing:
-
-[source,shell]
-----
-kubectl get pods
-----
-
-We expect a list of three pods similar to below.
-Note that the `camel-quarkus-examples-jpa-idempotent-repository-flyway` pod will transition from `running` to `completed`, after it has completed initializing the MariaDB database.
-
-[source,shell]
-----
-NAME                                                              READY   STATUS    RESTARTS      AGE
-camel-quarkus-examples-mariadb-database-deployment-76f6dc9bdnwwxn   1/1     Running   0             23s
-camel-quarkus-examples-jpa-idempotent-repository-flyway-in2q5n5   0/1     Completed   0              23s
-camel-quarkus-examples-jpa-idempotent-repository-7c74b9cf5ph68r   1/1     Running   1 (18s ago)   23s
-----
-
-Now, let's tail the application logs:
-
-[source,shell]
-----
-kubectl logs -f camel-quarkus-examples-jpa-idempotent-repository-56999fcffb6qv2
-----
-
-To clean up do:
-
-[source,shell]
-----
-kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-jpa-idempotent-repository
-kubectl delete all -l job-name=camel-quarkus-examples-jpa-idempotent-repository-flyway-init
-kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-mariadb-database
-----
-
-[NOTE]
-====
-If you need to configure container resource limits & requests, or enable the Quarkus Kubernetes client to trust self signed certificates, you can find these configuration options in `src/main/resources/application.properties`. Simply uncomment them and set your desired values.
-====
-
 ==== Deploying to OpenShift
 
 In order to start a Source To Image (S2I) build and deploy the application, let's execute the command below:
