@@ -36,11 +36,13 @@ public class Routes extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("platform-http:/greeting")
+                .log("Received at greeting: ${body}")
                 .removeHeaders("*")
                 .process(this::countGreeting)
                 .to("http://localhost:{{greeting-provider-app.service.port}}/greeting-provider");
 
         from("platform-http:/greeting-provider")
+                .log("Received at greeting-provider: ${body}")
                 // Random delay to simulate latency
                 .to("micrometer:counter:org.acme.observability.greeting-provider?tags=type=events,purpose=example")
                 .delay(simple("${random(1000, 5000)}"))
