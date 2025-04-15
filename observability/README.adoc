@@ -152,6 +152,8 @@ Configure the OpenTelemetry exporter in `application.properties`:
 ----
 # We are using a property placeholder to be able to test this example in convenient way in a cloud environment
 quarkus.otel.exporter.otlp.traces.endpoint = http://${TELEMETRY_COLLECTOR_COLLECTOR_SERVICE_HOST:localhost}:4317
+# To enable tracing (it is disabled by default via camel-quarkus-observability-services)
+quarkus.otel.sdk.disabled=false
 ----
 
 NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus OpenTelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
