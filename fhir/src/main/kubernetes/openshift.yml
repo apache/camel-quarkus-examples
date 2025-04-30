@@ -21,18 +21,18 @@ metadata:
   name: fhir-server
   labels:
     app.kubernetes.io/name: camel-quarkus-examples-fhir
-    app.kubernetes.io/version: 3.22.0-SNAPSHOT
+    app.kubernetes.io/version: 3.22.0
 spec:
   replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: camel-quarkus-examples-fhir
-      app.kubernetes.io/version: 3.22.0-SNAPSHOT
+      app.kubernetes.io/version: 3.22.0
   template:
     metadata:
       labels:
         app.kubernetes.io/name: camel-quarkus-examples-fhir
-        app.kubernetes.io/version: 3.22.0-SNAPSHOT
+        app.kubernetes.io/version: 3.22.0
     spec:
       # Work around container permissions issues for /app/target
       # https://github.com/hapifhir/hapi-fhir-jpaserver-starter/issues/519
@@ -99,7 +99,7 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: camel-quarkus-examples-fhir
-    app.kubernetes.io/version: 3.22.0-SNAPSHOT
+    app.kubernetes.io/version: 3.22.0
   name: fhir-server
 spec:
   ports:
@@ -108,5 +108,5 @@ spec:
       targetPort: 8080
   selector:
     app.kubernetes.io/name: camel-quarkus-examples-fhir
-    app.kubernetes.io/version: 3.22.0-SNAPSHOT
+    app.kubernetes.io/version: 3.22.0
   type: ClusterIP
