@@ -98,23 +98,23 @@ It will increment the counter metric each time the Camel timer is fired.
 
 === Metrics endpoint
 
-Metrics are exposed on an HTTP endpoint at `/observe/metrics` on port `9000`.
+Metrics are exposed on an HTTP endpoint at `/observe/metrics` on port `9876`.
 
-NOTE: Note we are using a different port (9000) for the management endpoint then our application (8080) is listening on.
+NOTE: Note we are using a different port (9876) for the management endpoint then our application (8080) is listening on.
 This is configured in `applcation.properties` via link:src/main/resources/application.properties#L22[`quarkus.management.enabled = true`]. See the https://quarkus.io/guides/management-interface-reference[Quarkus management interface guide] for more information.
 
 To view all Camel metrics do:
 
 [source,shell]
 ----
-$ curl -s localhost:9000/observe/metrics
+$ curl -s localhost:9876/observe/metrics
 ----
 
 To view only our previously created metrics, use:
 
 [source,shell]
 ----
-$ curl -s localhost:9000/observe/metrics | grep -i 'purpose="example"'
+$ curl -s localhost:9876/observe/metrics | grep -i 'purpose="example"'
 ----
 
 and you should see 3 lines of different metrics (with the same value, as they are all triggered by the timer).
@@ -123,16 +123,16 @@ NOTE: Maybe you've noticed the Prometheus output format. If you would rather use
 
 === Health endpoint
 
-Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/observe/health/live` and `/observe/health/ready` endpoints on port `9000`:
+Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/observe/health/live` and `/observe/health/ready` endpoints on port `9876`:
 
 [source,shell]
 ----
-$ curl -s localhost:9000/observe/health/live
+$ curl -s localhost:9876/observe/health/live
 ----
 
 [source,shell]
 ----
-$ curl -s localhost:9000/observe/health/ready
+$ curl -s localhost:9876/observe/health/ready
 ----
 
 The JSON output will contain a checks for verifying whether the `CamelContext` and each individual route is in the 'Started' state.
