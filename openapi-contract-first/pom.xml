@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: openapi-contract-first</description>
 
     <properties>
-        <quarkus.platform.version>3.15.4</quarkus.platform.version>
+        <quarkus.platform.version>3.15.5</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
