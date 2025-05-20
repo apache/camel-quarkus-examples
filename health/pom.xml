@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Health Check</description>
 
     <properties>
-        <quarkus.platform.version>3.20.0.temporary-redhat-00003</quarkus.platform.version>
+        <quarkus.platform.version>3.20.0.SP1-redhat-00001</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>com.redhat.quarkus.platform</quarkus.platform.group-id>
