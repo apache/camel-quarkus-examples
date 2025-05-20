@@ -84,9 +84,10 @@ public class ObservabilityTest {
 
     @Test
     public void jolokia() {
+        RestAssured.port = 8778;
         String applicationName = ConfigProvider.getConfig().getValue("quarkus.application.name", String.class);
         RestAssured.given()
-                .get(getManagementPrefix() + "/q/jolokia/")
+                .get("/jolokia/")
                 .then()
                 .statusCode(200)
                 .body(
