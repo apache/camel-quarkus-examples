@@ -24,7 +24,7 @@
 
     <artifactId>camel-quarkus-examples-jpa-idempotent-repository</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.23.0-SNAPSHOT</version>
+    <version>3.23.0</version>
 
     <name>Camel Quarkus :: Examples :: JPA Idempotent Repository</name>
     <description>Camel Quarkus Example :: JPA Idempotent Repository</description>
