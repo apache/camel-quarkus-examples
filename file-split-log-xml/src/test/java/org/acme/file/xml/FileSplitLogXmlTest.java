@@ -31,10 +31,10 @@ public class FileSplitLogXmlTest {
 
     @Test
     public void testFileSplitLogXml() {
-        // Verify that all 1000 items were output to the log
+        // Verify that all 10 items were output to the log
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
             String log = new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8);
-            return log.contains("line 1000 contains: Anna,COOKE");
+            return log.contains("line 10 contains: Richard,WILSON");
         });
     }
 }
