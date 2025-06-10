@@ -28,7 +28,7 @@ It comes with the following capabilities.
 
 * `camel-quarkus-microprofile-health` for health checks
 * `camel-quarkus-management` for JMX monitoring and management
-* `camel-quarkus-micromenter` for Micrometer metrics, together with support for exporting them in Prometheus format
+* `camel-quarkus-micrometer` for Micrometer metrics, together with support for exporting them in Prometheus format
 * `camel-quarkus-opentelemetry` for tracing
 
 The `camel-quarkus-observability-services` extension exposes the above capabilities under a common HTTP endpoint context path of `/observe`.
