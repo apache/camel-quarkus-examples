@@ -23,7 +23,7 @@
 
     <artifactId>camel-quarkus-examples-cxf-soap</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.24.0-SNAPSHOT</version>
+    <version>3.24.0</version>
 
     <name>Camel Quarkus :: Examples :: CXF SOAP</name>
     <description>Camel Quarkus Example :: CXF SOAP</description>

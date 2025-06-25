@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-file-log-xml</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.24.0-SNAPSHOT</version>
+    <version>3.24.0</version>
 
     <name>Camel Quarkus :: Examples :: File To Log XML DSL</name>
     <description>Camel Quarkus Example :: File To Log XML DSL</description>
