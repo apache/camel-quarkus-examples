@@ -1,0 +1,24 @@
+{
+  "id" : "7aae2c51-f61d-45bb-a2d7-ca47efeb6888",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite3.3:2b\",\n  \"messages\" : [ {\n    \"role\" : \"assistant\",\n    \"content\" : \"{\\n  \\\"customerSatisfied\\\": false,\\n  \\\"customerName\\\": \\\"John Doe\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 2001, \\\"month\\\": 11, \\\"day\\\": 1},\\n  \\\"summary\\\": \\\"Customer John Doe is dissatisfied with the insurance company's automatic cancellation of full reimbursement option from his contract. He was not informed about this change and wants it reversed.\\\"\\n}\"\n  }, {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the text delimited by triple backticks: ```Operator: Hello, how may I help you?\\nCustomer: Hello, I am currently at the police station because I've got an accident. The police would need a proof that I have an insurance. Could you please help me?\\nOperator: Sure, could you please remind me your name and birth date?\\nCustomer: Of course, my name is Kate Hart and I was born on August the thirteen in the year nineteen ninety nine.\\nOperator: I'm sorry Kate, but we don't have any contract in our records.\\nCustomer: Oh, I'm sorry that I've made a mistake. Actually, my last name is not Hart, but Boss. It changed since I'm married.\\nOperator: Indeed, I have now found your contract and everything looks good. Shall I send the proof of insurance to the police station?\\nCustomer: Oh, if possible, my husband will go directly to your office in order to get it.\\nOperator: Yes, that's possible. I will let the paper at the entrance. Your beloved could just ask it to the front desk.\\nCustomer: Many thanks. I'm happy. You made a great job, I'm satisfied.\\nOperator: Sure, you're welcome Kate. Please come back to us any time in case more information is needed. Bye.\\nCustomer: Bye.```.The customerBirthday field should be formatted as YYYY-MM-DD.The summary field should concisely relate the customer main ask.\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 40,\n    \"top_p\" : 0.9\n  },\n  \"format\" : {\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"customerSatisfied\" : {\n      \"type\" : \"boolean\"\n    },\n    \"customerName\" : {\n      \"type\" : \"string\"\n    },\n    \"customerBirthday\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"year\" : {\n          \"type\" : \"integer\"\n        },\n        \"month\" : {\n          \"type\" : \"integer\"\n        },\n        \"day\" : {\n          \"type\" : \"integer\"\n        }\n      },\n      \"required\" : [ \"year\", \"month\", \"day\" ]\n    },\n    \"summary\" : {\n      \"type\" : \"string\"\n    }\n  },\n  \"required\" : [ \"customerSatisfied\", \"customerName\", \"customerBirthday\", \"summary\" ]\n},\n  \"stream\" : false\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite3.3:2b\",\"created_at\":\"2025-06-30T13:10:40.346190215Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Kate Boss\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 1999, \\\"month\\\": 8, \\\"day\\\": 13},\\n  \\\"summary\\\": \\\"Customer Kate Boss sought assistance from the insurance operator regarding a car accident. She initially provided incorrect information about her last name but was later identified in the records. The operator offered to send proof of insurance to the police station and facilitated direct delivery to the customer's husband at the office.\\\"\\n}\"},\"done_reason\":\"stop\",\"done\":true,\"total_duration\":13376536166,\"load_duration\":8849390,\"prompt_eval_count\":486,\"prompt_eval_duration\":7919716523,\"eval_count\":121,\"eval_duration\":5445928322}",
+    "headers" : {
+      "Date" : "Mon, 30 Jun 2025 13:10:40 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "7aae2c51-f61d-45bb-a2d7-ca47efeb6888",
+  "persistent" : true,
+  "insertionIndex" : 4
+}
