@@ -79,25 +79,31 @@ public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
                 LOG.info("Starting a fake Ollama server backed by wiremock");
                 initWireMockServer();
             } else {
-                LOG.info("Starting an Ollama server backed by testcontainers");
-                ollamaContainer = new OllamaContainer(OLLAMA_IMAGE)
-                        .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("basicAuthContainer"));
-                ollamaContainer.start();
+                baseUrl = System.getProperty("baseUrl", System.getenv("BASE_URL"));
+                if (baseUrl != null) {
+                    LOG.info("Using Ollama server at {}", baseUrl);
+                } else {
+                    LOG.info("Starting an Ollama server backed by testcontainers");
+                    ollamaContainer = new OllamaContainer(OLLAMA_IMAGE)
+                            .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("basicAuthContainer"));
+                    ollamaContainer.start();
 
-                String ollamaModelId = getConfig().getValue("quarkus.langchain4j.ollama.chat-model.model-id", String.class);
+                    String ollamaModelId = getConfig().getValue("quarkus.langchain4j.ollama.chat-model.model-id", String.class);
 
-                ExecResult result = ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
-                long pullBegin = currentTimeMillis();
-                while ((currentTimeMillis() - pullBegin < 10000)
-                        && (result.getStderr() == null || !result.getStderr().contains("success"))) {
-                    LOG.info("Will retry ollama pull after sleeping 250ms");
+                    ExecResult result = ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
+                    long pullBegin = currentTimeMillis();
+                    while ((currentTimeMillis() - pullBegin < 10000)
+                            && (result.getStderr() == null || !result.getStderr().contains("success"))) {
+                        LOG.info("Will retry ollama pull after sleeping 250ms");
 
-                    Thread.sleep(250);
+                        Thread.sleep(250);
 
-                    result = ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
+                        result = ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
+                    }
+
+                    baseUrl = format(BASE_URL_FORMAT, ollamaContainer.getHost(),
+                            ollamaContainer.getMappedPort(OLLAMA_SERVER_PORT));
                 }
-
-                baseUrl = format(BASE_URL_FORMAT, ollamaContainer.getHost(), ollamaContainer.getMappedPort(OLLAMA_SERVER_PORT));
 
                 if (isRecordingMode) {
                     LOG.info("Recording interactions with the Ollama server backed by testcontainers");
