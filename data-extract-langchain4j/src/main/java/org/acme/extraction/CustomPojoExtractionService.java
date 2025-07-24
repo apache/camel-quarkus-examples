@@ -19,6 +19,7 @@ package org.acme.extraction;
 import java.time.LocalDate;
 import java.util.Locale;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.langchain4j.service.UserMessage;
 import io.quarkiverse.langchain4j.RegisterAiService;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -33,9 +34,13 @@ public interface CustomPojoExtractionService {
 
     @RegisterForReflection
     static class CustomPojo {
+        @JsonProperty(required = true)
         public boolean customerSatisfied;
+        @JsonProperty(required = true)
         public String customerName;
+        @JsonProperty(required = true)
         public LocalDate customerBirthday;
+        @JsonProperty(required = true)
         public String summary;
 
         private final static String FORMAT = "\n{\n"
