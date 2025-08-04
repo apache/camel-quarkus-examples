@@ -93,6 +93,6 @@ public class ObservabilityTest {
                 .body(
                         "status", equalTo(200),
                         "value.config.agentDescription", equalTo(applicationName),
-                        "value.details.url", matchesPattern("http://.*:8778/jolokia/"));
+                        "value.details.url", matchesPattern("http://.*:8778/jolokia/?"));
     }
 }
