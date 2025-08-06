@@ -120,6 +120,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/data-extract-langchain4j"
   },
   {
+    "title": "Upload a file to an AWS S3 bucket",
+    "description": "Shows how to produce and consume messages to an aws2-s3 bucket.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws2-s3"
+  },
+  {
     "title": "Vertx-Websocket Chat",
     "description": "Shows how to configure a WebSocket server and interact with connected peers.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/vertx-websocket-chat"
