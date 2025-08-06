@@ -1,0 +1,80 @@
+= AMQP: A Camel Quarkus example
+:cq-example-description: An example that shows how to produce and consume messages to an ActiveMQ Artemis broker using AMQP.
+
+{cq-description}
+
+This example shows how to produce and consume messages to an ActiveMQ Artemis broker using AMQP.
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Prerequisites:
+
+In order to send or receive message from Artemis Broker you need to start a service.
+You can either run the container or start downloaded binary.
+
+=== Run the Artemis container:
+
+[source,shell]
+----
+docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 5672:5672 -p 8161:8161 --name artemis quay.io/artemiscloud/activemq-artemis-broker:1.0.26
+----
+
+Now you can access Artemis on localhost:8161
+
+=== Run the downloaded binary:
+
+From Apache ActiveMQ you can download the broker as a `.zip` or `.tar.gz` file.
+
+Unzip/tar the archive, and start a terminal.
+
+Change directory to the unzipped directory and start the broker.
+
+    bin/activemq console
+
+Which runs the broker in the foreground and logs to the console.
+
+== Start in the Development mode
+
+[source,shell]
+----
+mvn clean compile quarkus:dev
+----
+
+== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+=== JVM mode:
+
+[source,shell]
+----
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
+----
+
+=== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+mvn clean package -Pnative
+./target/*-runner
+----
+
+=== Stop the container:
+
+----
+docker stop artemis
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

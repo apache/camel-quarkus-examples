@@ -1,5 +1,10 @@
 [
   {
+    "title": "AMQP",
+    "description": "Shows how to produce and consume messages to an ActiveMQ Artemis broker using AMQP.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/amqp"
+  },
+  {
     "title": "Artemis to ElasticSearch",
     "description": "Shows how the message is consumed from the Apache Artemis broker using MQTT protocol, transformed and loaded into ElasticSearch",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/artemis-elasticsearch"
