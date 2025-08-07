@@ -1,0 +1,56 @@
+= Send and receive messages from Redis: A Camel Quarkus example
+:cq-example-description: An example that shows how to produce and consume messages from Redis, using both basic operations and pub/sub messaging.
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Start in the Development mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
+workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+== Prerequisites:
+
+In order to send or receive message from Redis you need to start a service.
+
+=== Run the Redis container:
+
+[source,shell]
+----
+docker run -d --rm -p 6379:6379 -v /src/resources/redis.conf:/usr/local/etc/redis/redis.conf --name myredis mirror.gcr.io/redis:6.2.14-alpine redis-server /usr/local/etc/redis/redis.conf
+----
+
+=== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+==== JVM mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+...
+[io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
+----
+
+==== Native mode
+
+The Redis extension does not work in the native mode.
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

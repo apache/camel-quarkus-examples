@@ -110,6 +110,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/saga"
   },
   {
+    "title": "Send and receive messages from Redis",
+    "description": "Shows how to produce and consume messages from Redis, using both basic operations and pub/sub messaging.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/spring-redis"
+  },
+  {
     "title": "Timer Hello World",
     "description": "Uses the Camel timer component to output a Hello world message to the console",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log"
