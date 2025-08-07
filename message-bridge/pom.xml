@@ -52,7 +52,7 @@
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
 
         <quarkiverse-artemis.version>3.8.4</quarkiverse-artemis.version>
-        <assertj.version>3.27.3</assertj.version>
+        <assertj.version>3.27.4</assertj.version>
     </properties>
 
     <dependencyManagement>
