@@ -15,6 +15,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cxf-soap"
   },
   {
+    "title": "Communication with Netty over TCP",
+    "description": "Shows how to use TCP communication with Netty using a custom codec to encode and decode the data over the wire.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/netty-custom-correlation"
+  },
+  {
     "title": "Custom `main()`",
     "description": "Shows how to start Camel from a custom `main()` method",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-main"
