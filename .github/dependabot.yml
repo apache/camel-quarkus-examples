@@ -46,9 +46,11 @@ updates:
       - dependency-name: "io.quarkiverse.*:*"
       - dependency-name: "dev.langchain4j:*"
       - dependency-name: "org.zeroturnaround:zt-exec"
+      - dependency-name: "dev.langchain4j:*"
       # Test dependencies
       - dependency-name: "org.assertj:assertj-core"
       - dependency-name: "org.wiremock:wiremock-standalone"
+      - dependency-name: "org.zeroturnaround:zt-exec"
       # Maven plugins
       - dependency-name: "*:*-maven-plugin"
       - dependency-name: "org.apache.maven.plugins:*"
