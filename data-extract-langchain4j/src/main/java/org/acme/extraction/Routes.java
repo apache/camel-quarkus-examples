@@ -20,6 +20,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.camel.builder.RouteBuilder;
 
+import static org.acme.extraction.DataExtractAgentConfiguration.AGENT_ID;
+
 @ApplicationScoped
 public class Routes extends RouteBuilder {
 
@@ -28,15 +30,13 @@ public class Routes extends RouteBuilder {
 
     @Override
     public void configure() {
-
         // Consumes file documents that contain conversation transcripts (JSON format)
         from("file:target/transcripts?sortBy=file:name")
                 .log("A document has been received by the camel-quarkus-file extension: ${body}")
-                .setHeader("expectedDateFormat", constant("YYYY-MM-DD"))
-                // The CustomPojoExtractionService transforms the conversation transcript into a CustomPojoExtractionService.CustomPojo
-                .bean(CustomPojoExtractionService.class)
-                // Store extracted CustomPojoExtractionService.CustomPojos objects into the CustomPojoStore for later inspection
-                .bean(customPojoStore);
+                // Get the content to fulfill the CustomPojoExtractService text argument
+                .setBody().jsonpath("$.content")
+                // Initiate a conversation with the LLM
+                .toF("langchain4j-agent:%s", AGENT_ID);
 
         // This route make it possible to inspect the extracted POJOs, mainly used for demo and test
         from("platform-http:/custom-pojo-store?produces=application/json")

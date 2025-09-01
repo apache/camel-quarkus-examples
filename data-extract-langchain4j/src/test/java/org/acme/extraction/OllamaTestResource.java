@@ -88,7 +88,7 @@ public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
                             .withLogConsumer(new Slf4jLogConsumer(LOG).withPrefix("basicAuthContainer"));
                     ollamaContainer.start();
 
-                    String ollamaModelId = getConfig().getValue("quarkus.langchain4j.ollama.chat-model.model-id", String.class);
+                    String ollamaModelId = getConfig().getValue("langchain4j.ollama.chat-model.model-id", String.class);
 
                     ExecResult result = ollamaContainer.execInContainer("ollama", "pull", ollamaModelId);
                     long pullBegin = currentTimeMillis();
@@ -111,7 +111,7 @@ public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
                 }
             }
 
-            return Map.of("quarkus.langchain4j.ollama.base-url", baseUrl);
+            return Map.of("langchain4j.ollama.base-url", baseUrl);
         } catch (Exception ex) {
             throw new RuntimeException("An issue occurred while starting ollama container", ex);
         }
