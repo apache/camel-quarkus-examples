@@ -116,12 +116,14 @@ See how the LLM shows its capacity to:
  * Manage issues related to date format, like the field `customerBirthday`
  * Mixed structured and unstructured data (semi-structured data) with the field `summary`.
 
-Cherry on the cake, all those informations are computed simultaneously during a single LLM inference.
+Notice how all of this is computed simultaneously during a single LLM inference.
 
 At the end, the application should have extracted 3 POJOs.
 For each of them, it could be interesting to compare the unstructured input text and the corresponding structured POJO.
 
-More details can be found in the `src/main/java/org/acme/extraction/CustomPojoExtractionService.java` class.
+Details of the LangChain4j `AiService` setup can be found in class `CustomPojoExtractionService`.
+
+Details of the custom data extract `camel-langchain4j-agent` AI agent implementation can be found in classes `DataExtractAgent` and `DataExtractConfiguration`.
 
 ==== Native mode
 
