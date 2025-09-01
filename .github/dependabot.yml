@@ -37,10 +37,12 @@ updates:
     allow:
       # Quarkiverse extensions
       - dependency-name: "io.quarkiverse.*:*"
-      - dependency-name: "org.zeroturnaround:zt-exec"
+      # Misc third party dependencies
+      - dependency-name: "dev.langchain4j:*"
       # Test dependencies
       - dependency-name: "org.assertj:assertj-core"
       - dependency-name: "org.wiremock:wiremock-standalone"
+      - dependency-name: "org.zeroturnaround:zt-exec"
       # Maven plugins
       - dependency-name: "*:*-maven-plugin"
       - dependency-name: "org.apache.maven.plugins:*"
