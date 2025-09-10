@@ -27,18 +27,16 @@ import org.jboss.logging.Logger;
 
 @ApplicationScoped
 public class CustomPojoStore {
-
     private static final Logger LOG = Logger.getLogger(CustomPojoStore.class);
-
     private List<CustomPojo> pojos = new CopyOnWriteArrayList<>();
 
-    @Handler
     CustomPojo addPojo(CustomPojo pojo) {
         LOG.info("An extracted POJO has been added to the store: " + pojo);
         pojos.add(pojo);
         return pojo;
     }
 
+    @Handler
     String asString() {
         StringBuilder sb = new StringBuilder("{ \"pojos\": [");
         String pojoString = pojos.stream().map(CustomPojo::toString).collect(Collectors.joining(","));

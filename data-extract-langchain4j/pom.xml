@@ -55,7 +55,7 @@
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
 
-        <langchain4j.version>1.1.0</langchain4j.version>
+        <langchain4j.version>1.4.0</langchain4j.version>
         <wiremock.version>3.13.1</wiremock.version>
     </properties>
 
@@ -285,7 +285,6 @@
     </build>
 
     <profiles>
-        <!-- TODO: https://github.com/apache/camel-quarkus/issues/7568
         <profile>
             <id>native</id>
             <activation>
@@ -313,7 +312,6 @@
                 </plugins>
             </build>
         </profile>
-        -->
         <profile>
             <id>skip-testcontainers-tests</id>
             <activation>
