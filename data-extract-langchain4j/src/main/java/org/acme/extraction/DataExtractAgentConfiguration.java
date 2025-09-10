@@ -28,7 +28,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class DataExtractAgentConfiguration {
-    public static final String AGENT_MEMORY_ID = "data-extract-agent-memory";
     public static final String AGENT_ID = "data-extract-agent";
 
     @ConfigProperty(name = "langchain4j.ollama.base-url")
