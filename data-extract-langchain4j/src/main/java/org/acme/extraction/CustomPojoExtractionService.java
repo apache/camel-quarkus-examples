@@ -22,11 +22,9 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 
 public interface CustomPojoExtractionService {
 
-    @RegisterForReflection
     class CustomPojo {
         @JsonProperty(required = true)
         public boolean customerSatisfied;
