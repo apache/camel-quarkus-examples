@@ -40,6 +40,6 @@ public class Routes extends RouteBuilder {
 
         // This route make it possible to inspect the extracted POJOs, mainly used for demo and test
         from("platform-http:/custom-pojo-store?produces=application/json")
-                .bean(customPojoStore, "asString");
+                .bean(customPojoStore);
     }
 }
