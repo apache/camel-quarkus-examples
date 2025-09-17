@@ -39,6 +39,8 @@ updates:
       - "**/*"
     schedule:
       interval: "daily"
+    registries:
+      - maven-central
     allow:
       # Quarkiverse extensions
       - dependency-name: "io.quarkiverse.*:*"
