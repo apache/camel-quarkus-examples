@@ -44,6 +44,7 @@ updates:
     allow:
       # Quarkiverse extensions
       - dependency-name: "io.quarkiverse.*:*"
+      - dependency-name: "dev.langchain4j:*"
       - dependency-name: "org.zeroturnaround:zt-exec"
       # Test dependencies
       - dependency-name: "org.assertj:assertj-core"
