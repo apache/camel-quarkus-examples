@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: FHIR</description>
 
     <properties>
-        <quarkus.platform.version>3.27.0.CR1</quarkus.platform.version>
+        <quarkus.platform.version>3.27.0</quarkus.platform.version>
         <camel-quarkus.platform.version>3.27.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
