@@ -17,7 +17,12 @@
 package org.acme.health;
 
 import io.quarkus.test.junit.QuarkusIntegrationTest;
+import org.eclipse.microprofile.config.ConfigProvider;
 
 @QuarkusIntegrationTest
 class HealthIT extends HealthTest {
+    @Override
+    protected Integer getManagementPort() {
+        return ConfigProvider.getConfig().getValue("quarkus.management.port", Integer.class);
+    }
 }

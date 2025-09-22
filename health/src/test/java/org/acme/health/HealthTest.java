@@ -18,6 +18,7 @@ package org.acme.health;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +28,9 @@ import static org.hamcrest.CoreMatchers.is;
 public class HealthTest {
 
     @Test
-    public void testHealth() throws InterruptedException {
-        RestAssured.get("/q/health")
+    public void testHealth() {
+        RestAssured.port = getManagementPort();
+        RestAssured.get("/observe/health")
                 .then()
                 .statusCode(503)
                 .body("status", is("DOWN"),
@@ -36,5 +38,9 @@ public class HealthTest {
                         "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP", "UP"),
                         "checks.findAll { it.name == 'camel-routes' }.status", Matchers.contains("DOWN"),
                         "checks.findAll { it.name == 'camel-consumers' }.status", Matchers.contains("DOWN"));
+    }
+
+    protected Integer getManagementPort() {
+        return ConfigProvider.getConfig().getValue("quarkus.management.test-port", Integer.class);
     }
 }
