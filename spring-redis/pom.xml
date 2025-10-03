@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-spring-redis</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.27.0-SNAPSHOT</version>
+    <version>3.27.0</version>
 
     <name>Camel Quarkus :: Examples :: spring-redis</name>
     <description>Camel Quarkus Example :: Send and receive messages from Redis</description>
