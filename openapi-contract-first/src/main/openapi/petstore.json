@@ -495,7 +495,7 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/ApiResponse"
+									"$ref": "#/components/schemas/ModelApiResponse"
 								}
 							}
 						}
@@ -1168,7 +1168,7 @@
 					"name": "pet"
 				}
 			},
-			"ApiResponse": {
+			"ModelApiResponse": {
 				"type": "object",
 				"properties": {
 					"code": {
