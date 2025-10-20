@@ -79,7 +79,7 @@ docker exec -it db-mysql mysql -uadmin -padmin testdb -e \
 %prod.quarkus.datasource.jdbc.url=mysql://localhost:3306/testdb
 %prod.quarkus.datasource.jdbc.transactions=xa
 
-%prod.quarkus.hibernate-orm.database.generation=none
+%prod.quarkus.hibernate-orm.schema-management.strategy=none
 ----
 
 ==== JVM mode
