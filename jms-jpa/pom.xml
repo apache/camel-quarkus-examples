@@ -41,10 +41,7 @@
         <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
-        <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
