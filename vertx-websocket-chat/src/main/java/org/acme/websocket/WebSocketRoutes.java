@@ -22,7 +22,6 @@ import jakarta.inject.Inject;
 import org.apache.camel.Message;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.vertx.websocket.VertxWebsocketConstants;
-import org.apache.camel.model.rest.RestBindingMode;
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
@@ -58,22 +57,8 @@ public class WebSocketRoutes extends RouteBuilder {
                 .to("vertx-websocket:/chat/{userName}?sendToAll=true")
                 .endChoice()
 
-                // Capture MESSAGE events and broadcast them to all connected peers or specified peer
+                // Capture MESSAGE events and broadcast them to all connected peers
                 .when(simple("${header.CamelVertxWebsocket.event} == 'MESSAGE'"))
-                .choice()
-                .when(body().contains("recipientName"))
-                .unmarshal().json(ChatMessage.class)
-                .process(exchange -> {
-                    Message message = exchange.getMessage();
-                    ChatMessage chatMessage = message.getBody(ChatMessage.class);
-
-                    String recipientConnectionKey = sessionManager.getConnectionKey(chatMessage.getRecipientName());
-                    exchange.getMessage().setHeader(VertxWebsocketConstants.CONNECTION_KEY, recipientConnectionKey);
-                    exchange.getMessage().setBody(chatMessage);
-                })
-                .setBody().simple("<<<<< ${header.userName}: ${body.messageContent}")
-                .to("vertx-websocket:/chat/{userName}")
-                .otherwise()
                 .log("New message from user ${header.userName}: ${body}")
                 .setBody().simple("<<<<< ${header.userName}: ${body}")
                 .to("vertx-websocket:/chat/{userName}?sendToAll=true")
@@ -100,16 +85,5 @@ public class WebSocketRoutes extends RouteBuilder {
                 .setBody().simple("<<<<< ${header.userName} left the chat")
                 .to("vertx-websocket:/chat/{userName}?sendToAll=true")
                 .endChoice();
-
-        //Displays list of connected users in the UI
-        restConfiguration().bindingMode(RestBindingMode.json);
-
-        rest("/peers")
-                .get()
-                .to("direct:getConnectedUsers");
-
-        from("direct:getConnectedUsers")
-                .setBody(method(sessionManager, "getAllConnectedUsers"));
-
     }
 }

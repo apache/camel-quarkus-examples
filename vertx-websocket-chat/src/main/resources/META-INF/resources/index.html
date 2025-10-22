@@ -66,11 +66,8 @@
                     <label for="message" class="col-form-label">Message</label>
                     <input type="text" class="form-control"  id="message" style="width:50%"/>
                 </div>
-                <div class="dropdown">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" id="sending" onclick="listUsers()">Send</button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1" id="userList">
-        
-                    </ul>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" id="send" onclick="sendMessage()">Send</button>
                 </div>
             </div>
         </div>
@@ -82,6 +79,7 @@
         const message = $("#message");
         const connectDialog = $("#connect-dialog");
         const chatDialog = $("#chat-dialog");
+        let socket;
 
         userName.val("");
         chat.val("");
@@ -111,7 +109,7 @@
                 });
 
                 socket.addEventListener("error", (event) => {
-                  console.log("WebSocket error: ", event);
+                    console.log("WebSocket error: ", event);
                 });
 
                 socket.addEventListener("open", (event) => {
@@ -135,61 +133,6 @@
                 chat.val(chat.val() + ">>>>> " + userName.val() + ": " + message.val() + "\n");
                 message.val("");
                 scrollChat();
-            }
-        }
-
-        function sendDM(user){
-            let recipient = user;
-
-            let data = {
-            recipientName: recipient,
-            messageContent: message.val()
-            };
-
-            if (recipient.length && message.length) {
-                socket.send(JSON.stringify(data));
-                chat.val(chat.val() + ">>>>> " + userName.val() + ": " + message.val() + "\n");
-                message.val("");
-                scrollChat();
-            }
-        }
-
-        async function getConnectedUsers() {
-            try{
-                const response = await fetch('/peers');
-                const peers = await response.json();
-                return peers;
-            }catch(error){
-                console.log('Error',error);
-                throw error;
-            }
-        }
-        
-        async function listUsers() {
-            const currentUser = userName.val().trim();
-            let userList = document.getElementById("userList");
-            userList.innerHTML = ""; 
-            try {
-                let connectedUsers = await getConnectedUsers();
-                connectedUsers.forEach(function(user) {
-                    if (user !== currentUser){
-                        let listItem = document.createElement("button");
-                        listItem.classList.add("dropdown-item");
-                        listItem.innerText = user;
-                        listItem.addEventListener("click", function() {
-                            sendDM(user);
-                        });
-                        userList.appendChild(listItem);
-                    }
-                });
-
-                let sendAll = document.createElement("button");
-                sendAll.classList.add("dropdown-item");
-                sendAll.innerText = "Send All";
-                sendAll.addEventListener("click", sendMessage);
-                userList.appendChild(sendAll);
-            } catch(error) {
-                console.error('Error populating user list:', error);
             }
         }
 
