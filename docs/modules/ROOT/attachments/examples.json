@@ -1,8 +1,23 @@
 [
   {
+    "title": "AMQP",
+    "description": "Shows how to produce and consume messages to an ActiveMQ Artemis broker using AMQP.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/amqp"
+  },
+  {
+    "title": "Artemis to ElasticSearch",
+    "description": "Shows how the message is consumed from the Apache Artemis broker using MQTT protocol, transformed and loaded into ElasticSearch",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/artemis-elasticsearch"
+  },
+  {
     "title": "Camel Quarkus CXF SOAP example",
     "description": "Shows how to use Camel CXF SOAP component.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cxf-soap"
+  },
+  {
+    "title": "Communication with Netty over TCP",
+    "description": "Shows how to use TCP communication with Netty using a custom codec to encode and decode the data over the wire.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/netty-custom-correlation"
   },
   {
     "title": "Custom `main()`",
@@ -18,6 +33,11 @@
     "title": "Extract, Transform and Load between two databases",
     "description": "Shows how to extract, transform and load between two databases",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/jdbc-datasource"
+  },
+  {
+    "title": "FHIR",
+    "description": "Shows how to use Camel FHIR with Quarkus.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/fhir"
   },
   {
     "title": "File consumer with Bindy \u0026 FTP",
@@ -60,11 +80,6 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kamelet-chucknorris"
   },
   {
-    "title": "Kotlin Hello World",
-    "description": "Shows how to define Camel routes using Kotlin programming language",
-    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-kotlin"
-  },
-  {
     "title": "Leader election in Kubernetes: A Camel Quarkus Master example",
     "description": "Shows how to use Camel master component.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cluster-leader-election"
@@ -80,6 +95,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/observability"
   },
   {
+    "title": "OpenAPI Contract First",
+    "description": "Shows how to run with Contract First OpenAPI.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/openapi-contract-first"
+  },
+  {
     "title": "Platform HTTP security with Keycloak",
     "description": "Shows how to secure platform HTTP with Keycloak",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/platform-http-security-keycloak"
@@ -90,6 +110,16 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/rest-json"
   },
   {
+    "title": "Saga and LRA",
+    "description": "Shows how to use saga and lra",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/saga"
+  },
+  {
+    "title": "Send and receive messages from Redis",
+    "description": "Shows how to produce and consume messages from Redis, using both basic operations and pub/sub messaging.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/spring-redis"
+  },
+  {
     "title": "Timer Hello World",
     "description": "Uses the Camel timer component to output a Hello world message to the console",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log"
@@ -98,5 +128,20 @@
     "title": "Tokenize a CSV file",
     "description": "Shows how to define a Camel route in XML for tokenizing a CSV a file.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/file-split-log-xml"
+  },
+  {
+    "title": "Unstructured Data Extraction with LangChain4j",
+    "description": "Shows how to convert unstructured text data to structured Java objects helped with a Large Language Model and LangChain4j",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/data-extract-langchain4j"
+  },
+  {
+    "title": "Upload a file to an AWS S3 bucket",
+    "description": "Shows how to produce and consume messages to an aws2-s3 bucket.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws2-s3"
+  },
+  {
+    "title": "Vertx-Websocket Chat",
+    "description": "Shows how to configure a WebSocket server and interact with connected peers.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/vertx-websocket-chat"
   }
 ]

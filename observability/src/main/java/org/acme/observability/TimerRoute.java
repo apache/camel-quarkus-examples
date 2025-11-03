@@ -16,13 +16,19 @@
  */
 package org.acme.observability;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.camel.builder.RouteBuilder;
 
 public class TimerRoute extends RouteBuilder {
 
+    AtomicInteger counter = new AtomicInteger();
+
     @Override
     public void configure() throws Exception {
-        from("timer:greeting?period=10000")
+        from("timer:greeting?delay=10000&period=10000")
+                .setBody(exchange -> "Custom body #" + counter.incrementAndGet())
+                .log("Generated from timer: ${body}")
                 .bean("timerCounter", "count")
                 .to("http://{{greeting-app.service.host}}:{{greeting-app.service.port}}/greeting");
     }

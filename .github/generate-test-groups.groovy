@@ -22,7 +22,12 @@ int groupId = 0
 
 // Distribute example projects across a bounded set of test groups and output as JSON
 new File(".").eachFileRecurse { file ->
-    if (file.getName() == "pom.xml") {
+    if (file.getName() == "pom.xml" && file.getParentFile().getParentFile().getName() == ".") {
+        if (file.getParentFile().getName() == "saga") {
+            // saga is put into a dedicated group as it's a multi-module build
+            return
+        }
+
         if (GROUPS[groupId] == null) {
             GROUPS[groupId] = [:]
             GROUPS[groupId].name = "group-${String.format("%02d", groupId + 1)}"
@@ -39,5 +44,10 @@ new File(".").eachFileRecurse { file ->
         }
     }
 }
+
+// Add saga to a dedicated group
+GROUPS[MAX_GROUPS] = [:]
+GROUPS[MAX_GROUPS].name =  "group-${String.format("%02d", MAX_GROUPS + 1)}"
+GROUPS[MAX_GROUPS].tests = "saga"
 
 print JsonOutput.toJson(["include": GROUPS])

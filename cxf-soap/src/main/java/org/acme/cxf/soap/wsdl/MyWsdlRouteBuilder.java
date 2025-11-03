@@ -24,7 +24,6 @@ import com.example.customerservice.CustomerService;
 import com.example.customerservice.NoSuchCustomer;
 import com.example.customerservice.NoSuchCustomerException;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.SessionScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Named;
 import org.acme.cxf.soap.wsdl.repository.CustomerRepository;
@@ -46,7 +45,7 @@ public class MyWsdlRouteBuilder extends RouteBuilder {
     }
 
     @Produces
-    @SessionScoped
+    @ApplicationScoped
     @Named
     CxfEndpoint customer() {
         CxfEndpoint customersEndpoint = new CxfEndpoint();

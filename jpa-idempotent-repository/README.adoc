@@ -77,7 +77,7 @@ So, in a first shell, please launch a MariaDB database container:
 
 [source,shell]
 ----
-docker run -e MARIADB_USER=mariadb -e MARIADB_PASSWORD=mariadb -e MARIADB_DATABASE=my-db -e MARIADB_ROOT_PASSWORD=secret -p 3306:3306 docker.io/mariadb:10.11
+docker run -e MARIADB_USER=mariadb -e MARIADB_PASSWORD=mariadb -e MARIADB_DATABASE=my-db -e MARIADB_ROOT_PASSWORD=secret -p 3306:3306 mirror.gcr.io/mariadb:10.11
 ----
 
 If successful, you should see the message `mariadbd: ready for connections` output to the console.

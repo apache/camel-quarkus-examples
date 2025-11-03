@@ -1,0 +1,1 @@
+Hello from Camel via aws2-s3!

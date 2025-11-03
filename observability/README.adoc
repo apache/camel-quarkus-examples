@@ -19,20 +19,23 @@ workspace. Any modifications in your project will automatically take effect in t
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
-=== Enabling metrics
+=== Camel Observability Services
 
-To enable observability features in Camel Quarkus, we need to add some additional dependencies to the project's pom.xml file.
-The most important one for metrics is `camel-quarkus-micrometer`:
+This project includes the `camel-quarkus-observability-services` extension.
+This provides some opinionated observability configuration and simplifies your application.
 
-[source, xml]
-----
-<dependency>
-    <groupId>org.apache.camel.quarkus</groupId>
-    <artifactId>camel-quarkus-micrometer</artifactId>
-</dependency>
-----
+It comes with the following capabilities.
 
-After adding this dependency, you can benefit from both of the https://camel.apache.org/components/next/micrometer-component.html[Camel Micrometer] and https://quarkus.io/guides/micrometer[Quarkus Micrometer] worlds.
+* `camel-quarkus-microprofile-health` for health checks
+* `camel-quarkus-management` for JMX monitoring and management
+* `camel-quarkus-micrometer` for Micrometer metrics, together with support for exporting them in Prometheus format
+* `camel-quarkus-opentelemetry` for tracing
+
+The `camel-quarkus-observability-services` extension exposes the above capabilities under a common HTTP endpoint context path of `/observe`.
+
+=== Metrics
+
+You can benefit from both of the https://camel.apache.org/components/next/micrometer-component.html[Camel Micrometer] and https://quarkus.io/guides/micrometer[Quarkus Micrometer] worlds.
 We are able to use multiple ways of creating meters for our custom metrics.
 
 First using Camel micrometer component (see link:src/main/java/org/acme/observability/Routes.java[Routes.java]):
@@ -44,7 +47,7 @@ First using Camel micrometer component (see link:src/main/java/org/acme/observab
 
 Which will count each call to the `platform-http:/greeting-provider` endpoint.
 
-The second approach is to benefit from CDI dependnecy injection of the `MeterRegistry`:
+The second approach is to benefit from CDI dependency injection of the `MeterRegistry`:
 
 [source, java]
 ----
@@ -93,25 +96,25 @@ It can then be invoked from Camel via the bean EIP (see link:src/main/java/org/a
 
 It will increment the counter metric each time the Camel timer is fired.
 
-=== Browsing metrics
+=== Metrics endpoint
 
-Metrics are exposed on an HTTP endpoint at `/q/metrics` on port `9000`.
+Metrics are exposed on an HTTP endpoint at `/observe/metrics` on port `9876`.
 
-NOTE: Note we are using a different port (9000) for the management endpoint then our application (8080) is listening on.
+NOTE: Note we are using a different port (9876) for the management endpoint then our application (8080) is listening on.
 This is configured in `applcation.properties` via link:src/main/resources/application.properties#L22[`quarkus.management.enabled = true`]. See the https://quarkus.io/guides/management-interface-reference[Quarkus management interface guide] for more information.
 
 To view all Camel metrics do:
 
 [source,shell]
 ----
-$ curl -s localhost:9000/q/metrics
+$ curl -s localhost:9876/observe/metrics
 ----
 
 To view only our previously created metrics, use:
 
 [source,shell]
 ----
-$ curl -s localhost:9000/q/metrics | grep -i 'purpose="example"'
+$ curl -s localhost:9876/observe/metrics | grep -i 'purpose="example"'
 ----
 
 and you should see 3 lines of different metrics (with the same value, as they are all triggered by the timer).
@@ -120,16 +123,16 @@ NOTE: Maybe you've noticed the Prometheus output format. If you would rather use
 
 === Health endpoint
 
-Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/q/health/live` and `/q/health/ready` endpoints on port `9000`:
+Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/observe/health/live` and `/observe/health/ready` endpoints on port `9876`:
 
 [source,shell]
 ----
-$ curl -s localhost:9000/q/health/live
+$ curl -s localhost:9876/observe/health/live
 ----
 
 [source,shell]
 ----
-$ curl -s localhost:9000/q/health/ready
+$ curl -s localhost:9876/observe/health/ready
 ----
 
 The JSON output will contain a checks for verifying whether the `CamelContext` and each individual route is in the 'Started' state.
@@ -141,28 +144,19 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 
 === Tracing
 
-To be able to diagnose problems in Camel Quarkus applications, you can start tracing messages.
-We will use OpenTelemetry standard suited for cloud environments.
+To be able to diagnose problems in Camel Quarkus applications, It's useful to instrument method calls, HTTP interactions etc with OpenTelemetry.
 
-All you need is to add the `camel-quarkus-opentelemetry` dependency to your project `pom.xml`:
-
-[source, xml]
-----
-<dependency>
-    <groupId>org.apache.camel.quarkus</groupId>
-    <artifactId>camel-quarkus-opentelemetry</artifactId>
-</dependency>
-----
-
-Then configure the OpenTelemetry exporter in `application.properties`:
+Configure the OpenTelemetry exporter in `application.properties`:
 
 [source, text]
 ----
 # We are using a property placeholder to be able to test this example in convenient way in a cloud environment
 quarkus.otel.exporter.otlp.traces.endpoint = http://${TELEMETRY_COLLECTOR_COLLECTOR_SERVICE_HOST:localhost}:4317
+# To enable tracing (it is disabled by default via camel-quarkus-observability-services)
+quarkus.otel.sdk.disabled=false
 ----
 
-NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus Opentelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
+NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus OpenTelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
 
 To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
 
@@ -175,6 +169,30 @@ With the server running, browse to http://localhost:16686. Then choose 'camel-qu
 
 The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
 a hierarchy of 6 spans showing the progression of the message exchange through each endpoint.
+
+=== Jolokia & Hawtio
+
+It can be useful to leverage Camel's JMX management features to manage and introspect the application.
+
+You can interact with the https://jolokia.org[Jolokia] endpoint using cURL. For example to fetch information about the `CamelContext`.
+
+[source,shell]
+----
+$ curl -s 'http://localhost:8778/jolokia/read/org.apache.camel:context=*,type=context,name=*' | jq
+----
+
+https://hawt.io/[Hawtio] can be used to visualize your Camel routes. https://www.jbang.dev/[JBang] is a convenient way to get started.
+
+[source,shell]
+----
+$ jbang app install hawtio@hawtio/hawtio
+$ hawtio --port 8085
+----
+
+When this example project is run in dev mode, it will be discoverable from Hawtio via the 'Discover' tab.
+When running the application from the runnable JAR or native binary, you'll need to choose 'Add Connection' from the 'Remote' tab and add a connection for http://localhost:8778/jolokia/.
+
+When deploying to Kubernetes or Openshift, you can use https://github.com/hawtio/hawtio-online[Hawtio Online]. The `camel-quarkus-jolokia` extension will automatically configure the application to be discoverable from the Hawtio Online console.
 
 === Package and run the application
 

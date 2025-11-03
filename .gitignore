@@ -41,3 +41,10 @@ nb-configuration.xml
 
 # Quarkus
 quarkus.log*
+
+# Saga
+payment.*
+flight.*
+train.*
+app.*
+

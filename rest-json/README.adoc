@@ -23,8 +23,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode
 
 Then point your browser to one of the endpoints:
 
-* http://localhost:8080/fruits
-* http://localhost:8080/legumes
+* http://localhost:8080/fruits.html
+* http://localhost:8080/legumes.html
 
 === Package and run the application
 

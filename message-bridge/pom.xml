@@ -22,13 +22,13 @@
 
     <artifactId>camel-quarkus-examples-message-bridge</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.9.0</version>
+    <version>3.29.0</version>
 
     <name>Camel Quarkus :: Examples :: Message Bridge</name>
     <description>Camel Quarkus Example :: Configure XA Transactions and connection pooling</description>
 
     <properties>
-        <quarkus.platform.version>3.9.1</quarkus.platform.version>
+        <quarkus.platform.version>3.29.0</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
@@ -38,21 +38,18 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
-        <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
+        <maven.compiler.release>17</maven.compiler.release>
 
-        <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
-        <impsort-maven-plugin.version>1.9.0</impsort-maven-plugin.version>
-        <license-maven-plugin.version>4.2</license-maven-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
+        <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
+        <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
 
-        <quarkus-artemis-jms.version>3.1.4</quarkus-artemis-jms.version>
-        <assertj.version>3.24.2</assertj.version>
+        <quarkiverse-artemis.version>3.10.1</quarkiverse-artemis.version>
+        <assertj.version>3.27.6</assertj.version>
     </properties>
 
     <dependencyManagement>
@@ -110,7 +107,7 @@
         <dependency>
             <groupId>io.quarkiverse.artemis</groupId>
             <artifactId>quarkus-artemis-jms</artifactId>
-            <version>${quarkus-artemis-jms.version}</version>
+            <version>${quarkiverse-artemis.version}</version>
         </dependency>
 
         <!-- Test -->
@@ -122,12 +119,6 @@
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkiverse.artemis</groupId>
-            <artifactId>quarkus-test-artemis</artifactId>
-            <version>${quarkus-artemis-jms.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

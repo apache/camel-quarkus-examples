@@ -1,0 +1,112 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fhir-server-deployment
+  labels:
+    app.kubernetes.io/name: camel-quarkus-examples-fhir
+    app.kubernetes.io/version: 3.29.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: camel-quarkus-examples-fhir
+      app.kubernetes.io/version: 3.29.0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: camel-quarkus-examples-fhir
+        app.kubernetes.io/version: 3.29.0
+    spec:
+      # Work around container permissions issues for /app/target
+      # https://github.com/hapifhir/hapi-fhir-jpaserver-starter/issues/519
+      initContainers:
+        - name: init-container
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /app/target']
+          volumeMounts:
+            - name: shared-data
+              mountPath: /app/target
+      containers:
+        - name: fhir-server
+          image: mirror.gcr.io/hapiproject/hapi:v7.4.0
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: hapi.fhir.fhir_version
+              value: "R4"
+            - name: hapi.fhir.allow_multiple_delete
+              value: "true"
+            - name: hapi.fhir.reuse_cached_search_results_millis
+              value: "-1"
+          volumeMounts:
+            - name: shared-data
+              mountPath: /app/target
+            - mountPath: /tmp
+              name: tmp
+          livenessProbe:
+            initialDelaySeconds: 30
+            failureThreshold: 5
+            successThreshold: 1
+            periodSeconds: 15
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+          readinessProbe:
+            initialDelaySeconds: 30
+            failureThreshold: 5
+            successThreshold: 1
+            periodSeconds: 15
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+          startupProbe:
+            initialDelaySeconds: 30
+            failureThreshold: 60
+            successThreshold: 1
+            periodSeconds: 10
+            timeoutSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+      volumes:
+        - name: shared-data
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/name: camel-quarkus-examples-fhir
+    app.kubernetes.io/version: 3.29.0
+  name: fhir-server
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: camel-quarkus-examples-fhir
+    app.kubernetes.io/version: 3.29.0
+  type: ClusterIP

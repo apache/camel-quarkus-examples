@@ -16,14 +16,19 @@
  */
 package org.acme.observability;
 
+import java.time.Duration;
 import java.util.Arrays;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
+import org.awaitility.Awaitility;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @QuarkusTest
@@ -44,28 +49,29 @@ public class ObservabilityTest {
     @Test
     public void metrics() {
         // Verify Camel metrics are available
-        String prometheusMetrics = RestAssured
-                .get(getManagementPrefix() + "/q/metrics")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body().asString();
-
-        assertEquals(3,
-                Arrays.stream(prometheusMetrics.split("\n")).filter(line -> line.contains("purpose=\"example\"")).count());
+        Awaitility.await().pollInterval(Duration.ofSeconds(5)).atMost(Duration.ofMinutes(1)).untilAsserted(() -> {
+            String prometheusMetrics = RestAssured
+                    .get(getManagementPrefix() + "/observe/metrics")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .body().asString();
+            assertEquals(3,
+                    Arrays.stream(prometheusMetrics.split("\n")).filter(line -> line.contains("purpose=\"example\"")).count());
+        });
     }
 
     @Test
     public void health() {
         // Verify liveness
-        RestAssured.get(getManagementPrefix() + "/q/health/live")
+        RestAssured.get(getManagementPrefix() + "/observe/health/live")
                 .then()
                 .statusCode(200)
                 .body("status", is("UP"),
                         "checks.findAll { it.name == 'custom-liveness-check' }.status", Matchers.contains("UP"));
 
         // Verify readiness
-        RestAssured.get(getManagementPrefix() + "/q/health/ready")
+        RestAssured.get(getManagementPrefix() + "/observe/health/ready")
                 .then()
                 .statusCode(200)
                 .body("status", is("UP"),
@@ -74,5 +80,19 @@ public class ObservabilityTest {
                         "checks.findAll { it.name == 'context' }.status", Matchers.contains("UP"),
                         "checks.findAll { it.name == 'camel-routes' }.status", Matchers.contains("UP"),
                         "checks.findAll { it.name == 'camel-consumers' }.status", Matchers.contains("UP"));
+    }
+
+    @Test
+    public void jolokia() {
+        RestAssured.port = 8778;
+        String applicationName = ConfigProvider.getConfig().getValue("quarkus.application.name", String.class);
+        RestAssured.given()
+                .get("/jolokia/")
+                .then()
+                .statusCode(200)
+                .body(
+                        "status", equalTo(200),
+                        "value.config.agentDescription", equalTo(applicationName),
+                        "value.details.url", matchesPattern("http://.*:8778/jolokia/?"));
     }
 }

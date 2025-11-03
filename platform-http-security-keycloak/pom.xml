@@ -22,13 +22,13 @@
 
     <artifactId>camel-quarkus-examples-platform-http-security-keycloak</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.9.0</version>
+    <version>3.29.0</version>
 
     <name>Camel Quarkus :: Examples :: Platform HTTP Security Keycloak</name>
     <description>Camel Quarkus Example :: Platform HTTP Security Keycloak</description>
 
     <properties>
-        <quarkus.platform.version>3.9.1</quarkus.platform.version>
+        <quarkus.platform.version>3.29.0</quarkus.platform.version>
         <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
@@ -38,18 +38,15 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.testTarget>${maven.compiler.target}</maven.compiler.testTarget>
-        <maven.compiler.testSource>${maven.compiler.source}</maven.compiler.testSource>
+        <maven.compiler.release>17</maven.compiler.release>
 
-        <formatter-maven-plugin.version>2.23.0</formatter-maven-plugin.version>
-        <impsort-maven-plugin.version>1.9.0</impsort-maven-plugin.version>
-        <license-maven-plugin.version>4.2</license-maven-plugin.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
+        <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
+        <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -256,7 +253,7 @@
                 </property>
             </activation>
             <properties>
-                <quarkus.package.type>native</quarkus.package.type>
+                <quarkus.native.enabled>true</quarkus.native.enabled>
             </properties>
             <build>
                 <plugins>
@@ -271,7 +268,7 @@
                                 </goals>
                                 <configuration>
                                     <systemPropertyVariables>
-                                        <quarkus.package.type>${quarkus.package.type}</quarkus.package.type>
+                                        <quarkus.native.enabled>${quarkus.native.enabled}</quarkus.native.enabled>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>

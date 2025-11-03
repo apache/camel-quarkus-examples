@@ -38,7 +38,7 @@ public class CamelUptimeHealthCheck implements HealthCheck {
     public HealthCheckResponse call() {
         HealthCheckResponseBuilder builder = HealthCheckResponse.named("Uptime readiness check");
 
-        if (camelContext.getUptimeMillis() > 0) {
+        if (camelContext.getUptime().toMillis() > 0) {
             builder.up();
         } else {
             builder.down();

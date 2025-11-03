@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Iterates over all available examples and calls mvnd with the specified arguments for each of them
+
+set -x
+set -e
+
+pwd="$(pwd)"
+for moduleDir in $(ls -d */)
+do
+    if [ -f "${pwd}/${moduleDir}/pom.xml" ]; then
+        cd "${pwd}/${moduleDir}"
+        mvnd -1 "$@"
+        cp ../eclipse-formatter-config.xml .
+    fi
+done
+
+cd "${pwd}"
+mvnd org.l2x6.cq:cq-maven-plugin:0.33.0:update-examples-json -1
+
