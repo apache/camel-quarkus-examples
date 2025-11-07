@@ -86,7 +86,7 @@ $ export brokers=<YOUR_KAFKA_BROKERS_URL>
 $ export id=<YOUR_KAFKA_SASL_CLIENT_ID>
 $ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
 ----
--SASL Oauth Bearer
+- SASL Oauth Bearer
 [source,shell]
 ----
 $ export brokers=<YOUR_KAFKA_BROKERS_URL>
