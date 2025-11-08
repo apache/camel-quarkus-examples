@@ -20,18 +20,26 @@ package org.acme.resource;
 import java.util.Map;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import org.apache.commons.lang3.SystemUtils;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
 public class CustomPahoTestResource implements QuarkusTestResourceLifecycleManager {
-    private static final String IMAGE_NAME = "quay.io/artemiscloud/activemq-artemis-broker:1.0.26";
+    private static String IMAGE_NAME;
     private static final String AMQ_USER = "admin";
     private static final String AMQ_PASSWORD = "admin";
     private static final String AMQ_EXTRA_ARGS = "--relax-jolokia --no-autotune --mapped --no-fsync --java-options=-Dbrokerconfig.maxDiskUsage=-1";
     private GenericContainer<?> container;
 
+
     @Override
     public Map<String, String> start() {
+    if ("ppc64le".equals(SystemUtils.OS_ARCH))
+            IMAGE_NAME = "icr.io/ppc64le-oss/activemq-artemis-broker-ppc64le:2.0.2";
+    else
+	    IMAGE_NAME = "quay.io/artemiscloud/activemq-artemis-broker:1.0.26";
+
+
         container = new GenericContainer<>(DockerImageName.parse(IMAGE_NAME))
                 .withExposedPorts(61616, 8161, 1883)
                 .withEnv("AMQ_USER", AMQ_USER)
