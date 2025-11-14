@@ -30,7 +30,6 @@ public class CustomPahoTestResource implements QuarkusTestResourceLifecycleManag
     private static final String AMQ_EXTRA_ARGS = "--relax-jolokia --no-autotune --mapped --no-fsync --java-options=-Dbrokerconfig.maxDiskUsage=-1";
     private GenericContainer<?> container;
 
-
     @Override
     public Map<String, String> start() {
         String imageName = "quay.io/artemiscloud/activemq-artemis-broker:1.0.26";
