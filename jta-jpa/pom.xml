@@ -21,17 +21,17 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.camel.quarkus.examples</groupId>
     <artifactId>camel-quarkus-examples-jta-jpa</artifactId>
-    <version>3.30.0</version>
+    <version>3.31.0-SNAPSHOT</version>
     <name>Camel Quarkus :: Examples :: JTA JPA</name>
     <description>Camel Quarkus Example :: JTA JPA</description>
     <properties>
-        <quarkus.platform.version>3.30.1</quarkus.platform.version>
-        <camel-quarkus.platform.version>${quarkus.platform.version}</camel-quarkus.platform.version>
+        <quarkus.platform.version>3.30.0</quarkus.platform.version>
+        <camel-quarkus.platform.version>3.31.0-SNAPSHOT</camel-quarkus.platform.version>
 
-        <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-        <camel-quarkus.platform.group-id>${quarkus.platform.group-id}</camel-quarkus.platform.group-id>
-        <camel-quarkus.platform.artifact-id>quarkus-camel-bom</camel-quarkus.platform.artifact-id>
+        <camel-quarkus.platform.group-id>org.apache.camel.quarkus</camel-quarkus.platform.group-id>
+        <camel-quarkus.platform.artifact-id>camel-quarkus-bom</camel-quarkus.platform.artifact-id>
 
         <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.12.0</impsort-maven-plugin.version>
