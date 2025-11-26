@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-saga</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.30.0-SNAPSHOT</version>
+    <version>3.30.0</version>
 
     <name>Camel Quarkus :: Examples :: Saga</name>
     <description>Camel Quarkus Example :: Saga</description>
