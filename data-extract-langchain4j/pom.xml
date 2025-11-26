@@ -53,7 +53,7 @@
         <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
 
         <langchain4j.version>1.7.1</langchain4j.version>
-        <wiremock.version>3.13.1</wiremock.version>
+        <wiremock.version>3.13.2</wiremock.version>
     </properties>
 
     <dependencyManagement>
