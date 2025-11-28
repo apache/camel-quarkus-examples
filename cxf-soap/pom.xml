@@ -165,6 +165,7 @@
                     <groupId>${quarkus.platform.group-id}</groupId>
                     <artifactId>quarkus-maven-plugin</artifactId>
                     <version>${quarkus.platform.version}</version>
+                    <extensions>true</extensions>
                 </plugin>
 
                 <plugin>
