@@ -27,7 +27,7 @@ import org.apache.camel.component.cxf.jaxws.CxfEndpoint;
  * This class demonstrate how to expose a SOAP endpoint starting from java classes
  */
 @ApplicationScoped
-public class MyPojoRouteBuilder extends RouteBuilder {
+public class PojoCxfConsumerRouteBuilder extends RouteBuilder {
 
     @Produces
     @ApplicationScoped

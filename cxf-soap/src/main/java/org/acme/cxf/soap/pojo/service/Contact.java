@@ -38,6 +38,9 @@ public class Contact {
     private Address address;
     private ContactType type;
 
+    public Contact() {
+    }
+
     public String getName() {
         return name;
     }
