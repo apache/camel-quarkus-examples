@@ -16,6 +16,7 @@
  */
 package org.acme.cxf.soap.pojo.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
@@ -28,14 +29,14 @@ import jakarta.xml.bind.annotation.XmlType;
 })
 public class Contacts {
 
-    private Collection<Contact> contacts;
+    private Collection<Contact> contacts = new ArrayList<>();
 
     public Contacts() {
     }
 
     public Contacts(Collection<Contact> contacts) {
         super();
-        this.contacts = contacts;
+        this.contacts = (contacts != null) ? contacts : new ArrayList<>();
     }
 
     public Collection<Contact> getContacts() {
@@ -43,6 +44,6 @@ public class Contacts {
     }
 
     public void setContacts(Collection<Contact> contacts) {
-        this.contacts = contacts;
+        this.contacts = (contacts != null) ? contacts : new ArrayList<>();
     }
 }

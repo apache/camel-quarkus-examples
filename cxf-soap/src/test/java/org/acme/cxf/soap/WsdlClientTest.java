@@ -25,6 +25,7 @@ import com.example.customerservice.CustomerService;
 import com.example.customerservice.NoSuchCustomerException;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.xml.ws.soap.SOAPFaultException;
+import org.acme.cxf.soap.utils.CxfServerUtils;
 import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.frontend.ClientProxyFactoryBean;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
@@ -37,12 +38,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 @QuarkusTest
-public class WsdlClientTest extends BaseTest {
+public class WsdlClientTest {
 
     CustomerService cxfClient;
 
     protected CustomerService createCustomerClient() {
-        String URL = getServerUrl() + "/cxf/services/customer";
+        String URL = CxfServerUtils.getServerUrl() + "/customer";
 
         ClientProxyFactoryBean factory = new JaxWsProxyFactoryBean();
         factory.setServiceClass(CustomerService.class);
