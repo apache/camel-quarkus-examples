@@ -4,6 +4,8 @@
 {cq-description}
 
 In this example we will create two SOAP webservices with two different approaches. Both services will use Camel routes as service implementation exposed via CXF component.
+We will then communicate with the SOAP webservices (Camel consumer) directly via SOAP messages (ie. with `curl`).
+Later we will also leverage Camel producer to send SOAP messages to our exposed SOAP webservices.
 
 == WSDL first
 
@@ -36,6 +38,20 @@ The exposed contact web service will enable five operations - `addContact`, `get
 
 TIP: If you would like to only generate WSDL from Java, you can follow the https://quarkiverse.github.io/quarkiverse-docs/quarkus-cxf/dev/user-guide/generate-wsdl-from-java.html[WSDL from Java] chapter of Quarkus CXF documentation.
 
+== Camel producer
+The approach mentioned above concerned the creation of SOAP webservices.
+We will also describe how to create a client using the Camel Quarkus CXF SOAP producer.
+You can observe `org.acme.cxf.soap.pojo.PojoCxfProducerRouteBuilder` where we are creating the `CxfEndpoint` which is used in the route in form of Camel producer.
+
+It can typically looks like:
+[source,java]
+----
+from("direct:contact")
+    .to("cxf:bean:soapClientEndpointPojo");
+----
+
+For purpose of easier testing this approach we also added Camel Quarkus REST endpoint which will be used as external entry point for invoking the producer.
+
 == Start in the Development mode
 
 [source,shell]
@@ -52,6 +68,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode
 [[playground]]
 
 == Playground
+=== Interacting directly via SOAP messages
 
 We can first try to add a contact with:
 
@@ -152,6 +169,26 @@ To discover WSDLs of our services, you can use:
 $ curl "http://localhost:8080/cxf/services/contact?wsdl"
 $ curl "http://localhost:8080/cxf/services/customer?wsdl"
 ----
+
+=== Interacting via Camel Quarkus CXF producer
+We can also use Camel producer to interact with our exposed SOAP webservice.
+For testing purpose, we've also exposed REST endpoints to easily approach it externally.
+
+Firstly we will add new contact with:
+[source, shell]
+----
+$ curl -X POST -H "Content-Type: application/json" --data '{"name":"Lukas","address":{"city":"Czech Republic","street":"Random Street"},"type":"OTHER"}' "http://localhost:8080/producer/contact?operationName=addContact"
+----
+Then we will request all contacts with:
+[source, shell]
+----
+$ curl -X GET "http://localhost:8080/producer/contacts?operationName=getContacts"
+----
+
+Which should return something like:
+```
+{"contacts":[{"name":"Lukas","address":{"city":"Czech Republic","street":"Random Street"},"type":"OTHER"}]}
+```
 
 == Package and run the application
 
