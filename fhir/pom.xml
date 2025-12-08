@@ -217,6 +217,7 @@
                             <exclude>**/NOTICE</exclude>
                             <exclude>**/README</exclude>
                             <exclude>**/pom.xml.versionsBackup</exclude>
+                            <exclude>**/quarkus.log*</exclude>
                             <exclude>**/*.patient</exclude>
                         </excludes>
                         <mapping>

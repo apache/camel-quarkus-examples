@@ -204,6 +204,7 @@
                             <exclude>**/NOTICE</exclude>
                             <exclude>**/README</exclude>
                             <exclude>**/pom.xml.versionsBackup</exclude>
+                            <exclude>**/quarkus.log*</exclude>
                         </excludes>
                         <mapping>
                             <java>SLASHSTAR_STYLE</java>
