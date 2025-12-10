@@ -1,0 +1,43 @@
+language: java
+
+jdk:
+  - openjdk17
+
+env:
+  - TEST_MODULES=camel-quarkus-bom,camel-quarkus-component-aws,camel-quarkus-component-azure,camel-quarkus-component-google-cloud,camel-quarkus-component-kafka,camel-quarkus-component-netty,camel-quarkus-component-rest-java,camel-quarkus-component-servlet,camel-quarkus-component-spring,camel-quarkus-component-vertx,camel-quarkus-starter,camel-quarkus-tracing,camel-quarkus-integration-tests 
+
+before_install:
+  - sudo apt install groovy -y --no-install-recommends
+
+install: true
+
+script:
+  - BUILD_FAILURES=()
+  - for MODULE in ${TEST_MODULES//,/ }; do
+      cd $MODULE
+      ../mvnw clean verify -Dformatter.skip -Dimpsort.skip -Dquarkus.native.builder-image.pull=missing -Pnative,docker,ci
+      if [[ $? -ne 0 ]]; then
+        BUILD_FAILURES[${#BUILD_FAILURES[@]}]=${MODULE}
+      fi
+      cd -
+    done
+  - if [[ ${#BUILD_FAILURES[@]} -gt 0 ]]; then
+      echo -e "\nBuild errors were encountred in the following projects:\n"
+      for FAILURE in ${BUILD_FAILURES[@]}; do
+        echo "* $FAILURE"
+      done
+      echo -e "\nCheck build logs for further information."
+      exit 1
+    fi
+
+cache:
+  directories:
+    - $HOME/.m2/repository
+
+notifications:
+  email:
+    recipients:
+      - builds@camel.apache.org
+      - notif@camel.apache.org
+    on_success: always
+    on_failure: always
