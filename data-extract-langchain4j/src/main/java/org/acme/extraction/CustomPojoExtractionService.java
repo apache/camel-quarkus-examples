@@ -22,7 +22,9 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection(targets = LocalDate.class)
 public interface CustomPojoExtractionService {
 
     class CustomPojo {
@@ -48,9 +50,10 @@ public interface CustomPojoExtractionService {
         }
     }
 
-    String CUSTOM_POJO_EXTRACT_PROMPT = "Extract information about a customer from the text delimited by triple backticks: ```{{text}}```."
+    String CUSTOM_POJO_EXTRACT_PROMPT = "Extract information about a customer from the transcript delimited by triple backticks: ```{{text}}```."
             + "The customerBirthday field should be formatted as {{dateFormat}}."
-            + "The summary field should concisely relate the customer main ask.";
+            + "The summary field should concisely relate the customer main ask."
+            + "Source any extracted field values from what is explicitly mentioned in the transcript.";
 
     /**
      * The text and dateFormat parameters of this method are automatically injected as {{text}} & {{dateFormat}} in the

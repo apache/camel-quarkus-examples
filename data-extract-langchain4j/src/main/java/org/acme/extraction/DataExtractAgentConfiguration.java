@@ -18,6 +18,7 @@ package org.acme.extraction;
 
 import java.time.Duration;
 
+import dev.langchain4j.model.chat.Capability;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import io.smallrye.common.annotation.Identifier;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -43,6 +44,7 @@ public class DataExtractAgentConfiguration {
                 .topK(1)
                 .topP(0.1)
                 .modelName(chatModelId)
+                .supportedCapabilities(Capability.RESPONSE_FORMAT_JSON_SCHEMA)
                 .temperature(0.0)
                 .timeout(Duration.ofMinutes(3))
                 .build());
