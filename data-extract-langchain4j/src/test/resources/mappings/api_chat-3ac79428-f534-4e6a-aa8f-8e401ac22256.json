@@ -1,0 +1,24 @@
+{
+  "id" : "3ac79428-f534-4e6a-aa8f-8e401ac22256",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite3.3:2b\",\n  \"messages\" : [ {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the transcript delimited by triple backticks: ```Operator: Hello, how may I help you?\\nCustomer: Hello, I am currently at the police station because I've got an accident. The police would need a proof that I have an insurance. Could you please help me?\\nOperator: Sure, could you please remind me your name and birth date?\\nCustomer: Of course, my name is Kate Hart and I was born on August the thirteen in the year nineteen ninety nine.\\nOperator: I'm sorry Kate, but we don't have any contract in our records.\\nCustomer: Oh, I'm sorry that I've made a mistake. Actually, my last name is not Hart, but Boss. It changed since I'm married.\\nOperator: Indeed, I have now found your contract and everything looks good. Shall I send the proof of insurance to the police station?\\nCustomer: Oh, if possible, my husband will go directly to your office in order to get it.\\nOperator: Yes, that's possible. I will let the paper at the entrance. Your beloved could just ask it to the front desk.\\nCustomer: Many thanks. I'm happy. You made a great job, I'm satisfied.\\nOperator: Sure, you're welcome Kate. Please come back to us any time in case more information is needed. Bye.\\nCustomer: Bye.```.The customerBirthday field should be formatted as YYYY-MM-DD.The summary field should concisely relate the customer main ask.Source any extracted field values from what is explicitly mentioned in the transcript.\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 1,\n    \"top_p\" : 0.1,\n    \"stop\" : [ ]\n  },\n  \"format\" : {\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"customerSatisfied\" : {\n      \"type\" : \"boolean\"\n    },\n    \"customerName\" : {\n      \"type\" : \"string\"\n    },\n    \"customerBirthday\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"year\" : {\n          \"type\" : \"integer\"\n        },\n        \"month\" : {\n          \"type\" : \"integer\"\n        },\n        \"day\" : {\n          \"type\" : \"integer\"\n        }\n      },\n      \"required\" : [ ]\n    },\n    \"summary\" : {\n      \"type\" : \"string\"\n    }\n  },\n  \"required\" : [ \"customerSatisfied\", \"customerName\", \"customerBirthday\", \"summary\" ]\n},\n  \"stream\" : false,\n  \"tools\" : [ ]\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite3.3:2b\",\"created_at\":\"2025-12-18T13:25:52.676173019Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Kate Boss\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 1999, \\\"month\\\": 8, \\\"day\\\": 13},\\n  \\\"summary\\\": \\\"The customer, Kate Boss, needed to provide proof of insurance at the police station due to an accident. Initially, there was a misunderstanding regarding her last name, but it was clarified. The operator located her contract and offered to send the proof of insurance directly to the police station. However, the customer preferred her husband to collect it from the office. The customer expressed satisfaction with the operator's assistance.\\\"\\n}\"},\"done_reason\":\"stop\",\"done\":true,\"total_duration\":12099522028,\"load_duration\":11182294,\"prompt_eval_count\":404,\"prompt_eval_duration\":5432853467,\"eval_count\":149,\"eval_duration\":6654522875}",
+    "headers" : {
+      "Date" : "Thu, 18 Dec 2025 13:25:52 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "3ac79428-f534-4e6a-aa8f-8e401ac22256",
+  "persistent" : true,
+  "insertionIndex" : 4
+}
