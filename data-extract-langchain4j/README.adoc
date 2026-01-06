@@ -31,7 +31,7 @@ After a moment, a log like below should be output:
 
 [source,shell]
 ----
-time=2024-10-08T12:43:43.329Z level=INFO source=types.go:107 msg="inference compute" id=0 library=cpu variant=avx2 compute="" driver=0.0 name="" total="62.5 GiB" available="52.4 GiB"
+time=2026-01-06T14:21:55.578Z level=INFO source=types.go:130 msg="inference compute" id=0 library=cpu variant="" compute="" driver=0.0 name="" total="62.2 GiB" available="49.9 GiB"
 ----
 
 Then, download the codellama model, in a second shell type:
@@ -83,7 +83,7 @@ The Camel route should output a log as below:
 
 [source,shell]
 ----
-024-09-03 10:14:34,757 INFO  [route1] (Camel (camel-1) thread #1 - file://target/transcripts) A document has been received by the camel-quarkus-file extension: {
+2026-01-06 15:24:48,298 INFO  [route1] (Camel (camel-1) thread #1 - file://target/transcripts) A document has been received by the camel-quarkus-file extension: {
   "id": 1,
   "content": "Operator: Hello, how may I help you ?\nCustomer: Hello, I'm calling because I need to declare an accident on my main vehicle.\nOperator: Ok, can you please give me your name ?\nCustomer: My name is Sarah London.\nOperator: Could you please give me your birth date ?\nCustomer: 1986, July the 10th.\nOperator: Ok, I've got your contract and I'm happy to share with you that we'll be able to reimburse all expenses linked to this accident.\nCustomer: Oh great, many thanks."
 }
@@ -99,20 +99,20 @@ At the end, we are provided with a Plain Old Java Object (POJO) handling the ext
 
 [source,shell]
 ----
-2024-09-03 10:14:51,284 INFO  [org.acm.ext.CustomPojoStore] (Camel (camel-1) thread #1 - file://target/transcripts) An extracted POJO has been added to the store: 
+2026-01-06 15:24:56,889 INFO  [org.acme.extraction.CustomPojoStore] (Camel (camel-1) thread #1 - file://target/transcripts) An extracted POJO has been added to the store: 
 {
     "customerSatisfied": "true",
     "customerName": "Sarah London",
     "customerBirthday": "10 July 1986",
-    "summary": "The customer, Sarah London, called to declare an accident on her main vehicle and was informed that all expenses related to the accident would be reimbursed."
+    "summary": "The customer, Sarah London, is calling to declare an accident and seek reimbursement for related expenses."
 }
 ----
 
-See how the LLM shows its capacity to:
- * Extract a human friendly sentiment like `customerSatisfied`
- * Exhibits https://nlp.stanford.edu/projects/coref.shtml#:~:text=Overview,question%20answering%2C%20and%20information%20extraction.[coreference resolution], like `customerName` that is deduced from information spread in the whole conversation
- * Manage issues related to date format, like the field `customerBirthday`
- * Mixed structured and unstructured data (semi-structured data) with the field `summary`.
+.See how the LLM shows its capacity to:
+* Extract a human friendly sentiment like `customerSatisfied`
+* Exhibits https://nlp.stanford.edu/projects/coref.shtml#:~:text=Overview,question%20answering%2C%20and%20information%20extraction.[coreference resolution], like `customerName` that is deduced from information spread in the whole conversation
+* Manage issues related to date format, like the field `customerBirthday`
+* Mixed structured and unstructured data (semi-structured data) with the field `summary`.
 
 Notice how all of this is computed simultaneously during a single LLM inference.
 
@@ -121,7 +121,7 @@ For each of them, it could be interesting to compare the unstructured input text
 
 Details of the LangChain4j `AiService` setup can be found in class `CustomPojoExtractionService`.
 
-Details of the custom data extract `camel-langchain4j-agent` AI agent implementation can be found in classes `DataExtractAgent` and `DataExtractConfiguration`.
+Details of the custom data extract `camel-langchain4j-agent` AI agent implementation can be found in classes `DataExtractAgent` and `DataExtractAgentConfiguration`.
 
 ==== Native mode
 
