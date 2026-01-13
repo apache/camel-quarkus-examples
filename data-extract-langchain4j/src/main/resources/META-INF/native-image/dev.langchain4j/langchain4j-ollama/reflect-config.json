@@ -1,7 +1,0 @@
-[
-  {
-    "name" : "dev.langchain4j.model.ollama.OllamaChatRequest",
-    "allDeclaredFields" : true,
-    "allPublicFields" : true
-  }
-]
