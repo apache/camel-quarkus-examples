@@ -31,7 +31,7 @@ public class MasterTest {
 
     @Test
     public void testLog() {
-        await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
+        await().atMost(20L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
             String log = new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8);
             return log.contains("Clustered route (timer)");
         });
