@@ -27,8 +27,8 @@ import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -65,7 +65,7 @@ public class Aws2S3TestResource implements QuarkusTestResourceLifecycleManager {
                 .parse(config.getValue("localstack.container.image", String.class))
                 .asCompatibleSubstituteFor("localstack/localstack");
         localstack = new LocalStackContainer(imageName)
-                .withServices(LocalStackContainer.Service.S3)
+                .withServices("s3")
                 .withEnv("LS_LOG", "info")
                 .withEnv("AWS_ACCESS_KEY_ID", "testAccessKeyId")
                 .withEnv("AWS_SECRET_ACCESS_KEY", "testSecretKeyId")
@@ -76,8 +76,7 @@ public class Aws2S3TestResource implements QuarkusTestResourceLifecycleManager {
                 "camel.component.aws2-s3.secretKey", localstack.getSecretKey(),
                 "camel.component.aws2-s3.region", localstack.getRegion(),
                 "camel.component.aws2-s3.override-endpoint", "true",
-                "camel.component.aws2-s3.uri-endpoint-override",
-                localstack.getEndpointOverride(LocalStackContainer.Service.S3).toString(),
+                "camel.component.aws2-s3.uri-endpoint-override", localstack.getEndpoint().toString(),
                 "cq.aws2-s3.example.bucketName", createBucket());
     }
 
@@ -86,7 +85,7 @@ public class Aws2S3TestResource implements QuarkusTestResourceLifecycleManager {
         clientBuilder
                 .credentialsProvider(StaticCredentialsProvider
                         .create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
-                .endpointOverride(localstack.getEndpointOverride(LocalStackContainer.Service.S3))
+                .endpointOverride(localstack.getEndpoint())
                 .region(Region.of(localstack.getRegion()));
         final S3Client s3Client = clientBuilder.build();
 
