@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Timer to Log</description>
 
     <properties>
-        <quarkus.platform.version>3.30.1</quarkus.platform.version>
+        <quarkus.platform.version>3.31.0.CR1</quarkus.platform.version>
         <camel-quarkus.platform.version>3.31.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
@@ -96,7 +96,7 @@
         <!-- Test -->
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-junit5</artifactId>
+            <artifactId>quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
