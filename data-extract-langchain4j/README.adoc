@@ -15,7 +15,7 @@ In this example, we'll convert those text conversations into Java Objects that c
 image::schema.png[]
 
 In order to achieve this extraction, we'll need a https://en.wikipedia.org/wiki/Large_language_model[Large Language Model (LLM)] and related serving framework that natively supports https://ollama.com/blog/structured-outputs[JSON structured output].
-Here, we choose https://ollama.com/library/granite3.3:2b[granite3.3:2b] served through https://ollama.com/[ollama] as it seems compute friendly and under Apache V2 license.
+Here, we choose https://ollama.com/library/granite4:3b-h[granite4:3b-h] served through https://ollama.com/[ollama] as it seems compute friendly and under Apache V2 license.
 In order to request inference to the served model, we'll use the high-level LangChain4j APIs like https://docs.langchain4j.dev/tutorials/ai-services[AiServices].
 
 === Start the Large Language Model
@@ -24,21 +24,21 @@ Let's start a container to serve the LLM with Ollama, in a first shell type:
 
 [source,shell]
 ----
-docker run --rm -it -v cqex-data-extract-ollama:/root/.ollama -p 11434:11434 --name cqex-data-extract-ollama ollama/ollama:0.9.3
+docker run --rm -it -v cqex-data-extract-ollama:/root/.ollama -p 11434:11434 --name cqex-data-extract-ollama ollama/ollama:0.14.1
 ----
 
 After a moment, a log like below should be output:
 
 [source,shell]
 ----
-time=2026-01-06T14:21:55.578Z level=INFO source=types.go:130 msg="inference compute" id=0 library=cpu variant="" compute="" driver=0.0 name="" total="62.2 GiB" available="49.9 GiB"
+time=2026-01-07T14:28:19.092Z level=INFO source=types.go:60 msg="inference compute" id=cpu library=cpu compute="" name=cpu description=cpu libdirs=ollama driver="" pci_id="" type="" total="62.2 GiB" available="62.2 GiB"
 ----
 
 Then, download the codellama model, in a second shell type:
 
 [source,shell]
 ----
-docker exec -it cqex-data-extract-ollama ollama pull granite3.3:2b
+docker exec -it cqex-data-extract-ollama ollama pull granite4:3b-h
 ----
 
 After a moment, log like below should be output:

@@ -36,7 +36,7 @@ public class OllamaTestResource implements QuarkusTestResourceLifecycleManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(OllamaTestResource.class);
 
-    private static final String OLLAMA_IMAGE = "ollama/ollama:0.9.3";
+    private static final String OLLAMA_IMAGE = "ollama/ollama:0.14.1";
     private static final int OLLAMA_SERVER_PORT = 11434;
 
     private static final String MODE_MOCK = "mock";
