@@ -53,7 +53,8 @@ public interface CustomPojoExtractionService {
     String CUSTOM_POJO_EXTRACT_PROMPT = "Extract information about a customer from the transcript delimited by triple backticks: ```{{text}}```."
             + "The customerBirthday field should be formatted as {{dateFormat}}."
             + "The summary field should concisely relate the customer main ask."
-            + "Source any extracted field values from what is explicitly mentioned in the transcript.";
+            + "Source any extracted field values from what is explicitly mentioned in the transcript."
+            + "Extracted field values should be as accurate as possible.";
 
     /**
      * The text and dateFormat parameters of this method are automatically injected as {{text}} & {{dateFormat}} in the
