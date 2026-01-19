@@ -31,7 +31,9 @@ workspace. Any modifications in your project will automatically take effect in t
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
-// TODO: Describe how the user should interact with the example here
+=== Swagger UI
+
+You can interact with the Petstore REST APIs with the Quarkus Swagger UI. Open http://localhost:8080/q/swagger-ui in a web browser.
 
 === Package and run the application
 

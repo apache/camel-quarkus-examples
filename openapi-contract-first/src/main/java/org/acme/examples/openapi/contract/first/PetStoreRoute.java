@@ -18,7 +18,6 @@ package org.acme.examples.openapi.contract.first;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.rest.RestBindingMode;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import sample.petstore.model.Pet;
 import sample.petstore.model.Pet.StatusEnum;
@@ -34,10 +33,6 @@ public class PetStoreRoute extends RouteBuilder {
 
     @Override
     public void configure() throws Exception {
-        // turn on json binding and scan for POJO classes in the model package
-        restConfiguration().bindingMode(RestBindingMode.json)
-                .bindingPackageScan("sample.petstore.model");
-
         rest().openApi().specification("petstore.json").missingOperation("ignore");
 
         from("direct:getPetById")
