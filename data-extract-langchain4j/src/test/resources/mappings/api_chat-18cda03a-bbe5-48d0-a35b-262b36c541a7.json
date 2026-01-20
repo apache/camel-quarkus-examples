@@ -1,0 +1,24 @@
+{
+  "id" : "18cda03a-bbe5-48d0-a35b-262b36c541a7",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite4:3b-h\",\n  \"messages\" : [ {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the transcript delimited by triple backticks: ```Operator: Hello, how may I help you ?\\nCustomer: Hello, I'm calling because I need to declare an accident on my main vehicle.\\nOperator: Ok, can you please give me your name ?\\nCustomer: My name is Sarah London.\\nOperator: Could you please give me your birth date ?\\nCustomer: 1986, July the 10th.\\nOperator: Ok, I've got your contract and I'm happy to share with you that we'll be able to reimburse all expenses linked to this accident.\\nCustomer: Oh great, many thanks.```.The customerName field should be formatted as FIRSTNAME LASTNAME, for instance Isaac Newton.The summary field should concisely relate the customer main ask.Source any extracted field values from what is explicitly mentioned in the transcript.Extracted field values should be as accurate as possible.\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 1,\n    \"top_p\" : 0.1,\n    \"stop\" : [ ]\n  },\n  \"format\" : {\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"customerSatisfied\" : {\n      \"type\" : \"boolean\"\n    },\n    \"customerName\" : {\n      \"type\" : \"string\"\n    },\n    \"customerBirthday\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"year\" : {\n          \"type\" : \"integer\"\n        },\n        \"month\" : {\n          \"type\" : \"integer\"\n        },\n        \"day\" : {\n          \"type\" : \"integer\"\n        }\n      },\n      \"required\" : [ \"year\", \"month\", \"day\" ]\n    },\n    \"summary\" : {\n      \"type\" : \"string\"\n    }\n  },\n  \"required\" : [ \"customerSatisfied\", \"customerName\", \"customerBirthday\", \"summary\" ]\n},\n  \"stream\" : false,\n  \"tools\" : [ ]\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-01-20T14:46:58.833215508Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1986,\\n    \\\"month\\\": 7,\\n    \\\"day\\\": 10\\n  },\\n  \\\"summary\\\": \\\"The customer, Sarah London, needed to declare an accident on her main vehicle and was informed that all expenses linked to the accident would be reimbursed.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11185974927,\"load_duration\":1196566631,\"prompt_eval_count\":211,\"prompt_eval_duration\":4245459177,\"eval_count\":87,\"eval_duration\":4712126872}",
+    "headers" : {
+      "Date" : "Tue, 20 Jan 2026 14:46:58 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "18cda03a-bbe5-48d0-a35b-262b36c541a7",
+  "persistent" : true,
+  "insertionIndex" : 6
+}
