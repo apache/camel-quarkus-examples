@@ -1,0 +1,24 @@
+{
+  "id" : "d0af43a7-81b5-49cd-8624-a4c222c5eb4b",
+  "name" : "api_chat",
+  "request" : {
+    "url" : "/api/chat",
+    "method" : "POST",
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n  \"model\" : \"granite4:3b-h\",\n  \"messages\" : [ {\n    \"role\" : \"user\",\n    \"content\" : \"Extract information about a customer from the transcript delimited by triple backticks: ```Operator: Hello, how may I help you ?\\nCustomer: Hello, I'm John. I need to share a problem with you. Actually, the insurance has reimbursed only half the money I have spent due to the accident.\\nOperator: Hello John, could you please give me your last name so that I can find your contract.\\nCustomer: Sure, my surname is Doe.\\nOperator: And last thing, I need to know the date you were born.\\nCustomer: Yes, so I was born in 2001, actually during the first day of November.\\nOperator: Great, I see your contract now. Actually, the full reimbursement option has been cancelled automatically by our system. This explain the half reimbursement.\\nCustomer: Ah damn, this is not acceptable. I've not even been notified about this automatic change.\\nOperator: Oh, I'm sorry to hear that but the full reimbursement option was free for one year and at the time of subscription you were not interested in automatic renewal.\\nCustomer: I don't discuss that. The important fact is that I should have been notified.\\nOperator: Sure, I understand your resentment. The best I can do is to inform my manager.\\nCustomer: OK, let's do that. Good bye.\\nOperator: Good bye. And again let me apologize for the issue.```.The customerName field should be formatted as FIRSTNAME LASTNAME, for instance Isaac Newton.The summary field should concisely relate the customer main ask.Source any extracted field values from what is explicitly mentioned in the transcript.Extracted field values should be as accurate as possible.\"\n  } ],\n  \"options\" : {\n    \"temperature\" : 0.0,\n    \"top_k\" : 1,\n    \"top_p\" : 0.1,\n    \"stop\" : [ ]\n  },\n  \"format\" : {\n  \"type\" : \"object\",\n  \"properties\" : {\n    \"customerSatisfied\" : {\n      \"type\" : \"boolean\"\n    },\n    \"customerName\" : {\n      \"type\" : \"string\"\n    },\n    \"customerBirthday\" : {\n      \"type\" : \"object\",\n      \"properties\" : {\n        \"year\" : {\n          \"type\" : \"integer\"\n        },\n        \"month\" : {\n          \"type\" : \"integer\"\n        },\n        \"day\" : {\n          \"type\" : \"integer\"\n        }\n      },\n      \"required\" : [ \"year\", \"month\", \"day\" ]\n    },\n    \"summary\" : {\n      \"type\" : \"string\"\n    }\n  },\n  \"required\" : [ \"customerSatisfied\", \"customerName\", \"customerBirthday\", \"summary\" ]\n},\n  \"stream\" : false,\n  \"tools\" : [ ]\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 200,
+    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-01-20T14:47:13.730091697Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": false,\\n  \\\"customerName\\\": \\\"John Doe\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 2001,\\n    \\\"month\\\": 11,\\n    \\\"day\\\": 1\\n  },\\n  \\\"summary\\\": \\\"The customer, John Doe, is dissatisfied as his insurance company did not notify him about the cancellation of full reimbursement option after one year. He requested for a notification and was informed that the best they could do was to inform their manager.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":14851122117,\"load_duration\":56442194,\"prompt_eval_count\":363,\"prompt_eval_duration\":7657362565,\"eval_count\":106,\"eval_duration\":5876308381}",
+    "headers" : {
+      "Date" : "Tue, 20 Jan 2026 14:47:13 GMT",
+      "Content-Type" : "application/json; charset=utf-8"
+    }
+  },
+  "uuid" : "d0af43a7-81b5-49cd-8624-a4c222c5eb4b",
+  "persistent" : true,
+  "insertionIndex" : 5
+}
