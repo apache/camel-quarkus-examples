@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: Communication with Netty over TCP</description>
 
     <properties>
-        <quarkus.platform.version>3.31.0.CR1</quarkus.platform.version>
+        <quarkus.platform.version>3.31.0</quarkus.platform.version>
         <camel-quarkus.platform.version>3.31.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
@@ -85,6 +85,11 @@
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-bean</artifactId>
+        </dependency>
+        <!-- TODO: Remove this - currently required for integration tests to pass -->
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-platform-http</artifactId>
         </dependency>
 
         <!-- Test -->
