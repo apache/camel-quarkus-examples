@@ -16,7 +16,7 @@
  */
 package org.acme.extraction;
 
-import java.time.LocalDate;
+import java.time.Month;
 import java.util.Locale;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -24,42 +24,51 @@ import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-@RegisterForReflection(targets = LocalDate.class)
+@RegisterForReflection
 public interface CustomPojoExtractionService {
 
+    @RegisterForReflection(registerFullHierarchy = true)
     class CustomPojo {
         @JsonProperty(required = true)
         public boolean customerSatisfied;
         @JsonProperty(required = true)
         public String customerName;
         @JsonProperty(required = true)
-        public LocalDate customerBirthday;
+        public Birthday customerBirthday;
         @JsonProperty(required = true)
         public String summary;
 
         private final static String FORMAT = "\n{\n"
                 + "\t\"customerSatisfied\": \"%s\",\n"
                 + "\t\"customerName\": \"%s\",\n"
-                + "\t\"customerBirthday\": \"%td %tB %tY\",\n"
+                + "\t\"customerBirthday\": \"%02d %s %04d\",\n"
                 + "\t\"summary\": \"%s\"\n"
                 + "}\n";
 
         public String toString() {
-            return String.format(Locale.US, FORMAT, this.customerSatisfied, this.customerName, this.customerBirthday,
-                    this.customerBirthday, this.customerBirthday, this.summary);
+            return String.format(Locale.US, FORMAT, this.customerSatisfied, this.customerName, this.customerBirthday.day,
+                    Month.of(this.customerBirthday.month), this.customerBirthday.year, this.summary);
         }
     }
 
+    class Birthday {
+        @JsonProperty(required = true)
+        public int year;
+        @JsonProperty(required = true)
+        public short month;
+        @JsonProperty(required = true)
+        public short day;
+    }
+
     String CUSTOM_POJO_EXTRACT_PROMPT = "Extract information about a customer from the transcript delimited by triple backticks: ```{{text}}```."
-            + "The customerBirthday field should be formatted as {{dateFormat}}."
+            + "The customerName field should be formatted as FIRSTNAME LASTNAME, for instance Isaac Newton."
             + "The summary field should concisely relate the customer main ask."
             + "Source any extracted field values from what is explicitly mentioned in the transcript."
             + "Extracted field values should be as accurate as possible.";
 
     /**
-     * The text and dateFormat parameters of this method are automatically injected as {{text}} & {{dateFormat}} in the
-     * CUSTOM_POJO_EXTRACT_PROMPT.
+     * The text parameter of this method is automatically injected as {{text}} in the CUSTOM_POJO_EXTRACT_PROMPT.
      */
     @UserMessage(CUSTOM_POJO_EXTRACT_PROMPT)
-    CustomPojo extractFromText(@V("text") String text, @V("dateFormat") String dateFormat);
+    CustomPojo extractFromText(@V("text") String text);
 }

@@ -27,7 +27,6 @@ import org.apache.camel.component.langchain4j.agent.api.AiAgentBody;
  * Custom agent to extract data from text.
  */
 public class DataExtractAgent implements Agent {
-    public static final String DATE_FORMAT = "YYYY-MM-DD";
     private final AgentConfiguration configuration;
     private final CustomPojoStore pojoStore;
 
@@ -42,8 +41,8 @@ public class DataExtractAgent implements Agent {
      * Returns a JSON representation of a {@link CustomPojo}.
      */
     @Override
-    public String chat(AiAgentBody aiAgentBody, ToolProvider toolProvider) {
-        CustomPojo response = createService(toolProvider).extractFromText(aiAgentBody.getUserMessage(), DATE_FORMAT);
+    public String chat(AiAgentBody<?> aiAgentBody, ToolProvider toolProvider) {
+        CustomPojo response = createService(toolProvider).extractFromText(aiAgentBody.getUserMessage());
 
         // Store extracted CustomPojoExtractionService.CustomPojos objects into the CustomPojoStore for later inspection
         pojoStore.addPojo(response);
