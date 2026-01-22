@@ -143,7 +143,7 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Pnative
+$ mvn clean package -Dnative
 ----
 
 ==== Run script to execute services locally

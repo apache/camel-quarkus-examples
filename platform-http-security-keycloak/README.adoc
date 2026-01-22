@@ -156,7 +156,7 @@ To prepare a native executable using GraalVM, run the following command:
 [source,shell]
 ----
 $ export QUARKUS_OIDC_CREDENTIALS_SECRET=<insert-your-secret>
-$ mvn clean package -DskipTests -Pnative
+$ mvn clean package -DskipTests -Dnative
 $ ./target/*-runner
 ----
 
