@@ -220,7 +220,7 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Pnative
+$ mvn clean package -Dnative
 $ ./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.013s. Listening on: http://0.0.0.0:8080

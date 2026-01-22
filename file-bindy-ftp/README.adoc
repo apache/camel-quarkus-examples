@@ -96,7 +96,7 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Pnative
+$ mvn clean package -DskipTests -Dnative
 $ ./target/*-runner
 ----
 
