@@ -30,7 +30,7 @@
 
     <properties>
         <quarkus.platform.version>3.31.0</quarkus.platform.version>
-        <camel-quarkus.platform.version>3.31.0-SNAPSHOT</camel-quarkus.platform.version>
+        <camel-quarkus.platform.version>3.32.0-SNAPSHOT</camel-quarkus.platform.version>
         <quarkiverse-artemis.version>3.11.1</quarkiverse-artemis.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
