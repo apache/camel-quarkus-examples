@@ -29,7 +29,7 @@ It comes with the following capabilities.
 * `camel-quarkus-microprofile-health` for health checks
 * `camel-quarkus-management` for JMX monitoring and management
 * `camel-quarkus-micrometer` for Micrometer metrics, together with support for exporting them in Prometheus format
-* `camel-quarkus-opentelemetry` for tracing
+* `camel-quarkus-opentelemetry2` for tracing
 
 The `camel-quarkus-observability-services` extension exposes the above capabilities under a common HTTP endpoint context path of `/observe`.
 
@@ -144,13 +144,16 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 
 === Tracing
 
-To be able to diagnose problems in Camel Quarkus applications, It's useful to instrument method calls, HTTP interactions etc with OpenTelemetry.
+To be able to diagnose problems in Camel Quarkus applications, it's useful to instrument method calls, HTTP interactions etc with OpenTelemetry.
 
-Configure the OpenTelemetry exporter in `application.properties`:
+If you are running example in the Development mode, then Observability dev service is enabled (for more information, visit https://quarkus.io/guides/observability-devservices-lgtm[Observability Dev Services with Grafana OTel LGTM]).
+Observability dev service will run OTel collector in the background and the `quarkus.otel.exporter.otlp.endpoint` property is automatically set to the OTel collector endpoint as seen from the outside of the Docker container.
+
+In production you would rather configure real OTel collector and you would configure the OpenTelemetry exporter in `application.properties` as follows:
 
 [source, text]
 ----
-# We are using a property placeholder to be able to test this example in convenient way in a cloud environment
+# We are using a property placeholder to be able to use this example in convenient way in a cloud environment
 quarkus.otel.exporter.otlp.traces.endpoint = http://${TELEMETRY_COLLECTOR_COLLECTOR_SERVICE_HOST:localhost}:4317
 # To enable tracing (it is disabled by default via camel-quarkus-observability-services)
 quarkus.otel.sdk.disabled=false
@@ -158,17 +161,11 @@ quarkus.otel.sdk.disabled=false
 
 NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus OpenTelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
 
-To view tracing events, start a tracing server. A simple way of doing this is with Docker Compose:
-
-[source,shell]
-----
-$ docker-compose up -d
-----
-
-With the server running, browse to http://localhost:16686. Then choose 'camel-quarkus-observability' from the 'Service' drop down and click the 'Find Traces' button.
+To view tracing events find `grafana.endpoint` in your log (it will use random port) browse to eg. http://localhost:32768.
+Then follow instructions at https://quarkus.io/guides/observability-devservices-lgtm#explore.
 
 The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
-a hierarchy of 6 spans showing the progression of the message exchange through each endpoint.
+a hierarchy of 8 spans showing the progression of the message exchange through each endpoint.
 
 === Jolokia & Hawtio
 
