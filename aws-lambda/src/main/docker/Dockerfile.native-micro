@@ -22,7 +22,7 @@
 #
 # Before building the container image run:
 #
-# mvn package -Dnative
+# ./mvnw package -Dnative
 #
 # Then, build the image with:
 #
