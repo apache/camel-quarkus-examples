@@ -213,6 +213,10 @@
                         </excludes>
                         <mapping>
                             <java>SLASHSTAR_STYLE</java>
+                            <jvm>CAMEL_PROPERTIES_STYLE</jvm>
+                            <legacy-jar>CAMEL_PROPERTIES_STYLE</legacy-jar>
+                            <native>CAMEL_PROPERTIES_STYLE</native>
+                            <native-micro>CAMEL_PROPERTIES_STYLE</native-micro>
                             <properties>CAMEL_PROPERTIES_STYLE</properties>
                             <kt>SLASHSTAR_STYLE</kt>
                         </mapping>
@@ -381,6 +385,10 @@
                                 </excludes>
                                 <mapping>
                                     <java>SLASHSTAR_STYLE</java>
+                                    <jvm>CAMEL_PROPERTIES_STYLE</jvm>
+                                    <legacy-jar>CAMEL_PROPERTIES_STYLE</legacy-jar>
+                                    <native>CAMEL_PROPERTIES_STYLE</native>
+                                    <native-micro>CAMEL_PROPERTIES_STYLE</native-micro>
                                     <properties>CAMEL_PROPERTIES_STYLE</properties>
                                     <kt>SLASHSTAR_STYLE</kt>
                                 </mapping>
