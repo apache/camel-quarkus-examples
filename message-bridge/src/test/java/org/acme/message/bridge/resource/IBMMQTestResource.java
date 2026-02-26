@@ -26,7 +26,7 @@ import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.DockerImageName;
 
 public class IBMMQTestResource implements QuarkusTestResourceLifecycleManager {
-    private static final String IMAGE_NAME = "icr.io/ibm-messaging/mq:9.4.0.5-r1";
+    private static final String IMAGE_NAME = ConfigProvider.getConfig().getValue("ibm-mq.container.image", String.class);
     private static final int PORT = 1414;
     private static final String QUEUE_MANAGER_NAME = "QM1";
     private static final String USER = "app";
