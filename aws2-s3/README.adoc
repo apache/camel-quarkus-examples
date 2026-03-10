@@ -27,7 +27,7 @@ export AWS_REGION=eu-central-1
 export AWS_BUCKET_NAME=<your-bucket-name>
 ----
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----

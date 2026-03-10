@@ -29,25 +29,22 @@ import org.testcontainers.utility.DockerImageName;
 
 public class ElasticSearchTestResource implements QuarkusTestResourceLifecycleManager {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticSearchTestResource.class);
-    private static String IMAGE_NAME;
     private ElasticsearchContainer container;
 
     @Override
     public Map<String, String> start() {
-
+        String imageName = "mirror.gcr.io/elastic/elasticsearch:9.1.0";
         if ("ppc64le".equals(SystemUtils.OS_ARCH)) {
-            IMAGE_NAME = "icr.io/ppc64le-oss/elasticsearch-ppc64le:8.3.3";
-        } else
-            IMAGE_NAME = "mirror.gcr.io/elastic/elasticsearch:8.13.2";
+            imageName = "icr.io/ppc64le-oss/elasticsearch-ppc64le:8.3.3";
+        }
 
-        DockerImageName imageName = DockerImageName.parse(IMAGE_NAME)
+        DockerImageName parsedImageName = DockerImageName.parse(imageName)
                 .asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch");
-        container = new ElasticsearchContainer(imageName)
+        container = new ElasticsearchContainer(parsedImageName)
                 .withExposedPorts(9200)
                 .withEnv("discovery.type", "single-node")
                 .withEnv("xpack.security.enabled", "false")
                 .waitingFor(Wait.forListeningPort());
-        ;
 
         container.start();
 

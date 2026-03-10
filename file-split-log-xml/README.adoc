@@ -11,12 +11,12 @@ In particular, it demonstrates the following:
 4. Usage of properties defined in `application.properties` in a Camel endpoint URI
 5. No Java code required or used, the route defined in XML can still be compiled to native code.
 
-The file consumer has been marked as non-idempotent thus it will read the same file again using a configurable 30 second delay.
+The file consumer has been marked as non-idempotent thus it will read the same file again using a configurable 30-second delay.
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----

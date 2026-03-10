@@ -30,9 +30,9 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class FtpTestResource implements QuarkusTestResourceLifecycleManager {
 
     private static final int FTP_PORT = 2222;
-    private static final String SSH_IMAGE = "quay.io/jamesnetherton/sftp-server:0.6.0";
+    private static final String SSH_IMAGE = "quay.io/jamesnetherton/sftp-server:0.7.0";
 
-    private GenericContainer container;
+    private GenericContainer<?> container;
 
     @Override
     public Map<String, String> start() {

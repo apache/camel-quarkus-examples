@@ -6,7 +6,7 @@
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
@@ -101,7 +101,7 @@ It will increment the counter metric each time the Camel timer is fired.
 Metrics are exposed on an HTTP endpoint at `/observe/metrics` on port `9876`.
 
 NOTE: Note we are using a different port (9876) for the management endpoint then our application (8080) is listening on.
-This is configured in `applcation.properties` via link:src/main/resources/application.properties#L22[`quarkus.management.enabled = true`]. See the https://quarkus.io/guides/management-interface-reference[Quarkus management interface guide] for more information.
+This is configured in `application.properties` with `quarkus.management.enabled = true`. See the https://quarkus.io/guides/management-interface-reference[Quarkus management interface guide] for more information.
 
 To view all Camel metrics do:
 

@@ -14,7 +14,7 @@ and other general information.
 
 NOTE: The Narayana `node.identifier` is very important when you scale up in the cloud environment. It must be unique for each node. You can set it by using `quarkus.transaction-manager.node-name` property which the default value is `quarkus`.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
@@ -66,7 +66,7 @@ docker exec -it db-mysql mysql -uadmin -padmin testdb -e \
 
 ==== Prerequisites
 
-- Make sure `io.quarkus:quarkus-jdbc-mysql` has been added in `pom.xml`
+- Make sure `io.quarkus:quarkus-jdbc-mysql` has been added to the project `pom.xml`
 - Make sure `db-mysql` has been started and ready for servicing
 - Edit `src/main/resource/application.properties` to uncomment all `%prod` lines
 
@@ -191,7 +191,8 @@ Now restart the application, and wait about 10 seconds, then you can see the fol
 2022-09-16 12:35:49,251 INFO  [org.acm.DummyXAResourceRecovery] (Periodic Recovery) DummyXAResourceRecovery returning list of resources: [org.acme.DummyXAResource@35cdbf7a]
 2022-09-16 12:35:49,270 INFO  [org.acm.DummyXAResource] (Periodic Recovery) Committing DummyXAResource
 ----
-check the audit_log table, you should see the message "crash" in the table.
+
+Check the audit_log table, you should see the message "crash" in the table.
 
 == Feedback
 

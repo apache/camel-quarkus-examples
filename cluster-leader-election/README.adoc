@@ -19,7 +19,7 @@ Apache Camel has a component (called master) that is built exactly for this scen
 
 Within the component's configuration, the developer provides a namespace to designate the shared resource. All processes that use the same namespace for the locking will ensure that only one process at a time obtains the lock. When a process has the lock, it is the leader, and the process will run. If it loses the lock for any reason, the component will stop the process, as well.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
@@ -90,7 +90,7 @@ INFO  [clustered] (Camel (camel-quarkus-examples-cluster-leader-election) thread
 
 In the other terminal you should not see `Clustered route` message.
 
-You can also close the application process with `CTRL+C` and watch the other terminal will take a lead and you should start seeing `Clustered route` messages.
+You can also close the application process with `CTRL+C` and watch the other terminal will take a lead, and you should start seeing `Clustered route` messages.
 
 == Kubernetes
 
