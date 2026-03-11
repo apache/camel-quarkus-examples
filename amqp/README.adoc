@@ -10,17 +10,17 @@ and other general information.
 
 == Prerequisites:
 
-In order to send or receive message from Artemis Broker you need to start a service.
-You can either run the container or start downloaded binary.
+In order to send or receive messages to / from the Artemis Broker, you need to start a service.
+You can either run Artemis in a container or from a downloaded Artemis binary distribution.
 
 === Run the Artemis container:
 
 [source,shell]
 ----
-docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 5672:5672 -p 8161:8161 --name artemis quay.io/artemiscloud/activemq-artemis-broker:1.0.26
+docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 5672:5672 -p 8161:8161 --name artemis quay.io/arkmq-org/activemq-artemis-broker:artemis.2.51.0
 ----
 
-Now you can access Artemis on localhost:8161
+Now you can access Artemis on localhost:8161.
 
 === Run the downloaded binary:
 
@@ -34,7 +34,7 @@ Change directory to the unzipped directory and start the broker.
 
 Which runs the broker in the foreground and logs to the console.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----

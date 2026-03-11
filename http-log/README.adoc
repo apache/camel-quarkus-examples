@@ -13,13 +13,13 @@ You can of course also combine Quarkus REST services with Camel (see further bel
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-This example was used in a 10 minute video recording to demonstrate
+This example was used in a 10-minute video recording to demonstrate
 how to quickly run 100 Camels with Apache Camel, Quarkus and GraalVM:
 
 - https://www.youtube.com/watch?v=4lXSf8DBQkQ
 
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
@@ -78,7 +78,7 @@ $ ./target/*-runner
 == Using Camel from Quarkus JAX-RS
 
 The `ExampleResource.java` is a pure JAX-RS REST service without using Camel.
-Suppose you wanted to add a HTTP POST that sends the HTTP body to a Kafka topic,
+Suppose you wanted to add an HTTP POST that sends the HTTP body to a Kafka topic,
 via the camel-kafka component. You can then integrate Quarkus
 with Camel by dependency injecting Camels `FluentProducerTemplate` that allows to
 send the message in one line of code to Kafka. What's left is to configure the URL to the Kafka brokers,

@@ -14,7 +14,7 @@ The example application requires a Keycloak instance.
 You do not need to provide the Keycloak instance yourself
 as long as you play with the example code in dev mode (a.k.a. `mvn quarkus:dev`) - read more https://quarkus.io/guides/getting-started#development-mode[here]
 or as long as you only run the supplied tests (`mvn test`).
-In those situations, Quarkus tooling starts a Keycloak image for you via https://quarkus.io/guides/security-openid-connect-dev-services[Quarkus Dev Services]
+In those situations, Quarkus tooling starts a Keycloak image for you via https://quarkus.io/guides/security-openid-connect-dev-services[Quarkus Dev Services],
 and it also configures the application so that you do not need touch anything in `application.properties`.
 
 [[users-configuration]]
@@ -174,13 +174,13 @@ Follow https://www.keycloak.org/getting-started/getting-started-kube to install 
 
 === Configure Keycloak on Kubernetes
 
-Use the same configuration as in <<external-keycloak-instance-configuration>> and obtain `QUARKUS_OIDC_CREDENTIALS_SECRET` and rhe Kubernetes base URL (BASE_KEYCLOAK_KUBERNETES_URL) to your keycloak instance.
+Use the same configuration as in <<external-keycloak-instance-configuration>> and obtain `QUARKUS_OIDC_CREDENTIALS_SECRET` and the Kubernetes base URL (BASE_KEYCLOAK_KUBERNETES_URL) to your keycloak instance.
 
 === Deploy Camel Quarkus application to Kubernetes
 
 TIP: Because we use `quarkus.kubernetes.env.secrets=quarkus-keycloak` in `application.properties` all properties from the secret `quarkus-keycloak` will be presented as ENV variables to the pod.
 
-TIP: To trust self-signed certificates from Kubernetes API server use `-Dquarkus.kubernetes-client.trust-certs=true` in the deploy command.
+TIP: To trust self-signed certificates from the Kubernetes API server use `-Dquarkus.kubernetes-client.trust-certs=true` in the deploy command.
 
 [source,shell]
 ----
@@ -204,7 +204,7 @@ The `kubernetes` profile uses quarkus kubernetes and openshift-container extensi
 </dependencies>
 ----
 
-You can check the pods status:
+You can check the pod status:
 
 [source,shell]
 ----
@@ -269,7 +269,7 @@ The `openshift` profile uses quarkus openshift and openshift-container extension
 </dependencies>
 ----
 
-You can check the pods status:
+You can check the pod status:
 
 [source,shell]
 ----

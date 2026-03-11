@@ -34,7 +34,7 @@ public class PostgresTargetDatabaseTestResource<T extends GenericContainer> impl
     private static final Logger LOG = LoggerFactory.getLogger(PostgresTargetDatabaseTestResource.class);
 
     private static final int POSTGRES_PORT = 5432;
-    private static final String POSTGRES_IMAGE = "mirror.gcr.io/postgres:15.0";
+    private static final String POSTGRES_IMAGE = "mirror.gcr.io/postgres:17.5";
 
     private static final String POSTGRES_TARGET_DB_NAME = "target_db";
     private static final String POSTGRES_TARGET_PASSWORD = "1234567@8_target";
@@ -73,7 +73,7 @@ public class PostgresTargetDatabaseTestResource<T extends GenericContainer> impl
                 targetDbContainer.stop();
             }
         } catch (Exception ex) {
-            LOG.error("An issue occured while stopping the targetDbContainer", ex);
+            LOG.error("An issue occurred while stopping the targetDbContainer", ex);
         }
     }
 

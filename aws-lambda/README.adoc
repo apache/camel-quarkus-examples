@@ -101,7 +101,7 @@ io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
 
 === Testing the AWS Lambda Function
 
-1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test
+1. Now select the Test tab for executing a quick test. Copy and paste the below JSON payload and hit Test
 
     {
      "name": "Ravishankar"
@@ -115,7 +115,7 @@ io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
 
 [NOTE]
 ====
-<<package_native_executable,Please ensure that you have built your Java code as Quarkus Native executable>>
+You must build the application as a native application prior to deployment. Refer to the `Package and run the application` section above for details.
 ====
 
 1. Go to AWS Web console and search for Lambda Service
@@ -146,7 +146,7 @@ io.quarkus.amazon.lambda.runtime.QuarkusStreamHandler::handleRequest
 
 === Testing the AWS Lambda Function
 
-1. Now select the Test tab for executing a quick test. Copy paste the below json payload and hit Test
+1. Now select the Test tab for executing a quick test. Copy and paste the below JSON payload and hit Test
 
     {
      "name": "Ravishankar"

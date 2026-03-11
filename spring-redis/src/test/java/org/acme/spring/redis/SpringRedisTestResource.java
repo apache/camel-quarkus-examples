@@ -29,7 +29,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class SpringRedisTestResource implements QuarkusTestResourceLifecycleManager {
     private static final Logger LOG = LoggerFactory.getLogger(SpringRedisTestResource.class);
 
-    private static final String IMAGE_NAME = "mirror.gcr.io/redis:6.2.14-alpine";
+    private static final String IMAGE_NAME = "mirror.gcr.io/redis:7.4.0-alpine";
     private static final int REDIS_PORT = 6379;
 
     private GenericContainer<?> container;

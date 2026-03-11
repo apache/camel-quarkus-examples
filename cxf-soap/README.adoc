@@ -4,27 +4,27 @@
 {cq-description}
 
 In this example we will create two SOAP webservices with two different approaches. Both services will use Camel routes as service implementation exposed via CXF component.
-We will then communicate with the SOAP webservices (Camel consumer) directly via SOAP messages (ie. with `curl`).
+We will then communicate with the SOAP webservices (Camel consumer) directly via SOAP messages (i.e. with `curl`).
 Later we will also leverage Camel producer to send SOAP messages to our exposed SOAP webservices.
 
 == WSDL first
 
 The "WSDL first" approach presupposes writing the link:src/main/resources/wsdl/CustomerService.wsdl[WSDL file] manually at the beginning of the SOAP service design.
-Then we can use link:pom.xml#L231[the `generate-code` goal] of `quarkus-maven-plugin` to generate the Java classes for us.
-The `wsdl2java` tool is used under the hood and its configuration can be found in link:src/main/resources/application.properties#L28[application.properties].
+Then we can use the `generate-code` goal of `quarkus-maven-plugin` to generate the Java classes for us.
+The `wsdl2java` tool is used under the hood and its configuration can be found in `src/main/resources/application.properties`.
 
 The customer web service is exposed via Camel route endpoint `cxf:bean:customer`.
 Its logic is implemented directly in the route by delegating to `org.acme.cxf.soap.wsdl.repository.CustomerRepository`.
 The endpoint supports two SOAP operations: `getCustomersByName` and `updateCustomer`.
 
-NOTE: Most modern IDEs will be able to discover the generared classes automatically.
+NOTE: Most modern IDEs will be able to discover the generated classes automatically.
 You may want to check some occurrences of those in `org.acme.cxf.soap.wsdl.repository.CustomerRepository`.
 
 TIP: More information about generating Java classes from WSDL can be found in https://quarkiverse.github.io/quarkiverse-docs/quarkus-cxf/dev/user-guide/generate-java-from-wsdl.html[Java from WSDL] chapter of Quarkus CXF documentation.
 
 === Binding (Advanced)
 
-For illustrating how other `wsdl2java` options could be applied via link:src/main/resources/application.properties#L29[`quarkus.cxf.codegen.wsdl2java.additional-params`], we have added a custom binding defined in link:src/main/resources/binding.xml[binding.xml].
+For illustrating how other `wsdl2java` options could be applied via `src/main/resources/application.properties`, we have added a custom binding defined in link:src/main/resources/binding.xml[binding.xml].
 It instructs CXF to use `LocalDate` (more common in Java world) instead of default XML Date representation `XMLGregorianCalendar`.
 
 == Java first
@@ -43,7 +43,7 @@ The approach mentioned above concerned the creation of SOAP webservices.
 We will also describe how to create a client using the Camel Quarkus CXF SOAP producer.
 You can observe `org.acme.cxf.soap.pojo.PojoCxfProducerRouteBuilder` where we are creating the `CxfEndpoint` which is used in the route in form of Camel producer.
 
-It can typically looks like:
+It typically looks like:
 [source,java]
 ----
 from("direct:contact")
@@ -52,7 +52,7 @@ from("direct:contact")
 
 For purpose of easier testing this approach we also added Camel Quarkus REST endpoint which will be used as external entry point for invoking the producer.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
@@ -186,9 +186,21 @@ $ curl -X GET "http://localhost:8080/producer/contacts?operationName=getContacts
 ----
 
 Which should return something like:
-```
-{"contacts":[{"name":"Lukas","address":{"city":"Czech Republic","street":"Random Street"},"type":"OTHER"}]}
-```
+[source, json]
+----
+{
+  "contacts": [
+    {
+      "name": "Lukas",
+      "address": {
+        "city": "Czech Republic",
+        "street": "Random Street"
+      },
+      "type": "OTHER"
+    }
+  ]
+}
+----
 
 == Package and run the application
 
