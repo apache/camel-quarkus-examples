@@ -12,7 +12,7 @@ developing.
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-== Start in the Development mode
+== Start in Development mode
 
 The `main()` method implemented in the `org.acme.timer.Main` requires two arguments: a greeting and a number how
 many times should the greeting be printed in the log. So we need to pass these two via `-Dquarkus.args` so that the
@@ -31,7 +31,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode
 
 Then look at the log output in the console. As we run the example in Quarkus Dev Mode, you can edit the source code and have live updates.
 For example try to change `greeting = args[i++];` to `greeting = args[i++] + "!!!";` in the `main()`
-method and you should see the application being recompiled, restarted and the greeting with three exclamation marks
+method, and you should see the application being recompiled, restarted and the greeting with three exclamation marks
 should appear in the console.
 
 === Package and run the application

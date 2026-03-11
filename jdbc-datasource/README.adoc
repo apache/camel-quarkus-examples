@@ -8,7 +8,7 @@ and other general information.
 
 == Start the source and target databases
 
-All the commands in this example are expected to be run from the example directory, at the same level than the `pom.xml` file.
+All the commands in this example are expected to be run from the example directory, at the same level as the `pom.xml` file.
 [source,shell]
 ----
 cd jdbc-datasource
@@ -23,7 +23,7 @@ docker run -p 5432:5432 \
 -e POSTGRES_PASSWORD=1234567@8_source \
 -e POSTGRES_DB=source_db \
 -v ${PWD}/src/test/resources/init-source-db.sql:/docker-entrypoint-initdb.d/init-source-db.sql \
-mirror.gcr.io/postgres:15.0
+mirror.gcr.io/postgres:17.5
 ----
 
 In a second terminal, let's start the target database:
@@ -35,7 +35,7 @@ docker run -p 5433:5432 \
 -e POSTGRES_PASSWORD=1234567@8_target \
 -e POSTGRES_DB=target_db \
 -v ${PWD}/src/test/resources/init-target-db.sql:/docker-entrypoint-initdb.d/init-target-db.sql \
-mirror.gcr.io/postgres:15.0
+mirror.gcr.io/postgres:17.5
 ----
 
 == Running the application in dev mode
@@ -83,7 +83,7 @@ mvn package
 ----
 
 It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an  _über-jar_  as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Be aware that it’s not a  _über-jar_  as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
 The application is now runnable executing the command below:
 
@@ -92,7 +92,7 @@ The application is now runnable executing the command below:
 java -jar target/quarkus-app/quarkus-run.jar
 ----
 
-The application should output the same logs than in previous section.
+The application should output the same logs as in the previous section.
 
 ==== Creating a native executable
 
@@ -117,6 +117,6 @@ Either way, the resulting native executable could be started as below:
 ./target/*-runner
 ----
 
-The application should output the same logs than in previous section.
+The application should output the same logs as in the previous section.
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/maven-tooling.

@@ -6,7 +6,7 @@
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
@@ -27,7 +27,7 @@ In order to send or receive message from Redis you need to start a service.
 
 [source,shell]
 ----
-docker run -d --rm -p 6379:6379 -v /src/resources/redis.conf:/usr/local/etc/redis/redis.conf --name myredis mirror.gcr.io/redis:6.2.14-alpine redis-server /usr/local/etc/redis/redis.conf
+docker run -d --rm -p 6379:6379 -v /src/resources/redis.conf:/usr/local/etc/redis/redis.conf --name myredis mirror.gcr.io/redis:7.4.0-alpine redis-server /usr/local/etc/redis/redis.conf
 ----
 
 === Package and run the application

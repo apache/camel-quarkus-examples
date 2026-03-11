@@ -14,7 +14,7 @@ and other general information.
 
 NOTE: The Narayana `node.identifier` is very important when you scale up in the cloud environment. It must be unique for each node. You can set it by using `quarkus.transaction-manager.node-name` property which the default value is `quarkus`.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
@@ -86,7 +86,7 @@ docker run --name artemis \
 # Production Datasource
 %prod.quarkus.datasource.db-kind=mysql
 %prod.quarkus.datasource.username=admin
-$prod.quarkus.datasource.password=admin
+%prod.quarkus.datasource.password=admin
 %prod.quarkus.datasource.jdbc.url=mysql://localhost:3306/testdb
 %prod.quarkus.datasource.jdbc.transactions=xa
 

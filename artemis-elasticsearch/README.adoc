@@ -24,7 +24,7 @@ You can also use podman instead of docker for all the steps below.
 
 [source,shell]
 ----
-docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 61616:61616 -p 8161:8161 -p 1883:1883 --name artemis quay.io/artemiscloud/activemq-artemis-broker:1.0.26
+docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 61616:61616 -p 8161:8161 -p 1883:1883 --name artemis quay.io/arkmq-org/activemq-artemis-broker:artemis.2.51.0
 ----
 
 Now you can access Artemis on localhost:8161
@@ -33,13 +33,13 @@ Now you can access Artemis on localhost:8161
 
 [source,shell]
 ----
-docker run -d --rm --name elasticsearch -p 9200:9200 -p 9300:9300 -it -m 4GB -e "discovery.type=single-node" -e "xpack.security.enabled=false" mirror.gcr.io/elastic/elasticsearch:8.13.2
+docker run -d --rm --name elasticsearch -p 9200:9200 -p 9300:9300 -it -m 4GB -e "discovery.type=single-node" -e "xpack.security.enabled=false" mirror.gcr.io/elastic/elasticsearch:9.1.0
 ----
 
 Now you can access Elasticsearch on localhost:9200
 
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----

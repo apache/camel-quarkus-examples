@@ -12,7 +12,7 @@ that uses the Kamelet, and logs the result from the Kamelet to the console.
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-== Start in the Development mode
+== Start in Development mode
 
 [source,shell]
 ----
