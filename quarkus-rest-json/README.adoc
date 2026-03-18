@@ -1,0 +1,131 @@
+= REST with Jackson: A Quarkus based example
+:cq-example-description: An example that demonstrates how to use REST (Jackson) endpoints from a Quarkus project and invoke Camel routes.
+
+{cq-description}
+
+This example demonstrates how to invoke Camel routes from REST endpoints defined in a Quarkus project.
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Prerequisites
+
+The example application requires a Kafka instance.
+
+You do not need to provide a Kafka instance manually when running in development mode (`mvn quarkus:dev` - read more https://quarkus.io/guides/getting-started#development-mode[here]) or when executing the supplied tests (`mvn test`).
+In these scenarios, Quarkus automatically provisions a Strimzi container via https://quarkus.io/guides/kafka-dev-services[Quarkus Dev Services] and configures the application accordingly, requiring no changes to `application.properties`.
+
+== Start in the Development mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application, and enables live reload via Quarkus tooling.
+Any modifications to your project will be automatically hot-reloaded into the running application.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+Then submit orders to the REST endpoint by running the `test-requests.sh` script
+
+or
+
+send requests directly to the REST endpoint at http://localhost:8080/api/orders.
+
+An example payload:
+```
+{
+    "customerId": "CUST001",
+    "items": [
+      {
+        "productId": "PROD001",
+        "productName": "Widget A",
+        "quantity": 1,
+        "price": 50
+      },
+      {
+        "productId": "PROD002",
+        "productName": "Widget B",
+        "quantity": 2,
+        "price": 25
+      }
+    ]
+  }
+```
+
+=== Configure Kafka client, package and run the application
+
+Once development is complete, you may want to configure the Kafka client, package the application, and run it in production mode.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+==== Configure kafka client
+
+Uncomment the appropriate section in `src/main/resources/application.properties` based on your authentication method:
+
+- *Kafka instance without Authentication* - if no authentication is required.
+- *Kafka instance with SASL Plain* - if using SASL Plain authentication.
+- *Kafka instance with SASL Oauth Bearer* - if using OAuth Bearer authentication.
+
+Set the corresponding environment variables:
+- Without Authentication
+
+[source,shell]
+----
+$ export brokers=<YOUR_KAFKA_BROKERS_URL>
+----
+- SASL Plain
+[source,shell]
+----
+$ export brokers=<YOUR_KAFKA_BROKERS_URL>
+$ export id=<YOUR_KAFKA_SASL_CLIENT_ID>
+$ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
+----
+- SASL Oauth Bearer
+[source,shell]
+----
+$ export brokers=<YOUR_KAFKA_BROKERS_URL>
+$ export id=<YOUR_KAFKA_SASL_CLIENT_ID>
+$ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
+$ export token=<YOUR_KAFKA_SASL_OAUTHBEARER_TOKEN_URL>
+----
+
+To deploy on Kubernetes or OpenShift, define the above environment variables in a secret named `camel-kafka`. Configure the required values in `kubefiles/secret-example.yml`, then create the secret:
+
+[source,shell]
+----
+$ kubectl apply -f kubefiles/secret-example.yml
+----
+
+==== JVM mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+...
+[io.quarkus] (main) camel-quarkus-examples-... started in 1.163s. Listening on: http://0.0.0.0:8080
+----
+
+==== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ mvn clean package -Dnative
+$ ./target/*-runner
+...
+[io.quarkus] (main) camel-quarkus-examples-... started in 0.013s. Listening on: http://0.0.0.0:8080
+...
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
