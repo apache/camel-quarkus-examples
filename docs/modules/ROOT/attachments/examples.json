@@ -110,6 +110,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/rest-json"
   },
   {
+    "title": "REST with Jackson: A Quarkus based example",
+    "description": "Demonstrates how to use REST (Jackson) endpoints from a Quarkus project and invoke Camel routes.",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/quarkus-rest-json"
+  },
+  {
     "title": "Saga and LRA",
     "description": "Shows how to use saga and lra",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/saga"
