@@ -16,9 +16,11 @@
  */
 package org.apache.camel.example.saga;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.SagaPropagation;
 
+@ApplicationScoped
 public class TrainRoute extends RouteBuilder {
 
     @Override
@@ -27,14 +29,16 @@ public class TrainRoute extends RouteBuilder {
                 .saga()
                 .propagation(SagaPropagation.MANDATORY)
                 .option("id", header("id"))
-                .compensation("direct:cancelPurchase")
+                .compensation("direct:cancelTrainPurchase")
                 .log("Buying train #${header.id}")
+                // Request timeout prevents indefinite waits during payment service failures
                 .to("jms:queue:{{example.services.payment}}?exchangePattern=InOut" +
-                        "&replyTo={{example.services.payment}}.train.reply")
+                        "&replyTo={{example.services.payment}}.train.reply" +
+                        "&requestTimeout=30000")
                 .log("Payment for train #${header.id} done with transaction ${body}")
                 .end();
 
-        from("direct:cancelPurchase")
+        from("direct:cancelTrainPurchase")
                 .log("Train purchase #${header.id} has been cancelled due to payment failure");
     }
 
