@@ -16,9 +16,11 @@
  */
 package org.apache.camel.example.saga;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.SagaPropagation;
 
+@ApplicationScoped
 public class PaymentRoute extends RouteBuilder {
 
     @Override
@@ -33,7 +35,7 @@ public class PaymentRoute extends RouteBuilder {
                 .log("Paying ${header.payFor} for order #${header.id}")
                 .setBody(header("JMSCorrelationID"))
                 .choice()
-                .when(x -> Math.random() >= 0.85)
+                .when(simple("${random(0,100)} >= 85"))
                 .log("Payment ${header.payFor} for saga #${header.id} fails!")
                 .throwException(new RuntimeException("Random failure during payment"))
                 .endChoice()
