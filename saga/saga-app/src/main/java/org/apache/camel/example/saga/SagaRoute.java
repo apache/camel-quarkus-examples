@@ -16,9 +16,11 @@
  */
 package org.apache.camel.example.saga;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestParamType;
 
+@ApplicationScoped
 public class SagaRoute extends RouteBuilder {
 
     @Override
@@ -33,12 +35,15 @@ public class SagaRoute extends RouteBuilder {
                 .compensation("direct:cancelOrder")
                 .log("Executing saga #${header.id} with LRA ${header.Long-Running-Action}")
                 .setHeader("payFor", constant("train"))
+                // Request timeout prevents indefinite waits during service failures or slow responses
                 .to("jms:queue:{{example.services.train}}?exchangePattern=InOut" +
-                        "&replyTo={{example.services.train}}.reply")
+                        "&replyTo={{example.services.train}}.reply" +
+                        "&requestTimeout=30000")
                 .log("train seat reserved for saga #${header.id} with payment transaction: ${body}")
                 .setHeader("payFor", constant("flight"))
                 .to("jms:queue:{{example.services.flight}}?exchangePattern=InOut" +
-                        "&replyTo={{example.services.flight}}.reply")
+                        "&replyTo={{example.services.flight}}.reply" +
+                        "&requestTimeout=30000")
                 .log("flight booked for saga #${header.id} with payment transaction: ${body}")
                 .setBody(header("Long-Running-Action"))
                 .end();

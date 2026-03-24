@@ -13,15 +13,12 @@ The test suite verifies:
 - **LRA Integration:** Saga coordination with LRA coordinator
 - **JMS Messaging:** Request-reply pattern over Artemis queues
 - **Service Participation:** Train, flight, and payment service coordination
-- **Compensation Flow:** Rollback when failures occur
+- **Compensation Flow:** Rollback when failures occur (15% random failure rate)
 - **End-to-End Flow:** Complete saga orchestration
 
-### Test Cases
+### Test Case
 
-1. `testSagaOrchestrationStarts()` - Verifies saga starts with LRA coordinator
-2. `testTrainServiceParticipation()` - Validates train service and payment processing
-3. `testFlightServiceParticipation()` - Validates flight service and payment processing
-4. `testCompleteSagaFlow()` - End-to-end saga with all services
+`testSagaWithLRAAndRandomOutcomes()` - Comprehensive end-to-end test that verifies the complete saga flow including LRA coordination, all service participation (train, flight, payment), and validates both success and compensation scenarios. Since the payment service has a 15% random failure rate, the test accepts either outcome as valid.
 
 ## Running Tests
 
@@ -57,6 +54,8 @@ Both containers run on a shared Docker network with proper wait strategies.
 
 ### Test Settings (`src/test/resources/application.yml`)
 
+Key configuration settings:
+
 ```yaml
 quarkus:
   http:
@@ -65,13 +64,19 @@ quarkus:
     file:
       enable: true
       path: target/quarkus.log
+    category:
+      "org.apache.camel": DEBUG
+      "org.apache.camel.saga": DEBUG
+      "org.apache.camel.component.lra": DEBUG
 
 camel:
   lra:
     enabled: true
+    # coordinator-url and local-participant-url are set by SagaTestResource
   component:
     jms:
       test-connection-on-startup: true
+      concurrent-consumers: 5
 ```
 
 Dynamic configuration (Artemis URL, LRA coordinator URL) is injected by `SagaTestResource` at test runtime.

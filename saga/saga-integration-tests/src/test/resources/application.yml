@@ -21,7 +21,6 @@
 quarkus:
   http:
     port: 8084
-    test-port: 8084
   log:
     console:
       format: "%d{HH:mm:ss} %-5p [%c{2.}] %s%e%n"
@@ -37,6 +36,19 @@ quarkus:
         level: DEBUG
       "org.apache.camel.component.lra":
         level: DEBUG
+  index-dependency:
+    saga-app:
+      group-id: org.apache.camel.quarkus.examples
+      artifact-id: camel-quarkus-example-saga-app
+    saga-flight:
+      group-id: org.apache.camel.quarkus.examples
+      artifact-id: camel-quarkus-example-saga-flight
+    saga-train:
+      group-id: org.apache.camel.quarkus.examples
+      artifact-id: camel-quarkus-example-saga-train
+    saga-payment:
+      group-id: org.apache.camel.quarkus.examples
+      artifact-id: camel-quarkus-example-saga-payment
 
 camel:
   rest:

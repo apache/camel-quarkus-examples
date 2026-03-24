@@ -62,6 +62,7 @@ public class SagaTestResource implements QuarkusTestResourceLifecycleManager {
                 .withNetworkAliases("lra-coordinator")
                 .withEnv("QUARKUS_HTTP_PORT", String.valueOf(LRA_PORT))
                 .withExposedPorts(LRA_PORT)
+                .withExtraHost("host.testcontainers.internal", "host-gateway")
                 .waitingFor(Wait.forHttp("/lra-coordinator")
                         .forPort(LRA_PORT)
                         .forStatusCode(200)
@@ -84,6 +85,9 @@ public class SagaTestResource implements QuarkusTestResourceLifecycleManager {
                 lraContainer.getHost(),
                 lraContainer.getMappedPort(LRA_PORT));
         config.put("camel.lra.coordinator-url", lraCoordinatorUrl);
+
+        // Set local participant URL - use host.testcontainers.internal for coordinator callbacks
+        config.put("camel.lra.local-participant-url", "http://host.testcontainers.internal:8084/api");
 
         // Allow external connections
         config.put("quarkus.http.host", "0.0.0.0");

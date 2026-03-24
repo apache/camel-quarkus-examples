@@ -32,23 +32,26 @@
     <description>Integration tests for Saga example</description>
 
     <dependencies>
-        <!-- Runtime dependencies for Camel routes -->
+        <!-- Saga app dependencies - includes routes and configurations -->
         <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-jms</artifactId>
+            <groupId>org.apache.camel.quarkus.examples</groupId>
+            <artifactId>camel-quarkus-example-saga-app</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-lra</artifactId>
+            <groupId>org.apache.camel.quarkus.examples</groupId>
+            <artifactId>camel-quarkus-example-saga-flight</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-rest</artifactId>
+            <groupId>org.apache.camel.quarkus.examples</groupId>
+            <artifactId>camel-quarkus-example-saga-train</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.artemis</groupId>
-            <artifactId>quarkus-artemis-jms</artifactId>
-            <version>${quarkiverse-artemis.version}</version>
+            <groupId>org.apache.camel.quarkus.examples</groupId>
+            <artifactId>camel-quarkus-example-saga-payment</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Test dependencies -->
