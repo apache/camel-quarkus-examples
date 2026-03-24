@@ -8,12 +8,16 @@ and other general information.
 
 === How it works
 
-There are 4 services as participants of the Saga:
+There are 5 modules in this example:
 
-- payment-service: it emulates a real payment transaction, and it will be used by both flight-service and train-service
+**Service Modules:**
+- app: is the starting point, and it emulates a user that starts the transaction to buy both flight and train tickets
 - flight-service: it emulates the booking of a flight ticket, and it uses the payment-service to execute a payment transaction
 - train-service: it emulates the reservation of a train seat, and it uses the payment-service to execute a payment transaction
-- app: is the starting point, and it emulates a user that starts the transaction to buy both flight and train tickets
+- payment-service: it emulates a real payment transaction, and it will be used by both flight-service and train-service
+
+**Test Module:**
+- integration-tests: contains automated integration tests using Testcontainers for Docker-based testing
 
 The starting point is a REST endpoint that creates a request for a new reservation
 and there is 15% probability that the payment service fails.
@@ -100,6 +104,21 @@ in the app
 Transaction http://localhost:8080/lra-coordinator/0_ffff7f000001_8aad_62d16f11_74 has been cancelled due to flight or train failure
 ----
 
+
+=== Running Tests
+
+The integration tests use Testcontainers to automatically start Artemis and LRA Coordinator in Docker.
+
+[source,shell]
+----
+# Ensure Docker is running
+docker ps
+
+# Run integration tests
+mvn clean test -pl saga-integration-tests
+----
+
+See link:saga-integration-tests/README.md[saga-integration-tests/README.md] for more details.
 
 === Package and run the application
 
