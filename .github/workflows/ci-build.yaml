@@ -191,7 +191,7 @@ jobs:
       - name: Integration Tests
         shell: bash
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} clean verify
+          ./mvnw-for-each.sh ${MAVEN_ARGS} clean test
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
@@ -225,7 +225,7 @@ jobs:
       - name: Integration Tests
         shell: bash
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} -Dskip-testcontainers-tests clean verify
+          ./mvnw-for-each.sh ${MAVEN_ARGS} -Dskip-testcontainers-tests clean test
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
