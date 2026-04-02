@@ -1,5 +1,5 @@
 {
-  "id" : "ae3edfa4-a510-4121-9eb2-6051c3072e69",
+  "id" : "911e18f4-d2c2-4697-b795-8f4a5bf0f9b7",
   "name" : "api_chat",
   "request" : {
     "url" : "/api/chat",
@@ -12,13 +12,13 @@
   },
   "response" : {
     "status" : 200,
-    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-01-20T14:47:27.992920518Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Kate Boss\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1999,\\n    \\\"month\\\": 8,\\n    \\\"day\\\": 13\\n  },\\n  \\\"summary\\\": \\\"The customer, Kate Boss, had an accident and needed proof of insurance from the police station. The operator helped by verifying her identity and confirming that her contract was found in their records.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":14254749993,\"load_duration\":43034352,\"prompt_eval_count\":361,\"prompt_eval_duration\":7954943708,\"eval_count\":94,\"eval_duration\":5143927847}",
+    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-04-02T07:50:24.668969617Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Kate Boss\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1999,\\n    \\\"month\\\": 8,\\n    \\\"day\\\": 13\\n  },\\n  \\\"summary\\\": \\\"Kate Boss contacted the operator to provide proof of insurance for an accident she was involved in at a police station. The operator helped locate her insurance contract and informed her that her husband could retrieve the proof directly from the office.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":14261328773,\"load_duration\":42998735,\"prompt_eval_count\":361,\"prompt_eval_duration\":7673926216,\"eval_count\":101,\"eval_duration\":5423317392}",
     "headers" : {
-      "Date" : "Tue, 20 Jan 2026 14:47:27 GMT",
+      "Date" : "Thu, 02 Apr 2026 07:50:24 GMT",
       "Content-Type" : "application/json; charset=utf-8"
     }
   },
-  "uuid" : "ae3edfa4-a510-4121-9eb2-6051c3072e69",
+  "uuid" : "911e18f4-d2c2-4697-b795-8f4a5bf0f9b7",
   "persistent" : true,
   "insertionIndex" : 4
 }
