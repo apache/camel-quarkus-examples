@@ -1,5 +1,5 @@
 {
-  "id" : "d0af43a7-81b5-49cd-8624-a4c222c5eb4b",
+  "id" : "ca667f9d-7d74-40e9-b55f-39ed24737b42",
   "name" : "api_chat",
   "request" : {
     "url" : "/api/chat",
@@ -12,13 +12,13 @@
   },
   "response" : {
     "status" : 200,
-    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-01-20T14:47:13.730091697Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": false,\\n  \\\"customerName\\\": \\\"John Doe\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 2001,\\n    \\\"month\\\": 11,\\n    \\\"day\\\": 1\\n  },\\n  \\\"summary\\\": \\\"The customer, John Doe, is dissatisfied as his insurance company did not notify him about the cancellation of full reimbursement option after one year. He requested for a notification and was informed that the best they could do was to inform their manager.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":14851122117,\"load_duration\":56442194,\"prompt_eval_count\":363,\"prompt_eval_duration\":7657362565,\"eval_count\":106,\"eval_duration\":5876308381}",
+    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-04-02T07:50:10.398278523Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": false,\\n  \\\"customerName\\\": \\\"John Doe\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 2001, \\\"month\\\": 11, \\\"day\\\": 1},\\n  \\\"summary\\\": \\\"John Doe, the customer, is dissatisfied with the insurance company as the full reimbursement option was cancelled automatically by their system and he was not notified. He requested to inform the manager about this issue.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":13689200730,\"load_duration\":53779449,\"prompt_eval_count\":363,\"prompt_eval_duration\":7556841000,\"eval_count\":93,\"eval_duration\":5018724852}",
     "headers" : {
-      "Date" : "Tue, 20 Jan 2026 14:47:13 GMT",
+      "Date" : "Thu, 02 Apr 2026 07:50:10 GMT",
       "Content-Type" : "application/json; charset=utf-8"
     }
   },
-  "uuid" : "d0af43a7-81b5-49cd-8624-a4c222c5eb4b",
+  "uuid" : "ca667f9d-7d74-40e9-b55f-39ed24737b42",
   "persistent" : true,
   "insertionIndex" : 5
 }

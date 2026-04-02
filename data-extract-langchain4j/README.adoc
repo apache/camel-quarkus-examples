@@ -24,7 +24,7 @@ Let's start a container to serve the LLM with Ollama, in a first shell type:
 
 [source,shell]
 ----
-docker run --rm -it -v cqex-data-extract-ollama:/root/.ollama -p 11434:11434 --name cqex-data-extract-ollama ollama/ollama:0.17.7
+docker run --rm -it -v cqex-data-extract-ollama:/root/.ollama -p 11434:11434 --name cqex-data-extract-ollama ollama/ollama:0.19.0
 ----
 
 After a moment, a log like below should be output:

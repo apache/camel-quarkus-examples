@@ -1,5 +1,5 @@
 {
-  "id" : "18cda03a-bbe5-48d0-a35b-262b36c541a7",
+  "id" : "352961ad-e58d-4aa3-bd02-98f1da9b5b2d",
   "name" : "api_chat",
   "request" : {
     "url" : "/api/chat",
@@ -12,13 +12,13 @@
   },
   "response" : {
     "status" : 200,
-    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-01-20T14:46:58.833215508Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1986,\\n    \\\"month\\\": 7,\\n    \\\"day\\\": 10\\n  },\\n  \\\"summary\\\": \\\"The customer, Sarah London, needed to declare an accident on her main vehicle and was informed that all expenses linked to the accident would be reimbursed.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11185974927,\"load_duration\":1196566631,\"prompt_eval_count\":211,\"prompt_eval_duration\":4245459177,\"eval_count\":87,\"eval_duration\":4712126872}",
+    "body" : "{\"model\":\"granite4:3b-h\",\"created_at\":\"2026-04-02T07:49:56.668088405Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1986,\\n    \\\"month\\\": 7,\\n    \\\"day\\\": 10\\n  },\\n  \\\"summary\\\": \\\"The customer, Sarah London, needed to declare an accident on her main vehicle and was informed that all expenses linked to the accident would be reimbursed.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11115104439,\"load_duration\":1207380770,\"prompt_eval_count\":211,\"prompt_eval_duration\":4150700272,\"eval_count\":87,\"eval_duration\":4727844125}",
     "headers" : {
-      "Date" : "Tue, 20 Jan 2026 14:46:58 GMT",
+      "Date" : "Thu, 02 Apr 2026 07:49:56 GMT",
       "Content-Type" : "application/json; charset=utf-8"
     }
   },
-  "uuid" : "18cda03a-bbe5-48d0-a35b-262b36c541a7",
+  "uuid" : "352961ad-e58d-4aa3-bd02-98f1da9b5b2d",
   "persistent" : true,
   "insertionIndex" : 6
 }
