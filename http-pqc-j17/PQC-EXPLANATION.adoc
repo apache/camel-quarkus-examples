@@ -1,0 +1,476 @@
+= Post-Quantum Cryptography: Visual Explanation
+
+== The Quantum Computer Threat
+
+=== Traditional Encryption (RSA/ECC)
+
+[source,text]
+----
+┌─────────────────────────────────────────────────────────────┐
+│  Current World (Safe)          Future with Quantum Computer │
+│                                                               │
+│  RSA-2048 encryption           Quantum Computer              │
+│  ┌──────────────┐              ┌──────────────┐             │
+│  │  Lock (RSA)  │    ──────>   │ Shor's Algo  │             │
+│  │ Takes 1000s  │              │ Breaks in    │             │
+│  │ of years to  │              │ MINUTES! ⚠️   │             │
+│  │ break        │              └──────────────┘             │
+│  └──────────────┘                                            │
+└─────────────────────────────────────────────────────────────┘
+----
+
+=== Post-Quantum Cryptography (PQC)
+
+[source,text]
+----
+┌─────────────────────────────────────────────────────────────┐
+│  PQC Solution                  Even with Quantum Computer    │
+│                                                               │
+│  ML-DSA (FIPS 204)             Quantum Computer              │
+│  ┌──────────────┐              ┌──────────────┐             │
+│  │ Lattice Lock │    ──────>   │ Shor's Algo  │             │
+│  │ Based on     │              │ Doesn't work!│             │
+│  │ hard math    │              │ Still takes  │             │
+│  │ problems     │              │ 1000s years ✓│             │
+│  └──────────────┘              └──────────────┘             │
+└─────────────────────────────────────────────────────────────┘
+----
+
+'''
+
+== Three Approaches in Our Implementation
+
+=== 1. CURRENT HTTPS (What Most Systems Use Today)
+
+[source,text]
+----
+┌──────────────┐                                ┌──────────────┐
+│   Browser    │                                │    Server    │
+│   (Client)   │                                │              │
+└──────┬───────┘                                └──────┬───────┘
+       │                                               │
+       │  1. "Hello, I want HTTPS connection"          │
+       ├──────────────────────────────────────────────>│
+       │                                               │
+       │  2. "Here's my certificate"                   │
+       │     ┌─────────────────────────┐               │
+       │     │ Certificate:            │               │
+       │     │ - Public Key: RSA-2048  │               │
+       │     │ - Signature: SHA256+RSA │               │
+       │<────│ - Subject: localhost    │───────────────│
+       │     │ ⚠️ QUANTUM VULNERABLE   │               │
+       │     └─────────────────────────┘               │
+       │                                               │
+       │  3. Verify RSA signature ✓                    │
+       │     (Works today, broken by quantum later)    │
+       │                                               │
+       │  4. Encrypted communication using RSA         │
+       │<─────────────────────────────────────────────>│
+       │     ⚠️ Future quantum computer can break this │
+       │                                               │
+----
+
+**Problem:** When quantum computers arrive, they can:
+
+* Break the RSA encryption
+* Forge RSA signatures
+* Read all your "encrypted" data
+
+'''
+
+=== 2. ALTERNATIVE APPROACH: Application-Layer PQC (NOT this example)
+
+This is a **workaround approach** when you can't modify TLS behavior - demonstrate PQC **inside** the application:
+
+[source,text]
+----
+┌──────────────┐                                ┌──────────────┐
+│   Browser    │                                │    Server    │
+│   (curl)     │                                │  (Quarkus)   │
+└──────┬───────┘                                └──────┬───────┘
+       │                                               │
+       │  LAYER 1: HTTPS (Still uses RSA)              │
+       │  ════════════════════════════════════════     │
+       │  1. TLS Handshake with RSA certificate        │
+       ├──────────────────────────────────────────────>│
+       │     ┌─────────────────────────┐               │
+       │     │ TLS Certificate:        │               │
+       │     │ - RSA-2048 (classical)  │               │
+       │<────│ ⚠️ Quantum vulnerable   │───────────────│
+       │     └─────────────────────────┘               │
+       │                                               │
+       │  2. Encrypted tunnel established              │
+       │<═════════════════════════════════════════════>│
+       │     ⚠️ TLS handshake is quantum-vulnerable    │
+       │                                               │
+       │  LAYER 2: PQC at Application Level            │
+       │  ════════════════════════════════════════     │
+       │  3. GET /pqc/sign                             │
+       ├──────────────────────────────────────────────>│
+       │                                               │
+       │                                    ┌──────────┴───────────┐
+       │                                    │ PqcSignatureService  │
+       │                                    │ - Generate ML-DSA-65 │
+       │                                    │   keypair            │
+       │                                    │ - Sign message       │
+       │                                    │ - Verify signature   │
+       │                                    │ ✓ Algorithm is safe  │
+       │                                    └──────────┬───────────┘
+       │  4. Returns PQC signature demo                │
+       │<──────────────────────────────────────────────│
+----
+
+**Why we DON'T use this approach:**
+
+* ⚠️ **TLS handshake is still quantum-vulnerable** - attacker can intercept the initial connection
+* ℹ️ **Only demonstrates PQC algorithms** - doesn't actually protect the authentication
+* ✅ **Good for learning/demos** - shows how PQC algorithms work
+* ❌ **Not good for real security** - TLS layer remains vulnerable
+
+**This example uses Approach #3 instead** ⬇️
+
+'''
+
+=== 3. OUR IMPLEMENTATION: Chimera Hybrid Certificates at TLS Layer
+
+**This example implements this approach!** It validates hybrid PQC certificates during the TLS handshake:
+
+[source,text]
+----
+┌──────────────┐                                ┌──────────────┐
+│   Browser    │                                │    Server    │
+│   (Client)   │                                │              │
+└──────┬───────┘                                └──────┬───────┘
+       │                                               │
+       │  1. "Hello, I want HTTPS connection"          │
+       ├──────────────────────────────────────────────>│
+       │                                               │
+       │  2. "Here's my HYBRID certificate"            │
+       │     ┌─────────────────────────────────────┐   │
+       │     │  Chimera Hybrid Certificate:        │   │
+       │     │  ────────────────────────────────   │   │
+       │     │  PRIMARY (Classical):               │   │
+       │     │  - Public Key: RSA-2048             │   │
+       │     │  - Signature: SHA256withRSA         │   │
+       │     │  ✓ Works with old systems           │   │
+       │     │                                     │   │
+       │     │  ALTERNATIVE (PQC) - Extensions:    │   │
+       │<────│  - altPublicKey: ML-DSA-65          │───│
+       │     │  - altSignature: ML-DSA-65          │   │
+       │     │  ✓ QUANTUM SAFE                     │   │
+       │     │                                     │   │
+       │     │  BOTH signatures present!           │   │
+       │     └─────────────────────────────────────┘   │
+       │                                               │
+       │  3. Verify RSA signature ✓                    │
+       │     (Works with old browsers)                 │
+       │                                               │
+       │  4. Verify ML-DSA-65 signature ✓              │
+       │     (PQC-aware clients check this too)        │
+       │                                               │
+       │  5. Encrypted communication                   │
+       │<─────────────────────────────────────────────>│
+       │     ✓ Protected by BOTH classical & PQC       │
+       │                                               │
+----
+
+==== How Chimera Works
+
+[source,text]
+----
+┌─────────────────────────────────────────────────────────────┐
+│              CHIMERA HYBRID CERTIFICATE                     │
+│                                                             │
+│  ┌────────────────────┐      ┌────────────────────┐         │
+│  │   PRIMARY LAYER    │      │ ALTERNATIVE LAYER  │         │
+│  │   (Classical RSA)  │      │   (PQC ML-DSA)     │         │
+│  └─────────┬──────────┘      └─────────┬──────────┘         │
+│            │                           │                    │
+│            │  Subject: CN=localhost    │                    │
+│            │  Issuer: CN=PQC Hybrid CA │                    │
+│            │  Serial: 1234567890       │                    │
+│            │                           │                    │
+│  ┌─────────▼──────────┐      ┌─────────▼──────────┐         │
+│  │ RSA-2048           │      │ Extension OID      │         │
+│  │ Public Key         │      │ 2.5.29.72:         │         │
+│  │ (Standard field)   │      │ ML-DSA-65 Public   │         │
+│  └────────────────────┘      │ Key                │         │
+│                              └────────────────────┘         │
+│  ┌────────────────────┐      ┌────────────────────┐         │
+│  │ SHA256withRSA      │      │ Extension OID      │         │
+│  │ Signature          │      │ 2.5.29.74:         │         │
+│  │ [RSA signature     │      │ ML-DSA-65          │         │
+│  │  bytes]            │      │ Signature bytes    │         │
+│  └────────────────────┘      └────────────────────┘         │
+│                                                             │
+│  Verification: BOTH signatures must be valid!               │
+│  - Old systems: Check RSA only ✓                            │
+│  - PQC systems: Check RSA ✓ AND ML-DSA ✓                    │
+└─────────────────────────────────────────────────────────────┘
+----
+
+'''
+
+== Certificate Comparison
+
+=== Traditional Certificate (RSA only)
+
+[source,text]
+----
+┌─────────────────────────────────┐
+│ X.509 Certificate               │
+├─────────────────────────────────┤
+│ Version: 3                      │
+│ Serial: 0x123456                │
+│ Issuer: CN=My CA                │
+│ Subject: CN=localhost           │
+│ ┌─────────────────────────────┐ │
+│ │ Public Key:                 │ │
+│ │   Algorithm: RSA            │ │
+│ │   Size: 2048 bits           │ │
+│ │   Key: [MIIBIjANBg...]      │ │
+│ └─────────────────────────────┘ │
+│ ┌─────────────────────────────┐ │
+│ │ Signature:                  │ │
+│ │   Algorithm: SHA256withRSA  │ │
+│ │   Value: [3045022100...]    │ │
+│ └─────────────────────────────┘ │
+│                                 │
+│ ⚠️ QUANTUM VULNERABLE           │
+└─────────────────────────────────┘
+----
+
+=== Chimera Hybrid Certificate (RSA + ML-DSA-65)
+
+[source,text]
+----
+┌─────────────────────────────────────────────────────┐
+│ X.509 Certificate (Chimera Format)                  │
+├─────────────────────────────────────────────────────┤
+│ Version: 3                                          │
+│ Serial: 0x123456                                    │
+│ Issuer: CN=PQC Hybrid CA                            │
+│ Subject: CN=localhost                               │
+│ ┌─────────────────────────────┐                     │
+│ │ Public Key (PRIMARY):       │                     │
+│ │   Algorithm: RSA            │ ✓ Classical         │
+│ │   Size: 2048 bits           │                     │
+│ │   Key: [MIIBIjANBg...]      │                     │
+│ └─────────────────────────────┘                     │
+│ ┌─────────────────────────────┐                     │
+│ │ Extensions:                 │                     │
+│ │ ┌─────────────────────────┐ │                     │
+│ │ │ OID 2.5.29.72:          │ │                     │
+│ │ │ altSubjectPublicKeyInfo │ │                     │
+│ │ │   Algorithm: ML-DSA-65  │ │ ✓ Post-Quantum      │
+│ │ │   Key: [3082071E...]    │ │                     │
+│ │ │   Size: 1976 bytes      │ │                     │
+│ │ └─────────────────────────┘ │                     │
+│ │ ┌─────────────────────────┐ │                     │
+│ │ │ OID 2.5.29.73:          │ │                     │
+│ │ │ altSignatureAlgorithm   │ │                     │
+│ │ │   Algorithm: ML-DSA-65  │ │                     │
+│ │ └─────────────────────────┘ │                     │
+│ │ ┌─────────────────────────┐ │                     │
+│ │ │ OID 2.5.29.74:          │ │                     │
+│ │ │ altSignatureValue       │ │                     │
+│ │ │   Signature: [D1L1...]  │ │ ✓ Post-Quantum      │
+│ │ │   Size: 3309 bytes      │ │                     │
+│ │ └─────────────────────────┘ │                     │
+│ └─────────────────────────────┘                     │
+│ ┌─────────────────────────────┐                     │
+│ │ Signature (PRIMARY):        │                     │
+│ │   Algorithm: SHA256withRSA  │ ✓ Classical         │
+│ │   Value: [3045022100...]    │                     │
+│ └─────────────────────────────┘                     │
+│                                                     │
+│ ✓ HYBRID: Protected against classical AND quantum!  │
+└─────────────────────────────────────────────────────┘
+----
+
+'''
+
+== Our Implementation: TLS-Layer Hybrid Certificate Validation
+
+[source,text]
+----
+┌────────────────────────────────────────────────────────────────┐
+│         HTTP PQC Example - TLS-Layer Validation                │
+└────────────────────────────────────────────────────────────────┘
+
+HYBRID CERTIFICATE VALIDATION (Chimera at TLS Layer)
+────────────────────────────────────────────────────
+Endpoint: https://localhost:8443/pqc/secure
+
+┌─────────────┐      ┌─────────────────────────┐
+│   Client    │─────>│  TLS Handshake          │
+│   Request   │      │  (with client cert)     │
+└─────────────┘      └─────────┬───────────────┘
+                               │
+                     ┌─────────▼───────────┐
+                     │ Client sends hybrid │
+                     │ PQC certificate     │
+                     └─────────┬───────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                │ HybridPqcX509TrustManager   │
+                └──────────────┬──────────────┘
+                               │
+                     ┌─────────▼─────────┐
+                     │ Extract signatures│
+                     │ from certificate  │
+                     └─────────┬─────────┘
+                               │
+                ┌──────────────┴──────────────┐
+                ▼                             ▼
+        ┌───────────────┐            ┌────────────────┐
+        │ Validate RSA  │            │ Validate       │
+        │ Signature ✓   │            │ ML-DSA-65 ✓    │
+        └───────┬───────┘            └────────┬───────┘
+                │                             │
+                └──────────────┬──────────────┘
+                               │
+                     ┌─────────▼─────────┐
+                     │ BOTH valid?       │
+                     │  YES → Allow      │
+                     │  NO  → Reject TLS │
+                     └─────────┬─────────┘
+                               │
+                               ▼
+                    ┌──────────────────┐
+                    │ /pqc/secure      │
+                    │ route executes   │
+                    └──────┬───────────┘
+                           │
+                           ▼
+                    Result: ✓ Validated!
+                    "✓ Hybrid PQC certificate
+                     validated at TLS layer!"
+
+                    (Dual protection - works
+                     now + quantum-safe!)
+----
+
+'''
+
+== Why We Use Approach #3 (Chimera) Instead of Approach #2
+
+[cols="1,2,2",options="header"]
+|===
+|Aspect
+|Approach #2: App-Layer PQC
+|Approach #3: Chimera at TLS Layer ✅
+
+|**TLS Handshake**
+|⚠️ Quantum-vulnerable (RSA only)
+|✅ Validates both RSA + ML-DSA-65
+
+|**Authentication**
+|❌ No PQC authentication
+|✅ Rejects invalid certificates
+
+|**Protection Level**
+|⚠️ Demo only, TLS is vulnerable
+|✅ Real security at TLS layer
+
+|**When to use**
+|Learning, experimenting
+|Production-ready hybrid solution
+
+|**Code complexity**
+|Simple (app endpoints)
+|Moderate (custom TrustManager)
+|===
+
+**Key Difference:**
+
+* **Approach #2** is like having a regular lock on your door (RSA TLS) but demonstrating fancy new locks inside your house (PQC demos)
+* **Approach #3** is like installing a dual-lock system ON YOUR DOOR (Chimera certificates validated at TLS handshake)
+
+Approach #3 provides actual security because:
+
+. Invalid certificates are **rejected during TLS handshake** before any data is exchanged
+. Both RSA and ML-DSA-65 signatures must be valid to establish the connection
+. Works with the existing TLS infrastructure (backward compatible)
+
+'''
+
+== Why Chimera is the Best Migration Path
+
+[source,text]
+----
+┌─────────────────────────────────────────────────────────────┐
+│                 MIGRATION TIMELINE                          │
+└─────────────────────────────────────────────────────────────┘
+
+TODAY (2026)                    FUTURE (Quantum Computers)
+════════════                    ══════════════════════════
+
+Old Browser:                    PQC-Aware Browser:
+┌────────────┐                  ┌────────────┐
+│ Only knows │                  │ Checks RSA │
+│ RSA        │                  │ AND        │
+└──────┬─────┘                  │ ML-DSA     │
+       │                        └──────┬─────┘
+       │  Chimera                      │
+       │  Certificate                  │
+       ▼                               ▼
+┌──────────────┐              ┌──────────────┐
+│ Verifies RSA │              │ Verifies RSA │
+│ signature ✓  │              │ signature ✓  │
+│              │              │              │
+│ Ignores      │              │ ALSO checks  │
+│ ML-DSA       │              │ ML-DSA ✓     │
+│ (unknown     │              │              │
+│ extension)   │              │ Double       │
+│              │              │ protected!   │
+│ ✓ Works!     │              │ ✓ Quantum    │
+│              │              │   safe!      │
+└──────────────┘              └──────────────┘
+
+ADVANTAGE: One certificate works for everyone!
+----
+
+'''
+
+== Summary: What We've Built
+
+[cols="2,3,1",options="header"]
+|===
+|Component
+|What It Does
+|Quantum Safe?
+
+|**HTTPS Transport**
+|Encrypts connection (Java 17 limitation)
+|⚠️ No (classical crypto)
+
+|**HybridCertificateGenerator**
+|Generates Chimera dual certificates (RSA + ML-DSA-65)
+|✅ Yes
+
+|**HybridPqcX509TrustManager**
+|Validates both RSA and ML-DSA-65 signatures at TLS layer
+|✅ Yes
+
+|**SecurityConfiguration**
+|Configures custom TrustManager and client authentication
+|✅ Yes
+
+|**/pqc/secure endpoint**
+|Accessible only with valid hybrid PQC certificates
+|✅ Yes
+|===
+
+**Think of it like this:**
+
+* The **transport tunnel** (HTTPS/TLS) still uses classical encryption (Java 17 limitation)
+* But the **authentication** (certificate validation) is quantum-safe with dual signatures
+* The **Chimera certificate** is like a dual-lock ID card: RSA works today, ML-DSA-65 protects against future quantum attacks
+* Only clients with valid hybrid certificates can access the secure endpoint
+
+**When Java 21+ becomes standard:**
+
+* The transport itself can be upgraded to full PQC (e.g., Kyber for key exchange)
+* Chimera certificates will work perfectly with full PQC TLS
+* Zero code changes needed - we're already PQC-ready!
