@@ -2,6 +2,7 @@
 
 Useful links:
 
+* https://camel.apache.org/camel-quarkus/latest/contributor-guide/create-new-example.html[How to create a new Camel Quarkus example project]
 * https://camel.apache.org/camel-quarkus/latest/user-guide/examples.html[List of Camel Quarkus examples] with short descriptions
 * https://camel.apache.org/camel-quarkus/latest/user-guide/index.html[Camel Quarkus User guide]
 * https://camel.apache.org/camel-quarkus/latest/contributor-guide/index.html[Camel Quarkus Contributor guide]
