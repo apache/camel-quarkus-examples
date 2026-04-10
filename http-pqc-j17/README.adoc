@@ -1,0 +1,189 @@
+= HTTP with Post-Quantum Cryptography (PQC): A Camel Quarkus example (Java 17)
+:cq-example-description: An example that shows how to implement quantum-resistant authentication using hybrid certificates that combine RSA with post-quantum ML-DSA-65 signatures on Java 17 using application-level validation
+
+{cq-description}
+
+This example shows how to implement quantum-resistant TLS authentication on **Java 17** by combining classical RSA with post-quantum ML-DSA-65 signatures in X.509 certificates. Both signatures must be valid for authentication to succeed.
+
+IMPORTANT: This example uses **application-level PQC validation** because Java 17 doesn't support PQC in TLS natively. For full PQC TLS support with hybrid cipher suites, use Java 21+ with BouncyCastle JSSE provider.
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites and other general information.
+
+== What is Post-Quantum Cryptography?
+
+Post-Quantum Cryptography (PQC) protects against "harvest now, decrypt later" attacks where adversaries capture encrypted data today to decrypt when quantum computers become available.
+
+=== Java 17 Approach
+
+Since **Java 17 doesn't support PQC algorithms natively in TLS**, this example demonstrates a workaround using:
+
+* **Chimera hybrid certificates**: Combines RSA-2048 + ML-DSA-65 (NIST FIPS 204)
+* **X.509 extensions**: Standard extension OIDs (2.5.29.72-74) for alternative signatures
+* **Application-level validation**: Custom X509TrustManager validates both RSA and ML-DSA-65 signatures during TLS handshake
+* **BouncyCastle 1.83**: Provides ML-DSA-65 post-quantum signature algorithm (JCA provider only)
+
+This approach validates PQC signatures at the application level rather than relying on Java's TLS stack. For native PQC TLS support (hybrid cipher suites like X25519Kyber768), use Java 21+ with BouncyCastle JSSE provider.
+
+NOTE: For detailed diagrams and architecture explanation, see link:PQC-EXPLANATION.adoc[PQC Visual Guide].
+
+== Certificate Generation
+
+Hybrid certificates are automatically generated on every application startup. No manual steps required.
+
+Generated files in `target/certs/`:
+
+* `server-hybrid-keystore.p12` - Server certificate with RSA + ML-DSA-65
+* `server-hybrid-truststore.p12` - Truststore for validating clients
+* `client-hybrid-keystore.p12` - Client certificate with PQC (for success test)
+* `client-hybrid-keystore-cert.pem` - Client certificate in PEM format (for curl testing)
+* `client-hybrid-keystore-key.pem` - Client private key in PEM format (for curl testing)
+* `client-rsa-only-keystore.p12` - Client certificate without PQC (for failure test)
+
+== Prerequisites
+
+* **Java 17** (this example demonstrates Java 17-specific workarounds for PQC; for Java 21+, use native PQC TLS support instead)
+* Maven 3.9.9 or later
+* GraalVM (for native mode only)
+
+== Start in Development Mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+The application starts on HTTPS port 8443 with mutual TLS (mTLS) enabled. All endpoints require a valid hybrid client certificate with RSA + ML-DSA-65.
+
+Main endpoint:
+
+* `/pqc/secure` - Requires hybrid client certificate validated at TLS layer
+
+NOTE: With `client-auth=required`, the TLS handshake rejects connections without valid hybrid PQC certificates before any application code executes.
+
+=== Manual Testing with Client Certificates
+
+PEM files are automatically generated during application startup in `target/certs/`:
+
+* `client-hybrid-keystore-cert.pem` - Hybrid certificate (RSA + ML-DSA-65)
+* `client-hybrid-keystore-key.pem` - Private key for hybrid certificate
+
+Test with hybrid certificate (should succeed):
+
+[source,shell]
+----
+$ curl --cert target/certs/client-hybrid-keystore-cert.pem \
+       --key target/certs/client-hybrid-keystore-key.pem \
+       -k \
+       https://localhost:8443/pqc/secure
+
+✓ Hybrid PQC certificate validated at TLS layer!
+Your connection is quantum-safe.
+Both RSA and ML-DSA-65 signatures were validated during TLS handshake.
+----
+
+== Package and Run the Application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+=== JVM Mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+...
+[io.quarkus] (main) camel-quarkus-examples-http-pqc started in 1.5s. Listening on: https://0.0.0.0:8443
+----
+
+=== Native Mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ mvn clean package -Dnative
+$ ./target/*-runner
+...
+[io.quarkus] (main) camel-quarkus-examples-http-pqc started in 0.015s. Listening on: https://0.0.0.0:8443
+...
+----
+
+== Testing
+
+Run the tests to verify hybrid certificate functionality:
+
+[source,shell]
+----
+$ mvn clean test
+----
+
+The test suite validates:
+
+* Hybrid keystores are generated automatically
+* `/pqc/secure` rejects requests without client certificates
+* `/pqc/secure` accepts hybrid certificates (RSA + ML-DSA-65)
+* `/pqc/secure` rejects RSA-only certificates missing PQC extensions
+
+For native mode testing:
+
+[source,shell]
+----
+$ mvn clean verify -Dnative
+----
+
+== How It Works (Java 17 Application-Level Validation)
+
+This example works around Java 17's lack of native PQC support by implementing custom certificate validation at the application level, integrated into the TLS handshake via a custom `X509TrustManager`.
+
+=== Certificate Structure
+
+Traditional X.509 certificates are extended with three additional fields (Chimera format):
+
+* **OID 2.5.29.72** - Alternative public key (ML-DSA-65)
+* **OID 2.5.29.73** - Alternative signature algorithm identifier
+* **OID 2.5.29.74** - Alternative signature value (ML-DSA-65 signature)
+
+Both RSA and ML-DSA-65 signatures must validate for authentication to succeed.
+
+=== Validation Flow (Application-Level, Not TLS-Native)
+
+1. Client connects with TLS client certificate
+2. Java's TLS stack invokes our custom `HybridPqcX509TrustManager` during handshake
+3. `CertificatesUtil.validateHybridCertificate()` performs application-level checks:
+   - RSA signature (standard X.509 validation via Java crypto)
+   - ML-DSA-65 algorithm OID (2.5.29.73) - manual extraction
+   - ML-DSA-65 public key (2.5.29.72) - manual extraction
+   - ML-DSA-65 signature (2.5.29.74) - manual verification via BouncyCastle
+4. If all checks pass, TLS handshake continues
+5. If any check fails, TLS handshake is rejected
+
+NOTE: This validation happens at the application level, not within Java's TLS implementation. Java 17's TLS stack only handles the standard RSA certificate; our custom code validates the PQC extensions.
+
+== Important Notes
+
+* **Java 17 Only**: This example is specifically designed for Java 17, which lacks native PQC support in its TLS stack. It demonstrates application-level validation as a workaround. Do not use this approach if you can upgrade to Java 21+.
+
+* **Development Only**: Certificates are regenerated on every startup. For production, use persistent certificates from a trusted CA.
+
+* **BouncyCastle 1.83**: Uses standardized ML-DSA-65 naming per NIST FIPS 204 (effective August 2024). This example uses JCA provider only, not JSSE. Note that ML-DSA (standardized) and Dilithium (pre-standard) are NOT interoperable.
+
+== Additional Resources
+
+* link:PQC-EXPLANATION.adoc[Visual Guide] - Detailed diagrams and architecture
+* https://csrc.nist.gov/pubs/fips/204/final[NIST FIPS 204 - ML-DSA Standard]
+* https://datatracker.ietf.org/doc/html/draft-ounsworth-pq-composite-sigs[IETF Composite Signatures - Chimera format specification]
+* https://www.bouncycastle.org/[BouncyCastle - PQC provider documentation]
+* https://www.rfc-editor.org/rfc/rfc9881.html[RFC 9881 - Algorithm Identifiers for ML-DSA in X.509]
+* https://www.rfc-editor.org/rfc/rfc9882.html[RFC 9882 - Use of ML-DSA in CMS]
+
+== Feedback and Contributions
+
+For issues or contributions, please submit to the https://github.com/apache/camel-quarkus-examples[Camel Quarkus Examples] repository.

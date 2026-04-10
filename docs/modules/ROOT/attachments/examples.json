@@ -45,6 +45,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/file-bindy-ftp"
   },
   {
+    "title": "HTTP with Post-Quantum Cryptography (PQC) (Java 17)",
+    "description": "Shows how to implement quantum-resistant authentication using hybrid certificates that combine RSA with post-quantum ML-DSA-65 signatures on Java 17 using application-level validation",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-pqc-j17"
+  },
+  {
     "title": "HTTP with vanilla JAX-RS or with Camel `platform-http` component",
     "description": "Shows how to create HTTP endpoints using either the RESTEasy",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-log"
