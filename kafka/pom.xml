@@ -329,6 +329,9 @@
                     <name>kubernetes</name>
                 </property>
             </activation>
+            <properties>
+                <quarkus.kubernetes-client.devservices.enabled>false</quarkus.kubernetes-client.devservices.enabled>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>io.quarkus</groupId>
@@ -347,6 +350,9 @@
                     <name>openshift</name>
                 </property>
             </activation>
+            <properties>
+                <quarkus.kubernetes-client.devservices.enabled>false</quarkus.kubernetes-client.devservices.enabled>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>io.quarkus</groupId>
