@@ -207,7 +207,7 @@ The easiest way to visualize the dashboard with working metrics is using Docker 
 [source,shell]
 ----
 # Start the observability stack (Grafana, Prometheus, Tempo)
-$ docker-compose -f src/main/docker/docker-compose-grafana.yml up -d
+$ docker compose -f src/main/docker/docker-compose-grafana.yml up -d
 
 # In another terminal, package and run the application
 $ mvn clean package -DskipTests
@@ -216,7 +216,7 @@ $ java -jar target/quarkus-app/quarkus-run.jar
 
 Access Grafana at http://localhost:3000 (credentials: `admin/admin`). The dashboard is automatically provisioned and ready to use!
 
-NOTE: To stop the observability stack: `docker-compose -f src/main/docker/docker-compose-grafana.yml down -v`
+NOTE: To stop the observability stack: `docker compose -f src/main/docker/docker-compose-grafana.yml down -v`
 
 ==== Alternative: Dev Mode with Manual Dashboard Import
 
