@@ -16,13 +16,17 @@
  */
 package org.acme.message.bridge.resource;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.images.builder.Transferable;
 import org.testcontainers.utility.DockerImageName;
 
 public class IBMMQTestResource implements QuarkusTestResourceLifecycleManager {
@@ -36,13 +40,22 @@ public class IBMMQTestResource implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public Map<String, String> start() {
+        Path passwordFile = Paths.get("target").resolve("password");
+        try {
+            Files.writeString(passwordFile, PASSWORD);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create password file", e);
+        }
+
         container = new GenericContainer<>(DockerImageName.parse(IMAGE_NAME))
                 .withExposedPorts(PORT)
                 .withEnv(Map.of(
                         "LICENSE", ConfigProvider.getConfig().getValue("ibm.mq.container.license", String.class),
                         "MQ_QMGR_NAME", QUEUE_MANAGER_NAME))
-                .withCopyToContainer(Transferable.of(PASSWORD), "/run/secrets/mqAdminPassword")
-                .withCopyToContainer(Transferable.of(PASSWORD), "/run/secrets/mqAppPassword")
+                // prefer filesystembind over copytocontainer as copying to /run/secrets does not work for rootless podman
+                .withFileSystemBind(passwordFile.toAbsolutePath().toString(), "/run/secrets/mqAdminPassword",
+                        BindMode.READ_ONLY)
+                .withFileSystemBind(passwordFile.toAbsolutePath().toString(), "/run/secrets/mqAppPassword", BindMode.READ_ONLY)
                 // AMQ5806I is a message code for queue manager start
                 .waitingFor(Wait.forLogMessage(".*AMQ5806I.*", 1));
         container.start();
