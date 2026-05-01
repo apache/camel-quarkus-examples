@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-http-pqc-j17</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.35.0-SNAPSHOT</version>
+    <version>3.35.0</version>
 
     <name>Camel Quarkus :: Examples :: HTTP PQC</name>
     <description>Camel Quarkus Example :: HTTP with Post-Quantum Cryptography</description>
