@@ -50,6 +50,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-pqc-j17"
   },
   {
+    "title": "HTTP with Post-Quantum Cryptography (PQC) (Java 21)",
+    "description": "Shows how to implement quantum-resistant TLS using Java 21 with BouncyCastle JSSE provider for native PQC support with hybrid cipher suites",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-pqc-j21"
+  },
+  {
     "title": "HTTP with vanilla JAX-RS or with Camel `platform-http` component",
     "description": "Shows how to create HTTP endpoints using either the RESTEasy",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-log"

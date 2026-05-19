@@ -1,0 +1,288 @@
+= HTTP with Post-Quantum Cryptography (PQC): A Camel Quarkus example (Java 21)
+:cq-example-description: An example that shows how to implement quantum-resistant TLS using Java 21 with BouncyCastle JSSE provider for native PQC support with hybrid cipher suites
+
+{cq-description}
+
+This example shows how to implement quantum-resistant TLS on **Java 21** using hybrid cipher suites that combine classical ECDH with post-quantum ML-KEM-768 key exchange (X25519MLKEM768). The TLS stack natively negotiates and uses PQC algorithms.
+
+NOTE: CI runs with jdk17, therefore CI on this example is disabled (via profile)!
+
+IMPORTANT: This example uses **native PQC TLS support** via BouncyCastle JSSE provider. Java 21 supports PQC hybrid cipher suites at the TLS protocol level. For Java 17, see the http-pqc-j17 example which uses application-level validation.
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites and other general information.
+
+== What is Post-Quantum Cryptography?
+
+Post-Quantum Cryptography (PQC) protects against "harvest now, decrypt later" attacks where adversaries capture encrypted data today to decrypt when quantum computers become available.
+
+=== Java 21 Approach
+
+**Java 21 supports PQC algorithms natively in TLS** when using BouncyCastle JSSE provider. This example demonstrates:
+
+* **Hybrid cipher suites**: X25519MLKEM768 combines classical X25519 ECDH with quantum-resistant ML-KEM-768 (NIST FIPS 203)
+* **TLS-level key exchange**: PQC negotiation happens at the TLS protocol layer, not application level
+* **BouncyCastle JSSE provider**: Replaces SunJSSE to enable PQC cipher suites in TLS 1.3
+* **Configurable fallback**: Can configure classical fallback algorithms for backward compatibility
+
+This approach provides true PQC support at the TLS protocol level, unlike Java 17's application-level validation workaround.
+
+== Certificate Generation
+
+Certificates are automatically generated during application startup in `target/certs/`:
+
+* `server-keystore.p12` - Server certificate with RSA 4096-bit keys
+* `server-truststore.p12` - Truststore for validating clients
+* `client-keystore.p12` - Client certificate for testing
+* `client-truststore.p12` - Client truststore for server validation
+
+NOTE: Certificates use traditional RSA signatures. The PQC protection comes from the hybrid key exchange (X25519MLKEM768) negotiated during the TLS handshake, not from the certificate signatures.
+
+== Prerequisites
+
+* **Java 21** or higher (required for X25519MLKEM768 support)
+* Maven 3.8.1 or later
+* GraalVM (for native mode only)
+
+== Start in Development Mode
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+The application starts on a random HTTPS port with mutual TLS (mTLS) enabled. All endpoints require a valid client certificate.
+
+Main endpoint:
+
+* `/pqc/secure` - Requires client certificate, uses X25519MLKEM768 hybrid key exchange
+
+The actual port is displayed in the startup logs. Look for:
+[source]
+----
+Listening on: https://0.0.0.0:xxxxx
+----
+
+NOTE: The server is configured with `jdk.tls.namedGroups=X25519MLKEM768,x25519,secp256r1 by default, which means both PQC-capable clients and not-PQC-capable clients can connect.
+
+=== Manual Testing with Client Certificates
+
+IMPORTANT: Standard tools like `curl`, `wget`, and `openssl s_client` do **not** support X25519MLKEM768 hybrid key exchange.
+
+==== Option 1: Configure Server with Fallback (Recommended for Manual Testing)
+
+`application.properties` is configured by default to enable classical fallback:
+
+[source,properties]
+----
+jdk.tls.namedGroups=X25519MLKEM768,x25519,secp256r1
+----
+
+PKCS12 keystores are automatically generated during test execution in `target/certs/`:
+
+* `client-keystore.p12` - Client certificate (password: `changeit`)
+
+Start the application with fallback configuration and test with curl:
+
+[source,shell]
+----
+$ mvn quarkus:dev
+
+# In another terminal
+$ curl --cert target/certs/client-keystore.p12:changeit \
+       --cert-type P12 \
+       -k \
+       https://localhost:xxxxx/pqc/secure
+
+{"message":"Serving secure data via PQC-enabled TLS connection"}
+----
+
+NOTE: With fallback enabled, curl will use classical x25519 or secp256r1 key exchange since it doesn't support X25519MLKEM768. The connection is secure but not quantum-resistant.
+
+==== Option 2: Test with PQC-Capable Client (PQC Protection)
+
+Configure `application.properties` to disable classical fallback:
+
+[source,properties]
+----
+jdk.tls.namedGroups=X25519MLKEM768
+----
+
+To actually test X25519MLKEM768 hybrid key exchange, use a PQC-capable client. The test suite demonstrates this using Apache HttpClient 5 with BouncyCastle JSSE:
+
+[source,shell]
+----
+# Run the test that proves PQC is working
+$ mvn test -Dtest=PqcOnlyTest#testHttpClientWithBCJSSE
+----
+
+This test uses BouncyCastle JSSE provider which supports X25519MLKEM768, proving the server requires PQC when configured with `jdk.tls.namedGroups=X25519MLKEM768`.
+
+== Package and Run the Application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+=== JVM Mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+...
+[io.quarkus] (main) camel-quarkus-examples-http-pqc-j21 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
+----
+
+=== Native Mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ mvn clean package -Dnative
+$ ./target/*-runner
+...
+[io.quarkus] (main) camel-quarkus-examples-http-pqc-j21 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
+...
+----
+
+== Testing
+
+Run the tests to verify PQC functionality:
+
+[source,shell]
+----
+$ mvn clean test
+----
+
+The test suite validates:
+
+* **PqcOnlyTest**: Proves X25519MLKEM768 is enforced
+  - BCJSSE client ✓ succeeds (supports X25519MLKEM768)
+  - SunJSSE client ✗ fails (no PQC support)
+  - This proves the server requires PQC with no classical fallback
+
+* **PqcWithFallbackTest**: Demonstrates backward compatibility
+  - BCJSSE client ✓ succeeds (uses X25519MLKEM768)
+  - SunJSSE client ✓ succeeds (falls back to secp256r1)
+  - This proves gradual migration is possible
+
+Run individual tests:
+
+[source,shell]
+----
+# Test PQC enforcement
+$ mvn clean test -Dtest=PqcOnlyTest
+
+# Test backward compatibility
+$ mvn clean test -Dtest=PqcWithFallbackTest
+
+# Test specific scenario
+$ mvn clean test -Dtest=PqcOnlyTest#testHttpClientWithBCJSSE
+----
+
+For native mode testing:
+
+[source,shell]
+----
+$ mvn clean verify -Dnative
+----
+
+NOTE: Native mode only tests the fallback scenario (PqcWithFallbackIT) because a native executable can be built with only one `jdk.tls.namedGroups` configuration. Testing both scenarios would require building two separate native executables.
+
+== How It Works (Java 21 Native TLS Support)
+
+This example uses Java 21's native PQC support via BouncyCastle JSSE provider, which replaces the standard SunJSSE provider.
+
+=== Key Exchange vs Certificate Signatures
+
+It's important to understand the distinction:
+
+* **Key Exchange (Hybrid PQC)**: X25519MLKEM768 negotiated during TLS handshake
+  - Protects session keys from quantum attacks
+  - Negotiated at the TLS protocol level
+  - Configured via `jdk.tls.namedGroups` property
+
+* **Certificate Signatures (Classical RSA)**: Used for authentication only
+  - Proves identity of server/client
+  - Not directly vulnerable to "harvest now, decrypt later" attacks
+  - Future examples may demonstrate PQC signatures (ML-DSA)
+
+This example focuses on protecting the **session keys** via hybrid key exchange, which is the primary "harvest now, decrypt later" threat.
+
+=== TLS Handshake Flow
+
+1. Client initiates TLS 1.3 connection
+2. Server offers X25519MLKEM768 cipher suite (configured via `jdk.tls.namedGroups`)
+3. BouncyCastle JSSE provider negotiates hybrid key exchange:
+   - Classical X25519 ECDH component
+   - Quantum-resistant ML-KEM-768 component
+4. Both components combine to derive session keys
+5. Certificate validation happens (RSA signatures, standard X.509)
+6. TLS handshake completes with quantum-resistant session keys
+
+=== Configuration Options
+
+Configure via `jdk.tls.namedGroups` property:
+
+[source,properties]
+----
+# PQC only (maximum security, no backward compatibility)
+jdk.tls.namedGroups=X25519MLKEM768
+
+# PQC with fallback (recommended for production migration)
+jdk.tls.namedGroups=X25519MLKEM768,x25519,secp256r1
+
+----
+
+The server will prefer the first algorithm but fall back to subsequent ones if the client doesn't support PQC.
+
+== Important Notes
+
+* **Java 21 Required**: This example requires Java 21 or higher. Java 21 is the first LTS version with PQC support in the TLS stack. Do not attempt to run this example on Java 17 or earlier.
+
+* **BouncyCastle JSSE Provider**: The example uses BouncyCastle JSSE (not just JCA provider) registered at position 2 in the security provider list. This replaces SunJSSE for TLS operations while keeping other JCA providers for standard cryptographic operations.
+
+* **Development Only**: Certificates are regenerated during test setup. For production, use persistent certificates from a trusted CA.
+
+* **Test Ordering**: JVM tests must run in a specific order (@Order annotations) because SunJSSE's static initialization fails permanently with PQC-only configuration. PqcWithFallbackTest must run before PqcOnlyTest.
+
+* **Native Mode Limitation**: Native executables can only be built with one `jdk.tls.namedGroups` configuration. This example builds with fallback configuration for broader compatibility testing.
+
+== Available Hybrid Cipher Suites
+
+*Hybrid variants (classical + PQC):*
+- **X25519MLKEM768** (X25519 + ML-KEM-768) - Recommended, NIST Level 3 security
+- SecP256r1MLKEM768 (secp256r1 + ML-KEM-768) - NIST Level 3 security
+- SecP384r1MLKEM1024 (secp384r1 + ML-KEM-1024) - NIST Level 5 security
+
+*Pure PQC:*
+- MLKEM512 - NIST Level 1 security
+- MLKEM768 - NIST Level 3 security
+- MLKEM1024 - NIST Level 5 security
+
+*Classical fallback options:*
+- x25519 (Curve25519) - Current standard
+- secp256r1 (NIST P-256) - Widely supported
+- secp384r1 (NIST P-384) - Higher security
+
+NOTE: Hybrid cipher suites (X25519MLKEM768) are recommended over pure PQC because they maintain classical security even if PQC algorithms are broken.
+
+== Additional Resources
+
+* https://github.com/oscerd/camel-pqc-tls[Reference Implementation] - Original PQC TLS examples
+* https://csrc.nist.gov/pubs/fips/203/final[NIST FIPS 203 - ML-KEM Standard]
+* https://datatracker.ietf.org/doc/draft-ietf-tls-hybrid-design/[IETF Draft - Hybrid Key Exchange in TLS 1.3]
+* https://www.bouncycastle.org/[BouncyCastle] - PQC JSSE provider documentation
+* https://camel.apache.org/camel-quarkus/latest/[Camel Quarkus Documentation]
+* https://www.rfc-editor.org/rfc/rfc8446.html[RFC 8446 - TLS 1.3 Specification]
+
+== Feedback and Contributions
+
+For issues or contributions, please submit to the https://github.com/apache/camel-quarkus-examples[Camel Quarkus Examples] repository.
