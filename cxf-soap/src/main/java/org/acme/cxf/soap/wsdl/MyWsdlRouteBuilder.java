@@ -63,7 +63,7 @@ public class MyWsdlRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         // CustomerService is generated with quarkus-maven-plugin:generate-code during the build
         from("cxf:bean:customer")
-                .recipientList(simple("direct:${header.operationName}"));
+                .recipientList(simple("direct:${header.CamelCxfOperationName}"));
 
         from("direct:getCustomersByName").process(exchange -> {
             String name = exchange.getIn().getBody(String.class);
