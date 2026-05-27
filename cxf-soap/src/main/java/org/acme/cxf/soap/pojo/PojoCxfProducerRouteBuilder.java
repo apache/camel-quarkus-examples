@@ -25,6 +25,7 @@ import org.acme.cxf.soap.pojo.service.Contacts;
 import org.acme.cxf.soap.utils.CxfServerUtils;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.cxf.common.DataFormat;
+import org.apache.camel.component.cxf.common.message.CxfConstants;
 import org.apache.camel.component.cxf.jaxws.CxfEndpoint;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
@@ -60,9 +61,11 @@ public class PojoCxfProducerRouteBuilder extends RouteBuilder {
                 .to("direct:contacts");
 
         from("direct:contact")
+                .setHeader(CxfConstants.OPERATION_NAME, constant("addContact"))
                 .to("cxf:bean:soapClientEndpointPojo");
 
         from("direct:contacts")
+                .setHeader(CxfConstants.OPERATION_NAME, constant("getContacts"))
                 .to("cxf:bean:soapClientEndpointPojo")
                 .convertBodyTo(Contacts.class)
                 .marshal().json(JsonLibrary.Jackson);
