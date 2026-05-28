@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-http-pqc-j21</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.36.0-SNAPSHOT</version>
+    <version>3.36.0</version>
 
     <name>Camel Quarkus :: Examples :: HTTP PQC Java 21</name>
     <description>Camel Quarkus Example :: HTTP with Post-Quantum Cryptography on Java 21 using X25519MLKEM768</description>
