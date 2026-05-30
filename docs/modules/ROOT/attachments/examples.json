@@ -1,5 +1,10 @@
 [
   {
+    "title": "AMQ Broker and Keycloak Integration",
+    "description": "Demonstrates integration of AMQ Broker with Keycloak security using REST and SOAP endpoints",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/amq-broker-keycloak"
+  },
+  {
     "title": "AMQP",
     "description": "Shows how to produce and consume messages to an ActiveMQ Artemis broker using AMQP.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/amqp"

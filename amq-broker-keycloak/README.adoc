@@ -1,0 +1,552 @@
+= AMQ Broker and Keycloak Integration: A Camel Quarkus example
+:cq-example-description: An example that demonstrates integration of AMQ Broker with Keycloak security using REST and SOAP endpoints
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Overview
+
+This example demonstrates how to integrate Apache ActiveMQ Artemis (AMQ Broker) with Keycloak authentication in a Camel Quarkus application.
+The application provides both REST and SOAP endpoints that are secured using Keycloak authentication policies.
+
+The example includes:
+
+* *REST endpoint* for order submission (`/api/orders/submit`) - requires authentication
+* *REST endpoint* for admin operations (`/api/admin/users`) - requires authentication and admin role
+* *SOAP endpoint* for inventory management (`/services/inventory`) - secured with Keycloak
+* *JMS integration* using AMQ Broker to process orders asynchronously via `order-queue`
+* *Keycloak component* for user management and authentication
+
+== Prerequisites
+
+The example application requires both a Keycloak instance and an AMQ Broker (Apache ActiveMQ Artemis) instance.
+
+You do not need to provide these instances yourself as long as you play with the example code in dev mode
+(a.k.a. `mvn quarkus:dev`) - read more https://quarkus.io/guides/getting-started#development-mode[here]
+or as long as you only run the supplied tests (`mvn test`).
+In those situations, Quarkus tooling automatically starts both Keycloak and Artemis containers for you via
+https://quarkus.io/guides/security-openid-connect-dev-services[Quarkus Dev Services] and
+https://docs.quarkiverse.io/quarkus-artemis/dev/index.html#_dev_services[Artemis Dev Services],
+and it also configures the application so that you do not need to touch anything in `application.properties`.
+
+[[users-configuration]]
+
+=== Users configuration
+
+In all scenarios which we will cover, we will need two users:
+- *customer* (with role `customer-role` and password `customer-pass`) - can submit orders
+- *admin* (with role `admin-role` and password `admin-pass`) - can submit orders and access admin endpoints
+
+WARNING: These hardcoded credentials are for demonstration purposes only and should never be used in production.
+
+=== Quarkus OIDC
+
+We use the approach described in https://quarkus.io/guides/security-openid-connect-client-reference[Quarkus Open ID Connect]
+to protect the application with Keycloak as our OIDC provider. This automatically secures our
+Camel Quarkus routes using the `keycloakPolicy` policy defined in the application.
+
+== Start in Development mode
+
+=== Run the app with Dev Services
+
+Run the application in development mode. Quarkus will automatically start Keycloak and AMQ Broker containers:
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application, and starts both Keycloak and AMQ Broker instances via Dev Services.
+The Quarkus tooling watches for changes in your workspace. Any modifications in your project will automatically take effect
+in the running application.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+Now you can move on to the <<playground>> section with the assumption that `KEYCLOAK_URL=http://localhost:8082` and `APP_URL=http://localhost:8080`.
+
+[[playground]]
+
+=== Playground
+
+The first thing to do is to obtain the Bearer token from the running Keycloak instance for each created user. Save those tokens for further authentication.
+
+For the `customer` user, extract value from response of key `access_token` and call it `CUSTOMER_TOKEN`:
+
+[source,shell]
+----
+$ curl -d "client_id=quarkus-client" -d "client_secret=secret" -d "username=customer" -d "password=customer-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
+----
+
+For the `admin` user, extract value from response of key `access_token` and call it `ADMIN_TOKEN`:
+
+[source,shell]
+----
+$ curl -d "client_id=quarkus-client" -d "client_secret=secret" -d "username=admin" -d "password=admin-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
+----
+
+Now we are ready to try the HTTP endpoints:
+
+==== Submit an order (authenticated endpoint)
+
+The `customer` user can submit orders (you should receive `200 OK` and the order will be sent to the JMS queue):
+
+[source,shell]
+----
+$ curl -i -X POST -H "Authorization: Bearer $CUSTOMER_TOKEN" -H "Content-Type: application/json" \
+  -d '{"orderId":"ORDER-001","customerId":"CUST-001","productId":"PRODUCT-001","quantity":5}' \
+  $APP_URL/api/orders/submit
+----
+
+The `admin` user can also submit orders:
+
+[source,shell]
+----
+$ curl -i -X POST -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
+  -d '{"orderId":"ORDER-002","customerId":"CUST-002","productId":"PRODUCT-002","quantity":10}' \
+  $APP_URL/api/orders/submit
+----
+
+Without authentication, the request should fail (you should receive `401 Unauthorized`):
+
+[source,shell]
+----
+$ curl -i -X POST -H "Content-Type: application/json" \
+  -d '{"orderId":"ORDER-003","customerId":"CUST-003","productId":"PRODUCT-003","quantity":3}' \
+  $APP_URL/api/orders/submit
+----
+
+==== Access admin endpoint (authorized endpoint)
+
+The `customer` user cannot access admin endpoints (you should receive `403 Forbidden`):
+
+[source,shell]
+----
+$ curl -i -X GET -H "Authorization: Bearer $CUSTOMER_TOKEN" $APP_URL/api/admin/users
+----
+
+The `admin` user can access admin endpoints (you should receive `200 OK` with a list of Keycloak users):
+
+[source,shell]
+----
+$ curl -i -X GET -H "Authorization: Bearer $ADMIN_TOKEN" $APP_URL/api/admin/users
+----
+
+==== SOAP Inventory Service
+
+The SOAP endpoint is available at `/services/inventory` and is also secured with Keycloak authentication.
+You can test it using a SOAP client tool like SoapUI or curl with SOAP envelope:
+
+[source,shell]
+----
+$ curl -i -X POST -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: text/xml" \
+  -d '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+        <soap:Body>
+          <tns:UpdateStockRequest xmlns:tns="http://acme.org/inventory">
+            <productId>PRODUCT-001</productId>
+            <quantity>5</quantity>
+          </tns:UpdateStockRequest>
+        </soap:Body>
+      </soap:Envelope>' \
+  $APP_URL/services/inventory
+----
+
+Expected response:
+[source,xml]
+----
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <ns2:UpdateStockResponse xmlns:ns2="http://acme.org/inventory">
+      <success>true</success>
+      <message>Stock updated successfully</message>
+      <newStock>95</newStock>
+    </ns2:UpdateStockResponse>
+  </soap:Body>
+</soap:Envelope>
+----
+
+[[external-instances-configuration]]
+
+== Prerequisites for externally running Keycloak and AMQ Broker instances
+
+For the next steps, we need to have externally running Keycloak and AMQ Broker instances.
+
+=== Run Keycloak
+
+You can start a Keycloak instance easily via Docker:
+
+[source,shell]
+----
+$ docker run --name keycloak_amq_demo -p 8082:8080 \
+        -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
+        quay.io/keycloak/keycloak:latest \
+        start-dev
+----
+
+=== Configure the Keycloak realm
+
+Then go to `http://localhost:8082/` click on `Administration Console` and login with `admin:admin`.
+
+Create a new realm named `quarkus` with the following configuration:
+
+*Create a client:*
+- Client ID: `quarkus-client`
+- Client authentication: On
+- Direct access grants: Enabled
+- Client secret: `secret`
+
+*Create two roles:*
+- `customer-role`
+- `admin-role`
+
+*Create two users:*
+- Username: `customer`, Password: `customer-pass`, Email: `customer@example.com`, Role: `customer-role`
+- Username: `admin`, Password: `admin-pass`, Email: `admin@example.com`, Role: `admin-role`
+
+IMPORTANT: For each user, you must set:
+- Email address (required - without it you'll get "Account is not fully set up" error)
+- Email verified: On
+- Password: Set as non-temporary
+- Assign the appropriate role
+
+TIP: Make sure to enable direct access grants for the client to support password grant type.
+
+=== Run AMQ Broker (Apache ActiveMQ Artemis)
+
+You can start an AMQ Broker instance via Docker:
+
+[source,shell]
+----
+$ docker run --name artemis_amq_demo -d -p 61616:61616 -p 8161:8161 \
+        -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
+        quay.io/artemiscloud/activemq-artemis-broker:latest
+----
+
+The broker will be available at `tcp://localhost:61616` for JMS connections and `http://localhost:8161` for the web console.
+
+== JVM mode
+
+[source,shell]
+----
+$ export QUARKUS_OIDC_AUTH_SERVER_URL=http://localhost:8082/realms/quarkus
+$ export QUARKUS_OIDC_CLIENT_ID=quarkus-client
+$ export QUARKUS_OIDC_CREDENTIALS_SECRET=secret
+$ export QUARKUS_ARTEMIS_URL=tcp://localhost:61616
+$ export QUARKUS_ARTEMIS_USERNAME=admin
+$ export QUARKUS_ARTEMIS_PASSWORD=admin
+$ mvn clean package -DskipTests
+$ java -jar target/quarkus-app/quarkus-run.jar
+----
+
+Now you can go to the <<playground>> section (with the assumption that `KEYCLOAK_URL=http://localhost:8082` and `APP_URL=http://localhost:8081`) and try it yourself.
+
+== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ export QUARKUS_OIDC_AUTH_SERVER_URL=http://localhost:8082/realms/quarkus
+$ export QUARKUS_OIDC_CLIENT_ID=quarkus-client
+$ export QUARKUS_OIDC_CREDENTIALS_SECRET=secret
+$ export QUARKUS_ARTEMIS_URL=tcp://localhost:61616
+$ export QUARKUS_ARTEMIS_USERNAME=admin
+$ export QUARKUS_ARTEMIS_PASSWORD=admin
+$ mvn clean package -DskipTests -Dnative
+$ ./target/*-runner
+----
+
+Now you can go to the <<playground>> section (with the assumption that `KEYCLOAK_URL=http://localhost:8082` and `APP_URL=http://localhost:8081`) and try it yourself.
+
+== Deploying to Kubernetes
+
+You can build a container image for the application like this. Refer to the https://quarkus.io/guides/deploying-to-kubernetes[Quarkus Kubernetes guide] for options around customizing image names, registries etc.
+
+This example uses Jib to create the container image for Kubernetes deployment.
+
+=== Deploy Keycloak to Kubernetes
+
+For a simple Keycloak deployment on Kubernetes:
+
+[source,shell]
+----
+$ kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: keycloak
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:26.5.7
+        args: ["start-dev"]
+        env:
+        - name: KEYCLOAK_ADMIN
+          value: "admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          value: "admin"
+        - name: KC_PROXY
+          value: "edge"
+        ports:
+        - name: http
+          containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /realms/master
+            port: 8080
+EOF
+----
+
+For production use, follow https://www.keycloak.org/getting-started/getting-started-kube[Keycloak Kubernetes guide].
+
+=== Deploy AMQ Broker to Kubernetes
+
+For a simple AMQ Broker deployment on Kubernetes:
+
+[source,shell]
+----
+$ kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: artemis-broker
+  labels:
+    app: artemis
+spec:
+  ports:
+  - name: tcp
+    port: 61616
+    targetPort: 61616
+  - name: console
+    port: 8161
+    targetPort: 8161
+  selector:
+    app: artemis
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: artemis-broker
+  labels:
+    app: artemis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: artemis
+  template:
+    metadata:
+      labels:
+        app: artemis
+    spec:
+      containers:
+      - name: artemis
+        image: quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0
+        env:
+        - name: AMQ_USER
+          value: "admin"
+        - name: AMQ_PASSWORD
+          value: "admin"
+        - name: AMQ_ROLE
+          value: "admin"
+        ports:
+        - name: tcp
+          containerPort: 61616
+        - name: console
+          containerPort: 8161
+EOF
+----
+
+For production use with operators, follow the https://artemiscloud.io/[ArtemisCloud Operator] documentation.
+
+=== Configure Keycloak on Kubernetes
+
+Use the same configuration as in <<external-instances-configuration>> to create the realm, client, roles, and users.
+
+IMPORTANT: When creating users via the Keycloak Admin Console or API, you MUST set the `firstName` and `lastName` fields. Without these fields, you will get an "Account is not fully set up" error when trying to authenticate.
+
+For local Docker Desktop Kubernetes testing, Keycloak will be available at `http://localhost:8080` (LoadBalancer service).
+For remote clusters, obtain the Keycloak URL from your ingress or service configuration.
+
+=== Deploy Camel Quarkus application to Kubernetes
+
+TIP: Because we use `quarkus.kubernetes.env.secrets=quarkus-keycloak` in `application.properties` all properties from the secret `quarkus-keycloak` will be presented as ENV variables to the pod.
+
+TIP: To trust self-signed certificates from the Kubernetes API server use `-Dquarkus.kubernetes-client.trust-certs=true` in the deploy command.
+
+**Create the Kubernetes secret:**
+
+[source,shell]
+----
+$ kubectl create secret generic quarkus-keycloak \
+    --from-literal=QUARKUS_OIDC_CREDENTIALS_SECRET=secret \
+    --from-literal=QUARKUS_ARTEMIS_URL=tcp://artemis-broker:61616 \
+    --from-literal=QUARKUS_ARTEMIS_USERNAME=admin \
+    --from-literal=QUARKUS_ARTEMIS_PASSWORD=admin
+----
+
+**Deploy the application:**
+
+For local Docker Desktop Kubernetes (without pushing to a registry):
+
+[source,shell]
+----
+$ mvn clean package -DskipTests \
+    -Dquarkus.container-image.build=true \
+    -Dquarkus.container-image.push=false \
+    -Dquarkus.kubernetes.image-pull-policy=Never \
+    -Dquarkus.kubernetes.namespace=default \
+    -Dquarkus.kubernetes.env.vars.QUARKUS_OIDC_AUTH_SERVER_URL=http://keycloak:8080/realms/quarkus \
+    -Dquarkus.kubernetes.env.vars.CAMEL_COMPONENT_KEYCLOAK_SERVER_URL=http://keycloak:8080 \
+    -Dquarkus.kubernetes.env.vars.CAMEL_COMPONENT_KEYCLOAK_REALM=quarkus \
+    -Dquarkus.kubernetes.deploy=true
+----
+
+For production clusters with a container registry:
+
+[source,shell]
+----
+$ mvn clean package -DskipTests \
+    -Dquarkus.container-image.registry=<your-registry> \
+    -Dquarkus.container-image.group=<your-group> \
+    -Dquarkus.container-image.push=true \
+    -Dquarkus.kubernetes.namespace=<your-namespace> \
+    -Dquarkus.kubernetes.env.vars.QUARKUS_OIDC_AUTH_SERVER_URL=http://keycloak:8080/realms/quarkus \
+    -Dquarkus.kubernetes.env.vars.CAMEL_COMPONENT_KEYCLOAK_SERVER_URL=http://keycloak:8080 \
+    -Dquarkus.kubernetes.env.vars.CAMEL_COMPONENT_KEYCLOAK_REALM=quarkus \
+    -Dquarkus.kubernetes.deploy=true
+----
+
+You can check the pod status:
+
+[source,shell]
+----
+$ kubectl get pods -l app.kubernetes.io/name=camel-quarkus-examples-amq-broker-keycloak
+NAME                                                     READY   STATUS    RESTARTS   AGE
+camel-quarkus-examples-amq-broker-keycloak-xxx-xxx       1/1     Running   0          10m
+----
+
+=== Testing the Kubernetes Deployment
+
+IMPORTANT: Due to JWT token issuer validation, the access token must be obtained from within the Kubernetes cluster (using service names like `http://keycloak:8080`) rather than from `localhost`. Tokens obtained from `http://localhost:8080` will be rejected because the issuer URL doesn't match.
+
+**Test from inside the pod:**
+
+[source,shell]
+----
+$ kubectl exec deployment/camel-quarkus-examples-amq-broker-keycloak -- sh -c '
+TOKEN=$(curl -s http://keycloak:8080/realms/quarkus/protocol/openid-connect/token \
+  -d "username=customer" \
+  -d "password=customer-pass" \
+  -d "grant_type=password" \
+  -d "client_id=quarkus-client" \
+  -d "client_secret=secret" | grep -o "\"access_token\":\"[^\"]*" | cut -d\" -f4)
+
+curl -s http://localhost:8081/api/orders/submit \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{\"orderId\":\"K8S-001\",\"customerId\":\"CUST-001\",\"productId\":\"PRODUCT-001\",\"quantity\":5}"
+'
+----
+
+Expected response:
+[source,json]
+----
+{"success":true,"message":"Stock updated successfully","newStock":95}
+----
+
+**Test admin endpoint with customer role (should get 403):**
+
+[source,shell]
+----
+$ kubectl exec deployment/camel-quarkus-examples-amq-broker-keycloak -- sh -c '
+CUSTOMER_TOKEN=$(curl -s http://keycloak:8080/realms/quarkus/protocol/openid-connect/token \
+  -d "username=customer" \
+  -d "password=customer-pass" \
+  -d "grant_type=password" \
+  -d "client_id=quarkus-client" \
+  -d "client_secret=secret" | grep -o "\"access_token\":\"[^\"]*" | cut -d\" -f4)
+
+curl -s -o /dev/null -w "HTTP %{http_code}\n" http://localhost:8081/api/admin/users \
+  -H "Authorization: Bearer $CUSTOMER_TOKEN"
+'
+----
+
+Expected: `HTTP 403`
+
+**Test admin endpoint with admin role (should get 200):**
+
+[source,shell]
+----
+$ kubectl exec deployment/camel-quarkus-examples-amq-broker-keycloak -- sh -c '
+ADMIN_TOKEN=$(curl -s http://keycloak:8080/realms/quarkus/protocol/openid-connect/token \
+  -d "username=admin" \
+  -d "password=admin-pass" \
+  -d "grant_type=password" \
+  -d "client_id=quarkus-client" \
+  -d "client_secret=secret" | grep -o "\"access_token\":\"[^\"]*" | cut -d\" -f4)
+
+curl -s http://localhost:8081/api/admin/users \
+  -H "Authorization: Bearer $ADMIN_TOKEN"
+'
+----
+
+Expected response:
+[source,json]
+----
+[{"role":"customer-role","email":"customer@example.com","username":"customer"},{"role":"admin-role","email":"admin@example.com","username":"admin"}]
+----
+
+=== Clean up
+
+To clean up all Kubernetes resources:
+
+[source,shell]
+----
+# Delete the application
+$ kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-amq-broker-keycloak
+$ kubectl delete secret quarkus-keycloak
+$ kubectl delete ingress camel-quarkus-examples-amq-broker-keycloak
+
+# Delete Keycloak
+$ kubectl delete deployment,service keycloak
+
+# Delete AMQ Broker
+$ kubectl delete deployment,service artemis-broker
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
