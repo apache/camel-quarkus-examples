@@ -76,13 +76,13 @@ jobs:
         run: mvn org.l2x6.cq:cq-maven-plugin:2.10.0:examples-check-platform
       - name: mvn ${MAVEN_ARGS} license:check formatter:validate impsort:check
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} \
+          ./mvnw ${MAVEN_ARGS} \
             license:check \
             net.revelc.code.formatter:formatter-maven-plugin:validate \
             net.revelc.code:impsort-maven-plugin:check
       - name: Build Camel Quarkus Examples
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} clean install -DskipTests -Dquarkus.build.skip
+          ./mvnw ${MAVEN_ARGS} clean install -DskipTests -Dquarkus.build.skip
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
@@ -191,7 +191,7 @@ jobs:
       - name: Integration Tests
         shell: bash
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} clean test
+          ./mvnw ${MAVEN_ARGS} clean test
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
@@ -225,7 +225,7 @@ jobs:
       - name: Integration Tests
         shell: bash
         run: |
-          ./mvnw-for-each.sh ${MAVEN_ARGS} -Dskip-testcontainers-tests clean test
+          ./mvnw ${MAVEN_ARGS} -Dskip-testcontainers-tests clean test
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
