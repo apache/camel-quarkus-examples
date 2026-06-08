@@ -17,6 +17,8 @@
 package org.acme.kafka;
 
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
@@ -29,9 +31,15 @@ public class KafkaTest {
 
     @Test
     public void testKafka() {
+        Pattern pattern = Pattern.compile("Message #(\\d+)");
+
         await().atMost(10, TimeUnit.SECONDS).until(() -> {
             String message = RestAssured.get("/example").asString();
-            return message != null && message.contains("Message #");
+            if (message == null) {
+                return false;
+            }
+            Matcher matcher = pattern.matcher(message);
+            return matcher.find() && Integer.parseInt(matcher.group(1)) > 0;
         });
     }
 }
