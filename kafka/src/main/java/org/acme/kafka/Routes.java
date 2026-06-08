@@ -25,7 +25,7 @@ public class Routes extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         // produces messages to kafka
-        from("timer:foo?period={{timer.period}}&delay={{timer.delay}}")
+        from("timer:foo?period={{timer.period}}&delay={{timer.delay}}&includeMetadata=true")
                 .routeId("FromTimer2Kafka")
                 .setBody().simple("Message #${exchangeProperty.CamelTimerCounter}")
                 .to("kafka:{{kafka.topic.name}}")
