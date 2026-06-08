@@ -48,3 +48,5 @@ flight.*
 train.*
 app.*
 
+# AI assistants
+.bob
