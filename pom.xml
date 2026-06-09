@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.apache.camel.quarkus.examples</groupId>
+    <artifactId>camel-quarkus-examples</artifactId>
+    <version>3.37.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <cq-maven-plugin.version>4.25.0</cq-maven-plugin.version>
+        <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
+        <impsort-maven-plugin.version>1.13.0</impsort-maven-plugin.version>
+        <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
+    </properties>
+
+    <!-- Keep sorted alphabetically -->
+    <modules>
+        <module>amqp</module>
+        <module>artemis-elasticsearch</module>
+        <module>aws-lambda</module>
+        <module>aws2-s3</module>
+        <module>cluster-leader-election</module>
+        <module>cxf-soap</module>
+        <module>data-extract-langchain4j</module>
+        <module>fhir</module>
+        <module>file-bindy-ftp</module>
+        <module>file-split-log-xml</module>
+        <module>health</module>
+        <module>http-log</module>
+        <module>http-pqc-j17</module>
+        <module>http-pqc-j21</module>
+        <module>jdbc-datasource</module>
+        <module>jms-jpa</module>
+        <module>jpa-idempotent-repository</module>
+        <module>jta-jpa</module>
+        <module>kafka</module>
+        <module>kamelet-chucknorris</module>
+        <module>message-bridge</module>
+        <module>netty-custom-correlation</module>
+        <module>observability</module>
+        <module>openapi-contract-first</module>
+        <module>platform-http-security-keycloak</module>
+        <module>quarkus-rest-json</module>
+        <module>rest-json</module>
+        <module>saga</module>
+        <module>spring-redis</module>
+        <module>timer-log</module>
+        <module>timer-log-main</module>
+        <module>variables</module>
+        <module>vertx-websocket-chat</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <!--
+                These plugins are configured in each individual example module. They are declared here
+                only to prevent them from running against the aggregator pom, which has no sources.
+            -->
+            <plugin>
+                <groupId>com.mycila</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <version>${formatter-maven-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <version>${impsort-maven-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.l2x6.cq</groupId>
+                <artifactId>cq-maven-plugin</artifactId>
+                <version>${cq-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>update-examples-json</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
