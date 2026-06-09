@@ -62,6 +62,7 @@
         <module>platform-http-security-keycloak</module>
         <module>quarkus-rest-json</module>
         <module>rest-json</module>
+        <module>rest-keycloak-soap-jms</module>
         <module>saga</module>
         <module>spring-redis</module>
         <module>timer-log</module>

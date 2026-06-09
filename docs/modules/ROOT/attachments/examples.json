@@ -115,6 +115,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/platform-http-security-keycloak"
   },
   {
+    "title": "REST to SOAP with Keycloak and JMS",
+    "description": "Demonstrates REST-to-SOAP synchronous bridging with Keycloak security and asynchronous JMS topic events",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/rest-keycloak-soap-jms"
+  },
+  {
     "title": "REST with Jackson",
     "description": "Demonstrates how to create a REST service using the Camel REST DSL and Jackson.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/rest-json"
