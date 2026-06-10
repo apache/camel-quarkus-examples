@@ -23,6 +23,8 @@ import org.acme.cxf.soap.pojo.service.ContactService;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.cxf.jaxws.CxfEndpoint;
 
+import static org.acme.cxf.soap.utils.CxfServerUtils.OPERATION_NAME_HEADER;
+
 /**
  * This class demonstrate how to expose a SOAP endpoint starting from java classes
  */
@@ -43,6 +45,6 @@ public class PojoCxfConsumerRouteBuilder extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         from("cxf:bean:contact")
-                .recipientList(simple("bean:inMemoryContactService?method=${header.operationName}"));
+                .recipientList(simple("bean:inMemoryContactService?method=" + OPERATION_NAME_HEADER));
     }
 }
