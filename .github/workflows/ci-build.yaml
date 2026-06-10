@@ -65,13 +65,36 @@ jobs:
           java-version: '17'
       - name: Checkout
         uses: actions/checkout@v6
+      - name: Checkout Camel Quarkus
+        id: build-camel-quarkus
+        if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
+        run: |
+          git clone --depth 1 --branch main https://github.com/apache/camel-quarkus.git ${{ runner.temp }}/camel-quarkus
+          cd ${{ runner.temp }}/camel-quarkus
+          echo "Current Camel Quarkus commit:" $(git rev-parse HEAD)
+          JIRA_VERSION=$(./mvnw help:evaluate -Dexpression=jira-rest-client.version -q -DforceStdout -N)
+          echo "atlassian-version=${JIRA_VERSION}" >> $GITHUB_OUTPUT
+      - name: Restore Atlassian Maven Cache
+        if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: |
+            ~/.m2/repository/com/atlassian
+            ~/.m2/repository/io/atlassian
+          key: atlassian-maven-${{ steps.build-camel-quarkus.outputs.atlassian-version }}
       - name: Build Camel Quarkus
         if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
         run: |
-          git clone --depth 1 --branch main https://github.com/apache/camel-quarkus.git ${{ runner.temp }}/camel-quarkus \
-            && cd ${{ runner.temp }}/camel-quarkus \
-            && echo "Current Camel Quarkus commit:" $(git rev-parse HEAD) \
-            && ./mvnw ${MAVEN_ARGS} clean install -Dquickly
+          cd ${{ runner.temp }}/camel-quarkus
+          ./mvnw ${MAVEN_ARGS} clean install -Dquickly
+      - name: Save Atlassian Maven Cache
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
+        with:
+          path: |
+            ~/.m2/repository/com/atlassian
+            ~/.m2/repository/io/atlassian
+          key: atlassian-maven-${{ steps.build-camel-quarkus.outputs.atlassian-version }}
       - name: mvn cq:examples-check-platform
         run: mvn org.l2x6.cq:cq-maven-plugin:2.10.0:examples-check-platform
       - name: mvn ${MAVEN_ARGS} license:check formatter:validate impsort:check
@@ -90,12 +113,12 @@ jobs:
       - name: Tar Maven Repo
         shell: bash
         run: |
-          tar -czf ${{ runner.temp }}/maven-repo.tgz -C ~ .m2/repository
+          tar -I 'zstd -T0' -cf ${{ runner.temp }}/maven-repo.tar.zst -C ~ .m2/repository
       - name: Persist Maven Repo
         uses: actions/upload-artifact@v7
         with:
           name: maven-repo
-          path: ${{ runner.temp }}/maven-repo.tgz
+          path: ${{ runner.temp }}/maven-repo.tar.zst
           retention-days: 1
       - name: Setup Integration Test Matrix
         id: set-itest-matrix
@@ -127,7 +150,7 @@ jobs:
       - name: Extract Maven Repo
         shell: bash
         run: |
-          tar -xzf ../maven-repo.tgz -C ~
+          tar -I 'zstd -d' -xf ../maven-repo.tar.zst -C ~
       - name: Integration Tests
         env:
           TEST_MODULES: ${{matrix.tests}}
@@ -187,7 +210,7 @@ jobs:
       - name: Extract Maven Repo
         shell: bash
         run: |
-          tar -xzf ../maven-repo.tgz -C ~
+          tar -I 'zstd -d' -xf ../maven-repo.tar.zst -C ~
       - name: Integration Tests
         shell: bash
         run: |
@@ -221,7 +244,7 @@ jobs:
       - name: Extract Maven Repo
         shell: bash
         run: |
-          tar -xzf ../maven-repo.tgz -C ~
+          tar -I 'zstd -d' -xf ../maven-repo.tar.zst -C ~
       - name: Integration Tests
         shell: bash
         run: |
