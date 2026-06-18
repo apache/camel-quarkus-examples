@@ -86,7 +86,7 @@ jobs:
         if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
         run: |
           cd ${{ runner.temp }}/camel-quarkus
-          ./mvnw ${MAVEN_ARGS} clean install -Dquickly
+          ./mvnw ${MAVEN_ARGS} clean install -Dquickly -T1C
       - name: Save Atlassian Maven Cache
         uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
