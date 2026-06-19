@@ -49,7 +49,8 @@ public class SagaRoute extends RouteBuilder {
                 .end();
 
         from("direct:cancelOrder")
-                .log("Transaction ${header.Long-Running-Action} has been cancelled due to flight or train failure");
+                .log("Transaction ${header.Long-Running-Action} has been cancelled due to flight or train failure")
+                .end();
 
     }
 
