@@ -50,6 +50,7 @@ app.*
 
 # Claude
 .claude
+CLAUDE.local.md
 
 # Bob
 .bob
