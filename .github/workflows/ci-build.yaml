@@ -77,7 +77,7 @@ jobs:
           echo "atlassian-version=${JIRA_VERSION}" >> $GITHUB_OUTPUT
       - name: Restore Atlassian Maven Cache
         if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         with:
           path: |
             ~/.m2/repository/com/atlassian
@@ -89,7 +89,7 @@ jobs:
           cd ${{ runner.temp }}/camel-quarkus
           ./mvnw ${MAVEN_ARGS} clean install -Dquickly -T1C
       - name: Save Atlassian Maven Cache
-        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/save@2c8a9bd7457de244a408f35966fab2fb45fda9c8 # v6.0.0
         if: github.ref == 'refs/heads/camel-quarkus-main' || github.base_ref == 'camel-quarkus-main'
         with:
           path: |
