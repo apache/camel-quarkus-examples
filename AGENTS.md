@@ -3,50 +3,47 @@
 Guidelines for AI agents contributing examples to **apache/camel-quarkus-examples**.
 
 This repository contains runnable example applications that demonstrate Apache
-Camel running on [Quarkus](https://quarkus.io/). Each example is a standalone
-Maven module (there is **no aggregator `pom.xml` at the repo root**) and can be
-built, tested and run on its own — in JVM or native mode.
+Camel running on [Quarkus](https://quarkus.io/), in JVM and native mode.
 
-These guidelines complement the canonical, org-wide rules in the main
-[apache/camel `AGENTS.md`](https://github.com/apache/camel/blob/main/AGENTS.md).
-Read that file for the full *Rules of Engagement*; the section below repeats the
-essentials and adds what is specific to this examples repository.
+For the canonical, project-wide agent rules, see the Camel Quarkus
+[`AGENTS.md`](https://github.com/apache/camel-quarkus/blob/main/AGENTS.md).
+The notes below adapt the essentials to this examples repository — note that
+Camel Quarkus follows GitHub-based conventions that differ from Apache Camel
+core (e.g. GitHub issues instead of JIRA).
 
 ## Project Info
 
 - Build: Maven 3.9+ (use the provided `./mvnw` wrapper)
-- Java: 17 (`maven.compiler.release` = 17; CI also exercises JDK 21)
+- Java: 17+ (CI also exercises JDK 21)
 - BOMs: `quarkus-bom` + `quarkus-camel-bom` (extension versions are inherited,
   never pinned per-dependency)
 - Tests: `@QuarkusTest` (JVM) and `@QuarkusIntegrationTest` (packaged/native)
-- JIRA project: `CAMEL` (https://issues.apache.org/jira/projects/CAMEL)
+- Issue tracker: **GitHub issues** at https://github.com/apache/camel-quarkus/issues
+  (Camel Quarkus does **not** use JIRA)
 
 ## Rules of Engagement (essentials)
 
-- **Attribution**: every AI-generated PR description, review or JIRA comment MUST
+- **Attribution**: every AI-generated PR description, review or issue comment MUST
   identify itself as AI-generated and name the human operator, e.g.
   `_Claude Code on behalf of [Human Name]_`.
-- **JIRA ownership**: only pick **Unassigned** tickets. Before starting, assign
-  the ticket to your operator and transition it to *In Progress*. Set
-  `fixVersions` before closing.
 - **Target the `camel-quarkus-main` branch** for PRs (it tracks the current
   Camel Quarkus SNAPSHOT), as stated in the repository's PR template. The `main`
   branch tracks the latest released Quarkus Platform.
 - **One example per PR**, kept small and self-contained. Do not exceed 10 PRs per
   day per operator. Quality over quantity.
-- **Branch from your own fork** (not apache/), with a descriptive name containing
-  the topic and JIRA id (e.g. `CAMEL-12345-rest-json-example`). Delete the
-  branch after merge/close. Never push to a branch you did not create.
+- **Branch from your own fork** (not apache/), with a descriptive name (include
+  the GitHub issue number when there is one, e.g. `123-rest-json-example`).
+  Delete the branch after merge/close. Never push to a branch you did not create.
 - **Green CI is required**, including license/format/import checks and (where
   applicable) the native build.
 - **Never merge** without at least one human approval; never approve your own PR.
 
 ## Repository structure
 
-- One example per top-level directory, named semantically and hyphenated
-  (e.g. `timer-log/`, `rest-json/`, `kafka/`). Each is an independent Maven
-  module — there is no root aggregator, so nothing needs to be registered
-  centrally.
+- A root aggregator `pom.xml` (packaging `pom`) lists every example under
+  `<modules>`. Each example, however, is **parentless and standalone** — it
+  declares no `<parent>` and imports the Quarkus + Camel Quarkus BOMs directly,
+  so it can be built on its own.
 
 ## Anatomy of an example
 
@@ -98,25 +95,30 @@ formatting, compilation, tests, and native builds (Linux/Windows, JDK 17/21).
   `.properties`, `.groovy` (template in `header.txt`), enforced by the license
   plugin.
 - **Config**: inject with MicroProfile `@ConfigProperty(name = "...")` and back
-  it with keys in `application.properties`; set `camel.context.name`.
+  it with keys in `application.properties`.
 - **README**: AsciiDoc, with `Start in Development mode`, `Package and run`, and
   (where relevant) native sections, plus a Feedback section.
 
 ## Adding a new example (checklist)
 
-1. Create `<example>/` with a `pom.xml` importing `quarkus-bom` and
-   `quarkus-camel-bom` and depending on the needed `camel-quarkus-*` extensions
-   (no explicit versions).
-2. Add routes/beans under `org.acme.<domain>.<feature>`, an
-   `application.properties`, a test, and a `README.adoc` — all with ASF headers.
+1. Scaffold the example with the Camel Quarkus Maven mojo — it creates the
+   module and registers it in the root aggregator `pom.xml`:
+   ```bash
+   mvn org.l2x6.cq:cq-maven-plugin:create-example \
+     -Dcq.artifactIdBase="yaml-to-log" \
+     -Dcq.exampleName="YAML To Log" \
+     -Dcq.exampleDescription="Shows how to use a YAML route with the log EIP"
+   ```
+2. Implement the routes/beans under `org.acme.<domain>.<feature>`, configure
+   `application.properties`, add tests, and complete the generated `README.adoc`.
 3. Verify locally: `mvn clean test`, `mvn quarkus:dev`, and — if the example is
    expected to — `mvn clean package -Dnative`.
 4. Run `mvn license:check formatter:validate impsort:check`.
-5. Open the PR from your fork **against `camel-quarkus-main`**, link the JIRA
-   ticket, and request review from active committers.
+5. Open the PR from your fork **against `camel-quarkus-main`**, reference the
+   GitHub issue (if any), and request review from active committers.
 
 ## Links
 
 - Camel Quarkus user guide: https://camel.apache.org/camel-quarkus/latest/user-guide/index.html
 - Create a new example (contributor guide): https://camel.apache.org/camel-quarkus/latest/contributor-guide/create-new-example.html
-- Canonical agent rules: https://github.com/apache/camel/blob/main/AGENTS.md
+- Canonical agent rules: https://github.com/apache/camel-quarkus/blob/main/AGENTS.md
