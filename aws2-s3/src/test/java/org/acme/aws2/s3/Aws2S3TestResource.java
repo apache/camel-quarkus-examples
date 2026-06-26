@@ -16,6 +16,7 @@
  */
 package org.acme.aws2.s3;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
@@ -27,8 +28,9 @@ import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.localstack.LocalStackContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -39,8 +41,12 @@ import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 public class Aws2S3TestResource implements QuarkusTestResourceLifecycleManager {
     private static final Logger LOG = LoggerFactory.getLogger(Aws2S3TestResource.class);
+    private static final int FLOCI_PORT = 4566;
+    private static final String ACCESS_KEY = "testAccessKeyId";
+    private static final String SECRET_KEY = "testSecretKeyId";
+    private static final String REGION = "us-east-1";
 
-    private LocalStackContainer localstack;
+    private GenericContainer<?> floci;
 
     @Override
     public Map<String, String> start() {
@@ -54,7 +60,6 @@ public class Aws2S3TestResource implements QuarkusTestResourceLifecycleManager {
         final boolean realCredentialsProvided = accessKey.isPresent() && secretKey.isPresent() && region.isPresent()
                 && bucketName.isPresent();
 
-        //do not start a localstack, when real credentials are provided
         if (realCredentialsProvided) {
             LOG.info("Real backend will be used");
             return Collections.emptyMap();
@@ -62,31 +67,34 @@ public class Aws2S3TestResource implements QuarkusTestResourceLifecycleManager {
         LOG.info("Mock backend will be used");
 
         DockerImageName imageName = DockerImageName
-                .parse(config.getValue("localstack.container.image", String.class))
-                .asCompatibleSubstituteFor("localstack/localstack");
-        localstack = new LocalStackContainer(imageName)
-                .withServices("s3")
-                .withEnv("LS_LOG", "info")
-                .withEnv("AWS_ACCESS_KEY_ID", "testAccessKeyId")
-                .withEnv("AWS_SECRET_ACCESS_KEY", "testSecretKeyId")
+                .parse(config.getValue("floci.container.image", String.class));
+        floci = new GenericContainer<>(imageName)
+                .withExposedPorts(FLOCI_PORT)
+                .waitingFor(Wait.forHttp("/_floci/health").forPort(FLOCI_PORT))
+                .withEnv("AWS_ACCESS_KEY_ID", ACCESS_KEY)
+                .withEnv("AWS_SECRET_ACCESS_KEY", SECRET_KEY)
                 .withLogConsumer(new Slf4jLogConsumer(LOG));
-        localstack.start();
+        floci.start();
 
-        return Map.of("camel.component.aws2-s3.accessKey", localstack.getAccessKey(),
-                "camel.component.aws2-s3.secretKey", localstack.getSecretKey(),
-                "camel.component.aws2-s3.region", localstack.getRegion(),
+        String endpoint = String.format("http://%s:%d", floci.getHost(), floci.getMappedPort(FLOCI_PORT));
+
+        return Map.of("camel.component.aws2-s3.accessKey", ACCESS_KEY,
+                "camel.component.aws2-s3.secretKey", SECRET_KEY,
+                "camel.component.aws2-s3.region", REGION,
                 "camel.component.aws2-s3.override-endpoint", "true",
-                "camel.component.aws2-s3.uri-endpoint-override", localstack.getEndpoint().toString(),
-                "cq.aws2-s3.example.bucketName", createBucket());
+                "camel.component.aws2-s3.uri-endpoint-override", endpoint,
+                "camel.component.aws2-s3.force-path-style", "true",
+                "cq.aws2-s3.example.bucketName", createBucket(endpoint));
     }
 
-    private String createBucket() {
+    private String createBucket(String endpoint) {
         S3ClientBuilder clientBuilder = S3Client.builder();
         clientBuilder
                 .credentialsProvider(StaticCredentialsProvider
-                        .create(AwsBasicCredentials.create(localstack.getAccessKey(), localstack.getSecretKey())))
-                .endpointOverride(localstack.getEndpoint())
-                .region(Region.of(localstack.getRegion()));
+                        .create(AwsBasicCredentials.create(ACCESS_KEY, SECRET_KEY)))
+                .endpointOverride(URI.create(endpoint))
+                .forcePathStyle(true)
+                .region(Region.of(REGION));
         final S3Client s3Client = clientBuilder.build();
 
         final String bucketName = "camel-quarkus-" + RandomStringUtils.secure().nextAlphanumeric(49).toLowerCase(Locale.ROOT);
@@ -96,8 +104,8 @@ public class Aws2S3TestResource implements QuarkusTestResourceLifecycleManager {
 
     @Override
     public void stop() {
-        if (localstack != null) {
-            localstack.stop();
+        if (floci != null) {
+            floci.stop();
         }
     }
 }
