@@ -17,10 +17,13 @@
 package org.acme.cxf.soap.utils;
 
 import io.quarkus.runtime.LaunchMode;
+import org.apache.camel.component.cxf.common.message.CxfConstants;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
 
 public final class CxfServerUtils {
+    public static final String OPERATION_NAME_HEADER = "${header.%s}".formatted(CxfConstants.OPERATION_NAME);
+
     private CxfServerUtils() {
     }
 
