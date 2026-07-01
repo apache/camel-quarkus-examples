@@ -31,6 +31,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.cxf.jaxws.CxfEndpoint;
 import org.apache.cxf.message.MessageContentsList;
 
+import static org.acme.cxf.soap.utils.CxfServerUtils.OPERATION_NAME_HEADER;
+
 /**
  * This class demonstrate how to expose a SOAP endpoint starting from a wsdl, using the
  * quarkus-maven-plugin:generate-code
@@ -63,7 +65,7 @@ public class MyWsdlRouteBuilder extends RouteBuilder {
     public void configure() throws Exception {
         // CustomerService is generated with quarkus-maven-plugin:generate-code during the build
         from("cxf:bean:customer")
-                .recipientList(simple("direct:${header.operationName}"));
+                .recipientList(simple("direct:" + OPERATION_NAME_HEADER));
 
         from("direct:getCustomersByName").process(exchange -> {
             String name = exchange.getIn().getBody(String.class);
