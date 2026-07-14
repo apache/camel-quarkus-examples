@@ -17,6 +17,7 @@
 package org.acme.extraction;
 
 import dev.langchain4j.service.AiServices;
+import dev.langchain4j.service.Result;
 import dev.langchain4j.service.tool.ToolProvider;
 import org.acme.extraction.CustomPojoExtractionService.CustomPojo;
 import org.apache.camel.component.langchain4j.agent.api.Agent;
@@ -41,14 +42,14 @@ public class DataExtractAgent implements Agent {
      * Returns a string representation of the extracted {@link CustomPojo}.
      */
     @Override
-    public String chat(AiAgentBody<?> aiAgentBody, ToolProvider toolProvider) {
+    public Result<String> chat(AiAgentBody<?> aiAgentBody, ToolProvider toolProvider) {
         CustomPojo response = createService(toolProvider).extractFromText(aiAgentBody.getUserMessage());
 
         // Store extracted CustomPojoExtractionService.CustomPojos objects into the CustomPojoStore for later inspection
         pojoStore.addPojo(response);
 
         // Return a string representation of the result POJO
-        return response.toString();
+        return Result.<String> builder().content(response.toString()).build();
     }
 
     CustomPojoExtractionService createService(ToolProvider toolProvider) {
