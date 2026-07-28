@@ -1,0 +1,267 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.acme.cyberark.vault;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import org.junit.jupiter.api.Assertions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.testcontainers.containers.Container;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.containers.wait.strategy.Wait;
+import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
+
+public class CyberarkVaultTestResource implements QuarkusTestResourceLifecycleManager {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CyberarkVaultTestResource.class);
+    private static final String POSTGRES_PASSWORD = "SuperSecretPg";
+    private static final String CONJUR_DATA_KEY = "changeitchangeitchangeitchangeitchangeitIhc=";
+    private static final String CONJUR_ACCOUNT = "myConjurAccount";
+    private static final String POSTGRES_IMAGE = "mirror.gcr.io/postgres:17.5";
+    private static final String CONJUR_IMAGE = "mirror.gcr.io/cyberark/conjur:1.24.0";
+    private static final String CONJUR_CLI_IMAGE = "mirror.gcr.io/cyberark/conjur-cli:9";
+    private static final String NGINX_IMAGE = "mirror.gcr.io/nginx:1.30.3-alpine3.23-perl";
+    private static final int CONJUR_PORT = 80;
+    private static final int POSTGRES_PORT = 5432;
+    private static final int NGINX_PORT = 443;
+
+    private Network network;
+    private GenericContainer<?> postgresContainer;
+    private GenericContainer<?> conjurContainer;
+    private GenericContainer<?> nginxContainer;
+    private GenericContainer<?> clientContainer;
+
+    @Override
+    public Map<String, String> start() {
+        final Map<String, String> result = new LinkedHashMap<>();
+
+        List<String> missingExternalProperties = Stream
+                .of("CQ_CONJUR_URL", "CQ_CONJUR_ACCOUNT", "CQ_CONJUR_READ_USER", "CQ_CONJUR_READ_USER_API_KEY",
+                        "CQ_CONJUR_READ_WRITE_USER", "CQ_CONJUR_READ_WRITE_USER_API_KEY")
+                .filter(prop -> {
+                    String value = System.getenv(prop);
+                    return value == null || value.isEmpty();
+                })
+                .toList();
+        if (missingExternalProperties.isEmpty()) {
+            LOGGER.info("Using real CyberArk Conjur backend");
+            result.put("quarkus.http.port", "0");
+            result.put("quarkus.http.test-port", "0");
+            return result;
+        }
+
+        if (missingExternalProperties.size() < 6) {
+            throw new RuntimeException(
+                    "Several environmental properties are missing (you have to provide either all of them or none). "
+                            + "Missing properties are: " + String.join(",", missingExternalProperties));
+        }
+        LOGGER.info("Using testcontainers mock backend");
+
+        try {
+            network = Network.newNetwork();
+            startPostgresContainer();
+            startConjurContainer();
+            startNginxContainer();
+            startClientContainer();
+            initializeConjur(result);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to start Conjur test environment", e);
+        }
+
+        String conjurUrl = "http://localhost:" + conjurContainer.getMappedPort(CONJUR_PORT);
+
+        result.put("conjur.account", CONJUR_ACCOUNT);
+        result.put("conjur.url", conjurUrl);
+
+        result.put("camel.vault.cyberark.url", conjurUrl);
+        result.put("camel.vault.cyberark.account", CONJUR_ACCOUNT);
+        result.put("camel.vault.cyberark.username", result.get("conjur.reader.username"));
+        result.put("camel.vault.cyberark.apiKey", result.get("conjur.reader.apiKey"));
+
+        return result;
+    }
+
+    private void startPostgresContainer() {
+        LOGGER.info("Starting PostgreSQL container...");
+
+        postgresContainer = new GenericContainer<>(DockerImageName.parse(POSTGRES_IMAGE))
+                .withNetwork(network)
+                .withNetworkAliases("database")
+                .withExposedPorts(POSTGRES_PORT)
+                .withEnv("POSTGRES_USER", "postgres")
+                .withEnv("POSTGRES_PASSWORD", POSTGRES_PASSWORD)
+                .withEnv("POSTGRES_DB", "postgres")
+                .withLogConsumer(frame -> LOGGER.debug("[POSTGRESQL] {}", frame.getUtf8StringWithoutLineEnding()));
+
+        postgresContainer.start();
+        LOGGER.info("PostgreSQL container started");
+    }
+
+    private void startConjurContainer() {
+        LOGGER.info("Starting Conjur container...");
+
+        String databaseUrl = String.format("postgres://postgres:%s@database/postgres", POSTGRES_PASSWORD);
+
+        conjurContainer = new GenericContainer<>(DockerImageName.parse(CONJUR_IMAGE))
+                .withNetwork(network)
+                .withNetworkAliases("conjur")
+                .withCommand("server")
+                .withEnv("DATABASE_URL", databaseUrl)
+                .withEnv("CONJUR_DATA_KEY", CONJUR_DATA_KEY)
+                .withEnv("CONJUR_AUTHENTICATORS", "")
+                .withEnv("CONJUR_TELEMETRY_ENABLED", "false")
+                .withEnv("CONJUR_API_RESOURCE_LIST_LIMIT_MAX", "5000")
+                .withExposedPorts(CONJUR_PORT)
+                .withLogConsumer(frame -> LOGGER.debug("[CONJUR] {}", frame.getUtf8StringWithoutLineEnding()))
+                .waitingFor(Wait.forLogMessage(".*Listening on http.*", 1)
+                        .withStartupTimeout(Duration.ofMinutes(2)))
+                .dependsOn(postgresContainer);
+
+        conjurContainer.start();
+        LOGGER.info("Conjur container started on port {}", conjurContainer.getMappedPort(CONJUR_PORT));
+    }
+
+    private void startNginxContainer() throws Exception {
+        LOGGER.info("Starting Nginx proxy container...");
+
+        Path certsDir = Paths.get("target/certs");
+        Path nginxCert = certsDir.resolve("nginx.crt");
+        Path nginxKey = certsDir.resolve("nginx.key");
+
+        if (!Files.exists(nginxCert) || !Files.exists(nginxKey)) {
+            throw new RuntimeException("SSL certificates not found in target/certs.");
+        }
+
+        nginxContainer = new GenericContainer<>(DockerImageName.parse(NGINX_IMAGE))
+                .withNetwork(network)
+                .withNetworkAliases("proxy")
+                .withCopyFileToContainer(MountableFile.forClasspathResource("conf/default.conf"),
+                        "/etc/nginx/conf.d/default.conf")
+                .withCopyFileToContainer(MountableFile.forHostPath(nginxCert), "/etc/nginx/tls/nginx.crt")
+                .withCopyFileToContainer(MountableFile.forHostPath(nginxKey), "/etc/nginx/tls/nginx.key")
+                .withExposedPorts(NGINX_PORT)
+                .withLogConsumer(frame -> LOGGER.debug("[NGINX] {}", frame.getUtf8StringWithoutLineEnding()))
+                .waitingFor(Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(1)))
+                .dependsOn(conjurContainer);
+
+        nginxContainer.start();
+        LOGGER.info("Nginx proxy container started on port {}", nginxContainer.getMappedPort(NGINX_PORT));
+    }
+
+    private void startClientContainer() {
+        LOGGER.info("Starting Conjur CLI client container...");
+
+        clientContainer = new GenericContainer<>(DockerImageName.parse(CONJUR_CLI_IMAGE))
+                .withNetwork(network)
+                .withNetworkAliases("client")
+                .withCreateContainerCmdModifier(cmd -> {
+                    cmd.withEntrypoint("sleep");
+                })
+                .withCommand("infinity")
+                .withCopyFileToContainer(
+                        MountableFile.forClasspathResource("conf/policy/BotApp.yml"),
+                        "/policy/BotApp.yml")
+                .withLogConsumer(frame -> LOGGER.debug("[CLIENT] {}", frame.getUtf8StringWithoutLineEnding()))
+                .withStartupTimeout(Duration.ofSeconds(5))
+                .dependsOn(nginxContainer);
+
+        clientContainer.start();
+        LOGGER.info("Conjur CLI client container started");
+    }
+
+    private void initializeConjur(Map<String, String> result) throws Exception {
+        LOGGER.info("Initializing Conjur account...");
+
+        Container.ExecResult accountResult = conjurContainer.execInContainer(
+                "conjurctl", "account", "create", CONJUR_ACCOUNT);
+        Assertions.assertEquals(0, accountResult.getExitCode(),
+                "Creation of account failed with: " + accountResult.getStderr());
+
+        String adminKey = accountResult.getStdout().lines()
+                .filter(line -> line.contains("API key"))
+                .map(line -> line.replaceAll(".*API key for admin: ", "").trim())
+                .findFirst()
+                .orElseGet(() -> {
+                    String[] tokens = accountResult.getStdout().split("\\s");
+                    return tokens[tokens.length - 1];
+                });
+
+        Container.ExecResult er;
+
+        er = clientContainer.execInContainer(
+                "conjur", "init", "oss", "-u", "https://proxy", "-a", CONJUR_ACCOUNT, "--self-signed");
+        Assertions.assertEquals(0, er.getExitCode(), "Client init failed with: " + er.getStderr());
+
+        er = clientContainer.execInContainer(
+                "conjur", "login", "-i", "admin", "-p", adminKey);
+        Assertions.assertEquals(0, er.getExitCode(), "Client login failed with: " + er.getStderr());
+
+        er = clientContainer.execInContainer(
+                "conjur", "policy", "load", "-b", "root", "-f", "/policy/BotApp.yml");
+        Assertions.assertEquals(0, er.getExitCode(), "Policy load failed with: " + er.getStderr());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode jsonNode = objectMapper.readTree(er.getStdout());
+
+        result.put("conjur.reader.username", "host/BotApp/myDemoApp");
+        result.put("conjur.reader.apiKey",
+                jsonNode.get("created_roles").get(CONJUR_ACCOUNT + ":host:BotApp/myDemoApp").get("api_key").textValue());
+        result.put("conjur.writer.username", "user/Dave@BotApp");
+        result.put("conjur.writer.apiKey",
+                jsonNode.get("created_roles").get(CONJUR_ACCOUNT + ":user:Dave@BotApp").get("api_key").textValue());
+
+        clientContainer.execInContainer("conjur", "logout");
+
+        LOGGER.info("Conjur initialization complete");
+    }
+
+    @Override
+    public void stop() {
+        try {
+            if (clientContainer != null) {
+                clientContainer.stop();
+            }
+            if (nginxContainer != null) {
+                nginxContainer.stop();
+            }
+            if (conjurContainer != null) {
+                conjurContainer.stop();
+            }
+            if (postgresContainer != null) {
+                postgresContainer.stop();
+            }
+            if (network != null) {
+                network.close();
+            }
+        } catch (Exception e) {
+            LOGGER.warn("Error during cleanup", e);
+        }
+    }
+}

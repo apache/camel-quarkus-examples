@@ -1,0 +1,118 @@
+= CyberArk Vault: A Camel Quarkus example
+:cq-example-description: An example that shows how to retrieve secrets from CyberArk Vault via property placeholders with a local Conjur container
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== Prerequisites
+
+* Docker (for running the Conjur containers)
+
+== Starting Conjur
+
+The example requires a running Conjur instance. A helper script is provided to start a local Conjur
+environment via Docker Compose:
+
+[source,shell]
+----
+$ ./start-conjur.sh
+----
+
+The script starts the containers, initializes the account, loads the security policy and prints the
+`export` commands you need to run. Copy and execute them in your shell.
+
+Alternatively, to use an existing Conjur instance, set the following environment variables manually:
+
+[source,shell]
+----
+export CQ_CONJUR_URL=http://localhost:9080
+export CQ_CONJUR_ACCOUNT=myConjurAccount
+export CQ_CONJUR_READ_USER=host/BotApp/myDemoApp
+export CQ_CONJUR_READ_USER_API_KEY=...
+export CQ_CONJUR_READ_WRITE_USER=user/Dave@BotApp
+export CQ_CONJUR_READ_WRITE_USER_API_KEY=...
+----
+
+To stop the Docker-based Conjur environment:
+
+[source,shell]
+----
+$ ./start-conjur.sh stop
+----
+
+== Start in the Development mode
+
+With the environment variables set, start the example in dev mode:
+
+[source,shell]
+----
+$ mvn clean compile quarkus:dev
+----
+
+Then look at the log output in the console. There is a timer route that periodically resolves the secret
+via the CyberArk property placeholder. The first several messages will show that no secret is stored yet.
+To store a secret, open a new terminal and run:
+
+[source,shell]
+----
+$ curl -X POST http://localhost:8080/cyberark-vault/createSecret -d 'my-secret-value'
+----
+
+Following messages will show the resolved secret value. As we run the example in Quarkus Dev Mode, you can
+edit the source code and have live updates.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+Make sure the Conjur environment variables are set (see <<Starting Conjur>>).
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+=== JVM mode
+
+[source,shell]
+----
+$ mvn clean package
+$ java -jar target/quarkus-app/quarkus-run.jar
+...
+[io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
+----
+
+=== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+$ mvn clean package -Dnative
+$ ./target/*-runner
+...
+[io.quarkus] (main) camel-quarkus-examples-... started in 0.013s.
+...
+----
+
+== Running the tests
+
+By default, the tests use testcontainers to start a local Conjur environment automatically:
+
+[source,shell]
+----
+$ mvn clean verify
+----
+
+To run the tests against an external Conjur instance instead, set the environment variables described
+in <<Starting Conjur>> before running the command. When all `CQ_CONJUR_*` variables are present,
+testcontainers are skipped and the tests run against the external instance.
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
