@@ -41,6 +41,7 @@
         <module>aws2-s3</module>
         <module>cluster-leader-election</module>
         <module>cxf-soap</module>
+        <module>cyberark-vault</module>
         <module>data-extract-langchain4j</module>
         <module>fhir</module>
         <module>file-bindy-ftp</module>

@@ -25,6 +25,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/timer-log-main"
   },
   {
+    "title": "CyberArk Vault",
+    "description": "Shows how to retrieve secrets from CyberArk Vault via property placeholders with a local Conjur container",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cyberark-vault"
+  },
+  {
     "title": "Deploying a Camel Route in AWS Lambda ",
     "description": "Shows how to deploy a Camel Quarkus route as an AWS Lambda function",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/aws-lambda"
