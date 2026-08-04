@@ -50,6 +50,8 @@ updates:
       - dependency-name: "org.assertj:assertj-core"
       - dependency-name: "org.wiremock:wiremock-standalone"
       - dependency-name: "org.zeroturnaround:zt-exec"
+      # Maven extensions
+      - dependency-name: "eu.maveniverse.maven.scalpel:extension"
       # Maven plugins
       - dependency-name: "*:*-maven-plugin"
       - dependency-name: "org.apache.maven.plugins:*"
