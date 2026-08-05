@@ -11,9 +11,8 @@ and other general information.
 
 The example application requires a Keycloak instance.
 
-You do not need to provide the Keycloak instance yourself
-as long as you play with the example code in dev mode (a.k.a. `mvn quarkus:dev`) - read more https://quarkus.io/guides/getting-started#development-mode[here]
-or as long as you only run the supplied tests (`mvn test`).
+You don't need to provide a Keycloak instance when running in dev mode (a.k.a. `mvn quarkus:dev`) - read more https://quarkus.io/guides/getting-started#development-mode[here]
+or when running the supplied tests (`mvn test`).
 In those situations, Quarkus tooling starts a Keycloak image for you via https://quarkus.io/guides/security-openid-connect-dev-services[Quarkus Dev Services],
 and it also configures the application so that you do not need touch anything in `application.properties`.
 
@@ -40,8 +39,8 @@ TIP: If you want to use another running instance, in dev mode. Change `%prod` pr
 
 [source,shell]
 ----
-$ export QUARKUS_OIDC_CREDENTIALS_SECRET=abcdefghijklmnopqrstuvwxyz # You can change it as you wish
-$ mvn clean compile quarkus:dev
+export QUARKUS_OIDC_CREDENTIALS_SECRET=abcdefghijklmnopqrstuvwxyz # You can change it as you wish
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application, starts Keycloak instance via Dev Services and lets the Quarkus tooling watch for changes in your
@@ -62,14 +61,14 @@ For the `employee` user, extract value from response of key `access_token` and c
 
 [source,shell]
 ----
-$ curl -d "client_id=quarkus-client" -d "client_secret=$QUARKUS_OIDC_CREDENTIALS_SECRET" -d "username=employee" -d "password=employee-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
+curl -d "client_id=quarkus-client" -d "client_secret=$QUARKUS_OIDC_CREDENTIALS_SECRET" -d "username=employee" -d "password=employee-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
 ----
 
 For the `boss` use, extract value from response of key `access_token` and call it `BOSS_TOKEN`:
 
 [source,shell]
 ----
-$ curl -d "client_id=quarkus-client" -d "client_secret=$QUARKUS_OIDC_CREDENTIALS_SECRET" -d "username=boss" -d "password=boss-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
+curl -d "client_id=quarkus-client" -d "client_secret=$QUARKUS_OIDC_CREDENTIALS_SECRET" -d "username=boss" -d "password=boss-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
 ----
 
 Now we are ready to try some HTTP endpoints:
@@ -82,28 +81,28 @@ Now we are ready to try some HTTP endpoints:
 
 [source,shell]
 ----
-$ curl -i -X GET -H "Authorization: Bearer $EMPLOYEE_TOKEN" $APP_URL/secured/authenticated
+curl -i -X GET -H "Authorization: Bearer $EMPLOYEE_TOKEN" $APP_URL/secured/authenticated
 ----
 
 - `employee` accessing an authorized endpoint (you should receive `403 Forbidden`):
 
 [source,shell]
 ----
-$ curl -i -X GET -H "Authorization: Bearer $EMPLOYEE_TOKEN" $APP_URL/secured/authorized
+curl -i -X GET -H "Authorization: Bearer $EMPLOYEE_TOKEN" $APP_URL/secured/authorized
 ----
 
 - `boss` accessing an authenticated endpoint (you should receive `200 OK` + `You are authenticated user so you can perform this action.` message):
 
 [source,shell]
 ----
-$ curl -i -X GET -H "Authorization: Bearer $BOSS_TOKEN" $APP_URL/secured/authenticated
+curl -i -X GET -H "Authorization: Bearer $BOSS_TOKEN" $APP_URL/secured/authenticated
 ----
 
 - `boss` accessing an authorized endpoint (you should receive `200 OK` + `You are authorized to perform sensitive operation.`):
 
 [source,shell]
 ----
-$ curl -i -X GET -H "Authorization: Bearer $BOSS_TOKEN" $APP_URL/secured/authorized
+curl -i -X GET -H "Authorization: Bearer $BOSS_TOKEN" $APP_URL/secured/authorized
 ----
 
 [[external-keycloak-instance-configuration]]
@@ -114,7 +113,7 @@ For the next steps, we need to have an externally running Keycloak instance. Thi
 
 [source,shell]
 ----
-$ docker run --name keycloak_test -p 8082:8080 \
+docker run --name keycloak_test -p 8082:8080 \
         -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
         quay.io/keycloak/keycloak:latest \
         start-dev
@@ -139,9 +138,9 @@ Go to `Configure` left panel and select `quarkus-client` under `Clients`. Go to 
 
 [source,shell]
 ----
-$ export QUARKUS_OIDC_CREDENTIALS_SECRET=<insert-your-secret>
-$ mvn clean package -DskipTests
-$ java -jar target/quarkus-app/quarkus-run.jar
+export QUARKUS_OIDC_CREDENTIALS_SECRET=<insert-your-secret>
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 Now you can go to the <<playground>> section (with the assumption that `KEYCLOAK_URL=http://localhost:8082` and `APP_URL=http://localhost:8080`) and try it yourself.
@@ -155,9 +154,9 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ export QUARKUS_OIDC_CREDENTIALS_SECRET=<insert-your-secret>
-$ mvn clean package -DskipTests -Dnative
-$ ./target/*-runner
+export QUARKUS_OIDC_CREDENTIALS_SECRET=<insert-your-secret>
+mvn clean package -DskipTests -Dnative
+./target/*-runner
 ----
 
 Now you can go to the <<playground>> section (with the assumption that `KEYCLOAK_URL=http://localhost:8082` and `APP_URL=http://localhost:8080`) and try it yourself.
@@ -184,8 +183,8 @@ TIP: To trust self-signed certificates from the Kubernetes API server use `-Dqua
 
 [source,shell]
 ----
-$ kubectl create secret generic quarkus-keycloak --from-literal=QUARKUS_OIDC_CREDENTIALS_SECRET=<YOUR_SECRET>
-$ mvn clean package -DskipTests -Dquarkus.kubernetes.env.vars.QUARKUS_OIDC_AUTH_SERVER_URL=$BASE_KEYCLOAK_KUBERNETES_URL/realms/quarkus -Dquarkus.oidc.tls.verification=none -Dquarkus.kubernetes.ingress.expose=true -Dquarkus.kubernetes.deploy=true -Dkubernetes
+kubectl create secret generic quarkus-keycloak --from-literal=QUARKUS_OIDC_CREDENTIALS_SECRET=<YOUR_SECRET>
+mvn clean package -DskipTests -Dquarkus.kubernetes.env.vars.QUARKUS_OIDC_AUTH_SERVER_URL=$BASE_KEYCLOAK_KUBERNETES_URL/realms/quarkus -Dquarkus.oidc.tls.verification=none -Dquarkus.kubernetes.ingress.expose=true -Dquarkus.kubernetes.deploy=true -Dkubernetes
 ----
 
 The `kubernetes` profile uses quarkus kubernetes and openshift-container extensions, as described in the `pom.xml`.
@@ -208,7 +207,7 @@ You can check the pod status:
 
 [source,shell]
 ----
-$ kubectl get pods
+kubectl get pods
 NAME                                                             READY   STATUS    RESTARTS   AGE
 camel-quarkus-examples-platform-http-security-6f658784dd-kxcg8   1/1     Running   0          10m
 keycloak-57d89d998-rfkk7
@@ -222,8 +221,8 @@ To clean up do:
 
 [source,shell]
 ----
-$ kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-platform-http-security
-$ kubectl delete secret quarkus-keycloak
+kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-platform-http-security
+kubectl delete secret quarkus-keycloak
 ----
 
 == Deploying to OpenShift
@@ -238,7 +237,7 @@ Use the same configuration as in <<external-keycloak-instance-configuration>> an
 
 [source,shell]
 ----
-$ export BASE_KEYCLOAK_OPENSHIFT_ROUTE_URL=$(oc get route keycloak --template='{{ .spec.host }}')
+export BASE_KEYCLOAK_OPENSHIFT_ROUTE_URL=$(oc get route keycloak --template='{{ .spec.host }}')
 ----
 
 === Deploy Camel Quarkus application to OpenShift
@@ -249,8 +248,8 @@ TIP: To trust self-signed certificates from Kubernetes API server use `-Dquarkus
 
 [source,shell]
 ----
-$ oc create secret generic quarkus-keycloak --from-literal=QUARKUS_OIDC_CREDENTIALS_SECRET=<YOUR_SECRET>
-$ mvn clean package -DskipTests -Dquarkus.openshift.env.vars.QUARKUS_OIDC_AUTH_SERVER_URL=https://$BASE_KEYCLOAK_OPENSHIFT_ROUTE_URL/realms/quarkus -Dquarkus.oidc.tls.verification=none -Dquarkus.openshift.route.expose=true -Dquarkus.kubernetes.deploy=true -Dopenshift
+oc create secret generic quarkus-keycloak --from-literal=QUARKUS_OIDC_CREDENTIALS_SECRET=<YOUR_SECRET>
+mvn clean package -DskipTests -Dquarkus.openshift.env.vars.QUARKUS_OIDC_AUTH_SERVER_URL=https://$BASE_KEYCLOAK_OPENSHIFT_ROUTE_URL/realms/quarkus -Dquarkus.oidc.tls.verification=none -Dquarkus.openshift.route.expose=true -Dquarkus.kubernetes.deploy=true -Dopenshift
 ----
 
 The `openshift` profile uses quarkus openshift and openshift-container extensions, as described in the `pom.xml`.
@@ -273,7 +272,7 @@ You can check the pod status:
 
 [source,shell]
 ----
-$ oc get pods
+oc get pods
 NAME                                                     READY   STATUS      RESTARTS   AGE
 camel-quarkus-examples-platform-http-security-1-build    0/1     Completed   0          23h
 camel-quarkus-examples-platform-http-security-1-deploy   0/1     Completed   0          23h
@@ -286,7 +285,7 @@ Find the app url via:
 
 [source,shell]
 ----
-$ export OPENSHIFT_APP_URL=$(oc get route camel-quarkus-examples-platform-http-security --template='{{ .spec.host }}')
+export OPENSHIFT_APP_URL=$(oc get route camel-quarkus-examples-platform-http-security --template='{{ .spec.host }}')
 ----
 
 Then you can play with the example based on <<playground>> instructions (with the assumption that `KEYCLOAK_URL=https://$BASE_KEYCLOAK_OPENSHIFT_ROUTE_URL` and `APP_URL=$OPENSHIFT_APP_URL`).
@@ -295,8 +294,8 @@ To clean up do:
 
 [source,shell]
 ----
-$ oc delete all -l app.kubernetes.io/name=camel-quarkus-examples-platform-http-security
-$ oc delete secret quarkus-keycloak
+oc delete all -l app.kubernetes.io/name=camel-quarkus-examples-platform-http-security
+oc delete secret quarkus-keycloak
 ----
 
 == Feedback

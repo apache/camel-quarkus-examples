@@ -13,7 +13,7 @@ with mock events, refer to the https://quarkus.io/guides/amazon-lambda#live-codi
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -33,8 +33,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 ==== Native mode
@@ -46,8 +46,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dnative
-$ ./target/*-runner
+mvn clean package -DskipTests -Dnative
+./target/*-runner
 ----
 
 === Extra Build Generated Files
@@ -92,7 +92,7 @@ https://quarkus.io/guides/amazon-lambda#extra-build-generated-files[Please click
 
 9. Under the Code tab scroll down to the Runtime settings and click edit
 
-10. For the Handler details please provide the Quarkus Handler
+10. For the Handler, enter the Quarkus handler:
 
 [source,shell]
 ----

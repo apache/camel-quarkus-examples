@@ -49,7 +49,7 @@ Generated files in `target/certs/`:
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your workspace. Any modifications in your project will automatically take effect in the running application.
@@ -75,7 +75,7 @@ Test with hybrid certificate (should succeed):
 
 [source,shell]
 ----
-$ curl --cert target/certs/client-hybrid-keystore-cert.pem \
+curl --cert target/certs/client-hybrid-keystore-cert.pem \
        --key target/certs/client-hybrid-keystore-key.pem \
        -k \
        https://localhost:8443/pqc/secure
@@ -95,8 +95,8 @@ TIP: Find more details about the JVM mode and Native mode in the Package and run
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-http-pqc started in 1.5s. Listening on: https://0.0.0.0:8443
 ----
@@ -109,8 +109,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-http-pqc started in 0.015s. Listening on: https://0.0.0.0:8443
 ...
@@ -122,7 +122,7 @@ Run the tests to verify hybrid certificate functionality:
 
 [source,shell]
 ----
-$ mvn clean test
+mvn clean test
 ----
 
 The test suite validates:
@@ -136,7 +136,7 @@ For native mode testing:
 
 [source,shell]
 ----
-$ mvn clean verify -Dnative
+mvn clean verify -Dnative
 ----
 
 == How It Works (Java 17 Application-Level Validation)

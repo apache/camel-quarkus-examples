@@ -25,7 +25,7 @@ TIP: If you want to use another running instance, in dev mode. Uncomment the cor
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -53,7 +53,7 @@ Next a Kafka consumer reads the messages and put them in a seda queue.
 Next pull a message from the queue :
 [source,shell]
 ----
-$ curl -X GET http://0.0.0.0:8080/example
+curl -X GET http://0.0.0.0:8080/example
 ----
 
 
@@ -77,37 +77,37 @@ You need to set the corresponding environment variables:
 
 [source,shell]
 ----
-$ export brokers=<YOUR_KAFKA_BROKERS_URL>
+export brokers=<YOUR_KAFKA_BROKERS_URL>
 ----
 - SASL Plain
 [source,shell]
 ----
-$ export brokers=<YOUR_KAFKA_BROKERS_URL>
-$ export id=<YOUR_KAFKA_SASL_CLIENT_ID>
-$ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
+export brokers=<YOUR_KAFKA_BROKERS_URL>
+export id=<YOUR_KAFKA_SASL_CLIENT_ID>
+export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
 ----
 - SASL Oauth Bearer
 [source,shell]
 ----
-$ export brokers=<YOUR_KAFKA_BROKERS_URL>
-$ export id=<YOUR_KAFKA_SASL_CLIENT_ID>
-$ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
-$ export token=<YOUR_KAFKA_SASL_OAUTHBEARER_TOKEN_URL>
+export brokers=<YOUR_KAFKA_BROKERS_URL>
+export id=<YOUR_KAFKA_SASL_CLIENT_ID>
+export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
+export token=<YOUR_KAFKA_SASL_OAUTHBEARER_TOKEN_URL>
 ----
 
 If you want to deploy on Kubernetes or Openshift, you'd need to define the above environment variables in a secret named `camel-kafka`. Set the needed values in the `kubefiles/secret-example.yml`, then add the secret :
 
 [source,shell]
 ----
-$ kubectl apply -f kubefiles/secret-example.yml
+kubectl apply -f kubefiles/secret-example.yml
 ----
 
 ==== JVM mode
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 ==== Native mode
@@ -119,8 +119,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dnative
-$ ./target/*-runner
+mvn clean package -DskipTests -Dnative
+./target/*-runner
 ----
 
 ==== Deploying to Kubernetes
@@ -135,7 +135,7 @@ Build the application using the `kubernetes` profile.
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dkubernetes
+mvn clean package -DskipTests -Dkubernetes
 ----
 
 The `kubernetes` profile uses quarkus kubernetes and jib container extensions, as described in the `pom.xml`.
@@ -164,7 +164,7 @@ Example when using Strimzi operator, with a Kafka instance named `Test` :
 
 [source,shell]
 ----
-$ kubectl get pods
+kubectl get pods
 NAME                                           READY   STATUS    RESTARTS   AGE
 camel-quarkus-examples-kafka-dbc56974b-ph29m   1/1     Running   0          2m34s
 test-entity-operator-7cccff5899-dlfx8          3/3     Running   0          48m
@@ -181,15 +181,15 @@ Tail the application logs.
 
 [source,shell]
 ----
-$ kubectl logs -f camel-quarkus-examples-kafka-dbc56974b-ph29m
+kubectl logs -f camel-quarkus-examples-kafka-dbc56974b-ph29m
 ----
 
 To clean up do.
 
 [source,shell]
 ----
-$ kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-kafka
-$ kubectl delete secret camel-kafka
+kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-kafka
+kubectl delete secret camel-kafka
 ----
 
 [NOTE]
@@ -205,7 +205,7 @@ Uncomment the creating container with openshift and secrets, in the Openshift sp
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dopenshift
+mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dopenshift
 ----
 
 The `openshift` profile uses quarkus openshift and openshift-container extensions, as described in the `pom.xml`.

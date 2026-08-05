@@ -32,7 +32,7 @@ public class CustomPahoTestResource implements QuarkusTestResourceLifecycleManag
 
     @Override
     public Map<String, String> start() {
-        String imageName = "quay.io/arkmq-org/activemq-artemis-broker:artemis.2.51.0";
+        String imageName = "quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0";
         if ("ppc64le".equals(SystemUtils.OS_ARCH)) {
             imageName = "icr.io/ppc64le-oss/activemq-artemis-broker-ppc64le:2.0.2";
         }

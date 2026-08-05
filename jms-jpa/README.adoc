@@ -18,7 +18,7 @@ NOTE: The Narayana `node.identifier` is very important when you scale up in the 
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -71,7 +71,7 @@ Start Artemis:
 docker run --name artemis \
   -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
   -d -p 61616:61616 \
-  quay.io/artemiscloud/activemq-artemis-broker
+  quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0
 ----
 
 
@@ -101,8 +101,8 @@ docker run --name artemis \
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.570s.
@@ -117,8 +117,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.011s.
 ...

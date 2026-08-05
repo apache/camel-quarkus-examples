@@ -19,7 +19,7 @@ In these scenarios, Quarkus automatically provisions a Strimzi container via htt
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application, and enables live reload via Quarkus tooling.
@@ -75,37 +75,37 @@ Set the corresponding environment variables:
 
 [source,shell]
 ----
-$ export brokers=<YOUR_KAFKA_BROKERS_URL>
+export brokers=<YOUR_KAFKA_BROKERS_URL>
 ----
 - SASL Plain
 [source,shell]
 ----
-$ export brokers=<YOUR_KAFKA_BROKERS_URL>
-$ export id=<YOUR_KAFKA_SASL_CLIENT_ID>
-$ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
+export brokers=<YOUR_KAFKA_BROKERS_URL>
+export id=<YOUR_KAFKA_SASL_CLIENT_ID>
+export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
 ----
 - SASL Oauth Bearer
 [source,shell]
 ----
-$ export brokers=<YOUR_KAFKA_BROKERS_URL>
-$ export id=<YOUR_KAFKA_SASL_CLIENT_ID>
-$ export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
-$ export token=<YOUR_KAFKA_SASL_OAUTHBEARER_TOKEN_URL>
+export brokers=<YOUR_KAFKA_BROKERS_URL>
+export id=<YOUR_KAFKA_SASL_CLIENT_ID>
+export secret=<YOUR_KAFKA_SASL_CLIENT_SECRET>
+export token=<YOUR_KAFKA_SASL_OAUTHBEARER_TOKEN_URL>
 ----
 
 To deploy on Kubernetes or OpenShift, define the above environment variables in a secret named `camel-kafka`. Configure the required values in `kubefiles/secret-example.yml`, then create the secret:
 
 [source,shell]
 ----
-$ kubectl apply -f kubefiles/secret-example.yml
+kubectl apply -f kubefiles/secret-example.yml
 ----
 
 ==== JVM mode
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 1.163s. Listening on: http://0.0.0.0:8080
 ----
@@ -119,8 +119,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.013s. Listening on: http://0.0.0.0:8080
 ...
