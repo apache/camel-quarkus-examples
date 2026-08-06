@@ -34,6 +34,9 @@ Certificates are automatically generated during application startup in `target/c
 * `server-truststore.p12` - Truststore for validating clients
 * `client-keystore.p12` - Client certificate for testing
 * `client-truststore.p12` - Client truststore for server validation
+* `server-cert.pem` - Server certificate in PEM form, for clients that cannot read PKCS12 truststores (for example `curl --cacert`)
+
+The server certificate is issued for `CN=localhost` with subject alternative names `DNS:localhost` and `IP:127.0.0.1`, so clients can verify the server identity rather than having to disable verification.
 
 NOTE: Certificates use traditional RSA signatures. The PQC protection comes from the hybrid key exchange (X25519MLKEM768) negotiated during the TLS handshake, not from the certificate signatures.
 
@@ -81,9 +84,10 @@ IMPORTANT: Standard tools like `curl`, `wget`, and `openssl s_client` do **not**
 jdk.tls.namedGroups=X25519MLKEM768,x25519,secp256r1
 ----
 
-PKCS12 keystores are automatically generated during test execution in `target/certs/`:
+Client credentials are automatically generated during test execution in `target/certs/`:
 
 * `client-keystore.p12` - Client certificate (password: `changeit`)
+* `server-cert.pem` - Server certificate, used by curl to verify the server
 
 Start the application with fallback configuration and test with curl:
 
@@ -94,10 +98,16 @@ $ mvn quarkus:dev
 # In another terminal
 $ curl --cert target/certs/client-keystore.p12:changeit \
        --cert-type P12 \
-       -k \
+       --cacert target/certs/server-cert.pem \
        https://localhost:xxxxx/pqc/secure
 
-{"message":"Serving secure data via PQC-enabled TLS connection"}
+Secure data delivered via Post-Quantum Cryptography (PQC)!
+
+Connection details:
+- TLS version: 1.3
+- Key exchange: X25519MLKEM768 (hybrid PQC)
+- Provider: BouncyCastle JSSE
+...
 ----
 
 NOTE: With fallback enabled, curl will use classical x25519 or secp256r1 key exchange since it doesn't support X25519MLKEM768. The connection is secure but not quantum-resistant.
