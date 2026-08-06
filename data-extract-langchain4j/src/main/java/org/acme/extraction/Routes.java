@@ -19,6 +19,7 @@ package org.acme.extraction;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.model.dataformat.JsonLibrary;
 
 import static org.acme.extraction.DataExtractAgentConfiguration.AGENT_ID;
 
@@ -40,6 +41,7 @@ public class Routes extends RouteBuilder {
 
         // This route make it possible to inspect the extracted POJOs, mainly used for demo and test
         from("platform-http:/custom-pojo-store?produces=application/json")
-                .bean(customPojoStore);
+                .bean(customPojoStore)
+                .marshal().json(JsonLibrary.Jackson);
     }
 }

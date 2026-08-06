@@ -99,13 +99,7 @@ At the end, we are provided with a Plain Old Java Object (POJO) handling the ext
 
 [source,shell]
 ----
-2026-05-27 18:31:55,373 INFO  [org.acme.extraction.CustomPojoStore] (Camel (camel-1) thread #1 - file://target/transcripts) An extracted POJO has been added to the store: 
-{
-    "customerSatisfied": "true",
-    "customerName": "Sarah London",
-    "customerBirthday": "10 JULY 1986",
-    "summary": "The customer, Sarah London, called to declare an accident on her main vehicle. The operator confirmed that all expenses related to the accident will be reimbursed."
-}
+2026-05-27 18:31:55,373 INFO  [org.acme.extraction.CustomPojoStore] (Camel (camel-1) thread #1 - file://target/transcripts) An extracted POJO has been added to the store: CustomPojo[customerSatisfied=true, customerName=Sarah London, customerBirthday=10 JULY 1986, summary=The customer, Sarah London, called to declare an accident on her main vehicle. The operator confirmed that all expenses related to the accident will be reimbursed.]
 ----
 
 .See how the LLM shows its capacity to:

@@ -38,12 +38,8 @@ public interface CustomPojoExtractionService {
         @JsonProperty(required = true)
         public String summary;
 
-        private final static String FORMAT = "\n{\n"
-                + "\t\"customerSatisfied\": \"%s\",\n"
-                + "\t\"customerName\": \"%s\",\n"
-                + "\t\"customerBirthday\": \"%02d %s %04d\",\n"
-                + "\t\"summary\": \"%s\"\n"
-                + "}\n";
+        private final static String FORMAT = "CustomPojo[customerSatisfied=%s, customerName=%s, "
+                + "customerBirthday=%02d %s %04d, summary=%s]";
 
         public String toString() {
             return String.format(Locale.US, FORMAT, this.customerSatisfied, this.customerName, this.customerBirthday.day,
