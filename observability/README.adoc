@@ -319,7 +319,15 @@ $ hawtio --port 8085
 When this example project is run in dev mode, it will be discoverable from Hawtio via the 'Discover' tab.
 When running the application from the runnable JAR or native binary, you'll need to choose 'Add Connection' from the 'Remote' tab and add a connection for http://localhost:8778/jolokia/.
 
-When deploying to Kubernetes or Openshift, you can use https://github.com/hawtio/hawtio-online[Hawtio Online]. The `camel-quarkus-jolokia` extension will automatically configure the application to be discoverable from the Hawtio Online console.
+When deploying to Kubernetes or Openshift, you can use https://github.com/hawtio/hawtio-online[Hawtio Online]. The `camel-quarkus-jolokia` extension configures SSL client authentication automatically, but you must also uncomment the following properties in `application.properties`.
+
+[source,properties]
+----
+quarkus.camel.jolokia.server.host=0.0.0.0
+quarkus.camel.jolokia.remote-access-allowed=true
+----
+
+The Jolokia agent binds to `localhost` by default, which is unreachable from outside the pod, and the default restrictor rejects requests from non-loopback addresses.
 
 === Package and run the application
 
