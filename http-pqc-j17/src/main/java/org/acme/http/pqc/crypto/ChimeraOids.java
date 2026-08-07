@@ -17,6 +17,8 @@
 package org.acme.http.pqc.crypto;
 
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
+import org.bouncycastle.asn1.nist.NISTObjectIdentifiers;
+import org.bouncycastle.asn1.x509.Extension;
 
 /**
  * X.509 extension OIDs (Object Identifiers) for Chimera hybrid certificate format.
@@ -41,9 +43,14 @@ import org.bouncycastle.asn1.ASN1ObjectIdentifier;
  * </pre>
  *
  * <p>
- * <b>Why this matters:</b> Both signatures must be valid for authentication.
- * This provides quantum resistance (via ML-DSA-65) while maintaining backward
- * compatibility with standard TLS (via RSA).
+ * <b>Why this matters:</b> Both signatures must be valid for the certificate to be accepted, so a
+ * certificate remains tamper-evident even against an attacker who can forge RSA signatures. Standard
+ * TLS stacks that do not understand these extensions still verify the RSA signature as usual, which
+ * is what makes the format backward compatible.
+ *
+ * <p>
+ * The constants below simply alias the equivalent BouncyCastle definitions; they exist to gather the
+ * relevant references in one place rather than to redefine the OIDs.
  *
  * <h2>OID Hierarchy Explained:</h2>
  * <ul>
@@ -89,7 +96,7 @@ public final class ChimeraOids {
      * RFC 5280 - X.509 Certificate Extensions</a></li>
      * </ul>
      */
-    public static final ASN1ObjectIdentifier SUBJECT_ALT_PUBLIC_KEY_INFO = new ASN1ObjectIdentifier("2.5.29.72");
+    public static final ASN1ObjectIdentifier SUBJECT_ALT_PUBLIC_KEY_INFO = Extension.subjectAltPublicKeyInfo;
 
     /**
      * OID 2.5.29.73 - Alternative Signature Algorithm extension.
@@ -106,15 +113,16 @@ public final class ChimeraOids {
      * <li><a href="https://oidref.com/2.5.29.73">OID Repository: 2.5.29.73</a></li>
      * </ul>
      */
-    public static final ASN1ObjectIdentifier ALT_SIGNATURE_ALGORITHM = new ASN1ObjectIdentifier("2.5.29.73");
+    public static final ASN1ObjectIdentifier ALT_SIGNATURE_ALGORITHM = Extension.altSignatureAlgorithm;
 
     /**
      * OID 2.5.29.74 - Alternative Signature Value extension.
      * Contains the actual ML-DSA-65 digital signature bytes.
      *
      * <p>
-     * This is the post-quantum signature that proves the certificate is authentic
-     * and hasn't been tampered with, computed using the ML-DSA-65 private key.
+     * This is the post-quantum signature over the certificate body (the DER-encoded
+     * {@code TBSCertificate} with this extension removed), computed with the ML-DSA-65 private key.
+     * Because it covers the whole body, it detects tampering with any field of the certificate.
      *
      * <p>
      * <b>Official References:</b>
@@ -124,7 +132,7 @@ public final class ChimeraOids {
      * <li><a href="https://oidref.com/2.5.29.74">OID Repository: 2.5.29.74</a></li>
      * </ul>
      */
-    public static final ASN1ObjectIdentifier ALT_SIGNATURE_VALUE = new ASN1ObjectIdentifier("2.5.29.74");
+    public static final ASN1ObjectIdentifier ALT_SIGNATURE_VALUE = Extension.altSignatureValue;
 
     /**
      * OID 2.16.840.1.101.3.4.3.18 - ML-DSA-65 algorithm identifier (NIST FIPS 204).
@@ -159,7 +167,7 @@ public final class ChimeraOids {
      * BouncyCastle Source: NIST ML-DSA OID definitions</a></li>
      * </ul>
      */
-    public static final ASN1ObjectIdentifier ML_DSA_65 = new ASN1ObjectIdentifier("2.16.840.1.101.3.4.3.18");
+    public static final ASN1ObjectIdentifier ML_DSA_65 = NISTObjectIdentifiers.id_ml_dsa_65;
 
     private ChimeraOids() {
         throw new AssertionError("Constants class cannot be instantiated");

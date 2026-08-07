@@ -42,9 +42,7 @@ public class SecurityConfiguration {
     private void generateKeystores() {
         try {
             LOG.info("Generating fresh hybrid PQC keystores...");
-            HybridCertificateGenerator.generateServerKeystore();
-            HybridCertificateGenerator.generateClientHybridKeystore();
-            HybridCertificateGenerator.generateClientRsaOnlyKeystore();
+            HybridCertificateGenerator.generateKeystores();
             LOG.info("Hybrid PQC keystores generated successfully");
         } catch (Exception e) {
             LOG.error("Failed to generate hybrid PQC keystores", e);
