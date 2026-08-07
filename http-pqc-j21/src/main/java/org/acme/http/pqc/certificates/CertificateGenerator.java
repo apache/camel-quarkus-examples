@@ -18,6 +18,7 @@ package org.acme.http.pqc.certificates;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,9 +34,12 @@ import java.util.Date;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.BasicConstraints;
 import org.bouncycastle.asn1.x509.Extension;
+import org.bouncycastle.asn1.x509.GeneralName;
+import org.bouncycastle.asn1.x509.GeneralNames;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.jboss.logging.Logger;
@@ -100,18 +104,30 @@ public class CertificateGenerator {
 
     /**
      * Generates server keystore with RSA certificate.
+     *
+     * <p>
+     * The certificate carries subject alternative names for {@code localhost} and {@code 127.0.0.1} so that clients
+     * can verify the server identity instead of having to disable hostname verification. It is also written out as a
+     * PEM file so that it can be passed to tools such as {@code curl --cacert}.
      */
     public static void generateServerKeystore() throws Exception {
-        serverData = generateCertificateData("CN=localhost,O=Camel Quarkus,C=US", true);
+        GeneralNames subjectAltNames = new GeneralNames(new GeneralName[] {
+                new GeneralName(GeneralName.dNSName, "localhost"),
+                new GeneralName(GeneralName.iPAddress, "127.0.0.1") });
+
+        serverData = generateCertificateData("CN=localhost,O=Camel Quarkus,C=US", true, subjectAltNames);
         saveKeyStore(Paths.get(CERT_DIR, "server-keystore.p12"), serverData.keyPair, serverData.certificate, "server");
         LOG.info("Server keystore created: " + CERT_DIR + "/server-keystore.p12");
+
+        savePem(Paths.get(CERT_DIR, "server-cert.pem"), serverData.certificate);
+        LOG.info("Server certificate PEM created: " + CERT_DIR + "/server-cert.pem");
     }
 
     /**
      * Generates client keystore with RSA certificate.
      */
     public static void generateClientKeystore() throws Exception {
-        clientData = generateCertificateData("CN=client,O=Camel Quarkus,C=US", false);
+        clientData = generateCertificateData("CN=client,O=Camel Quarkus,C=US", false, null);
         saveKeyStore(Paths.get(CERT_DIR, "client-keystore.p12"), clientData.keyPair, clientData.certificate, "client");
         LOG.info("Client keystore created: " + CERT_DIR + "/client-keystore.p12");
     }
@@ -135,13 +151,15 @@ public class CertificateGenerator {
     /**
      * Generates a certificate with RSA keypair.
      *
-     * @param  dn   The DN for the certificate subject
-     * @param  isCA Whether this is a CA certificate
-     * @return      CertificateData containing keypair and certificate
+     * @param  dn              The DN for the certificate subject
+     * @param  isCA            Whether this is a CA certificate
+     * @param  subjectAltNames The subject alternative names to add to the certificate, or {@code null} for none
+     * @return                 CertificateData containing keypair and certificate
      */
-    private static CertificateData generateCertificateData(String dn, boolean isCA) throws Exception {
+    private static CertificateData generateCertificateData(String dn, boolean isCA, GeneralNames subjectAltNames)
+            throws Exception {
         KeyPair keyPair = generateKeyPair();
-        X509Certificate certificate = generateCertificate(keyPair, dn, isCA);
+        X509Certificate certificate = generateCertificate(keyPair, dn, isCA, subjectAltNames);
         return new CertificateData(keyPair, certificate);
     }
 
@@ -152,7 +170,8 @@ public class CertificateGenerator {
         return keyPairGenerator.generateKeyPair();
     }
 
-    private static X509Certificate generateCertificate(KeyPair keyPair, String dn, boolean isCA) throws Exception {
+    private static X509Certificate generateCertificate(KeyPair keyPair, String dn, boolean isCA,
+            GeneralNames subjectAltNames) throws Exception {
         long now = System.currentTimeMillis();
         Date notBefore = new Date(now);
         // Valid for 3 years for development convenience
@@ -171,6 +190,10 @@ public class CertificateGenerator {
                 keyPair.getPublic());
 
         certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(isCA));
+
+        if (subjectAltNames != null) {
+            certBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);
+        }
 
         // Use default SUN provider for RSA signing - no need for BC provider
         ContentSigner signer = new JcaContentSignerBuilder("SHA256WithRSA")
@@ -195,6 +218,18 @@ public class CertificateGenerator {
 
         try (FileOutputStream fos = new FileOutputStream(path.toFile())) {
             keyStore.store(fos, KEYSTORE_PASSWORD.toCharArray());
+        }
+    }
+
+    private static void savePem(Path path, X509Certificate cert) throws Exception {
+        Path dirPath = path.getParent();
+        if (!Files.exists(dirPath)) {
+            Files.createDirectories(dirPath);
+            LOG.info("Created directory: " + dirPath);
+        }
+
+        try (JcaPEMWriter pemWriter = new JcaPEMWriter(new FileWriter(path.toFile()))) {
+            pemWriter.writeObject(cert);
         }
     }
 

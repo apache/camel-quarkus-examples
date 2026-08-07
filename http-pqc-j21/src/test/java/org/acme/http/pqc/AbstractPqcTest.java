@@ -34,7 +34,6 @@ import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.HttpResponse;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -76,8 +75,7 @@ abstract class AbstractPqcTest {
                 .config(RestAssuredConfig.config().sslConfig(
                         SSLConfig.sslConfig()
                                 .keyStore("target/certs/client-keystore.p12", "changeit")
-                                .trustStore("target/certs/client-truststore.p12", "changeit")
-                                .allowAllHostnames()))
+                                .trustStore("target/certs/client-truststore.p12", "changeit")))
                 .baseUri("https://localhost:" + RestAssured.port)
                 .when()
                 .get("/pqc/secure")
@@ -92,8 +90,7 @@ abstract class AbstractPqcTest {
             SSLContext sslContext = createSslContext(securityProvider);
 
             // Create custom SSLConnectionSocketFactory that explicitly sets named groups
-            SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext,
-                    NoopHostnameVerifier.INSTANCE) {
+            SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext) {
                 @Override
                 protected void prepareSocket(javax.net.ssl.SSLSocket socket) throws java.io.IOException {
                     super.prepareSocket(socket);
