@@ -38,7 +38,8 @@ public class JdbcTest {
                     .then()
                     .extract().asString();
 
-            return "(\"Grand Hotel\",1)(\"Middle Hotel\",0)(\"Small Hotel\",-1)".equals(hotelReviews);
+            return "(\"Grand Hotel\",1)(\"Middle Hotel\",0)(\"Small Hotel\",-1)(\"O'Brien's Hotel\",0)"
+                    .equals(hotelReviews);
         });
     }
 }

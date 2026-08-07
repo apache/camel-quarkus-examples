@@ -42,11 +42,16 @@ public class JdbcRoutes extends RouteBuilder {
                     String review = (String) sourceData.get("review");
                     int mappedReview = reviewMapping.getOrDefault(review, 0);
                     sourceData.put("review", mappedReview);
+
+                    exchange.getIn().setHeader("id", sourceData.get("id"));
+                    exchange.getIn().setHeader("hotel_name", sourceData.get("hotel_name"));
+                    exchange.getIn().setHeader("price", sourceData.get("price"));
+                    exchange.getIn().setHeader("review", mappedReview);
                 })
                 .log("-> Transforming review for hotel '${body[hotel_name]}'")
-                .setBody()
-                .simple("INSERT INTO Target (id, hotel_name, price, review) VALUES(${body[id]}, '${body[hotel_name]}', ${body[price]}, ${body[review]})")
-                .to("jdbc:target_db")
+                .setBody(constant(
+                        "INSERT INTO Target (id, hotel_name, price, review) VALUES(:?id, :?hotel_name, :?price, :?review)"))
+                .to("jdbc:target_db?useHeadersAsParameters=true")
                 .log("-> Loading transformed data in target database");
     }
 }
