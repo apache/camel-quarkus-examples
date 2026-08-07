@@ -60,8 +60,9 @@ To store a secret, open a new terminal and run:
 curl -X POST http://localhost:8080/cyberark-vault/createSecret -d 'my-secret-value'
 ----
 
-Following messages will show the resolved secret value. As we run the example in Quarkus Dev Mode, you can
-edit the source code and have live updates.
+Following messages will show that the secret resolved successfully. The value itself is deliberately not
+logged, since writing secrets to the log defeats the purpose of storing them in a vault. As we run the
+example in Quarkus Dev Mode, you can edit the source code and have live updates.
 
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
