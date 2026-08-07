@@ -33,10 +33,13 @@ public class PqcCamelRoute extends EndpointRouteBuilder {
                 .log("Processing request with validated hybrid PQC certificate")
                 .setBody(constant(
                         "✓ Hybrid PQC certificate validated at TLS layer!\n\n" +
-                                "Your connection is quantum-safe.\n" +
-                                "Both RSA and ML-DSA-65 signatures were validated during TLS handshake.\n\n" +
-                                "This demonstrates TLS-layer validation using a custom X509TrustManager.\n" +
-                                "Invalid or RSA-only certificates are rejected during the TLS handshake.\n"))
+                                "Your certificate chained to a configured trust anchor and carried a valid\n" +
+                                "ML-DSA-65 alternative signature. Both were checked during the TLS handshake.\n\n" +
+                                "This demonstrates TLS-layer validation using a custom X509TrustManager that\n" +
+                                "adds a post-quantum signature check on top of the standard X.509 checks.\n\n" +
+                                "Note: the connection itself is protected by classical cryptography. Java 17\n" +
+                                "cannot negotiate a post-quantum key exchange, so only the certificate\n" +
+                                "authentication is hybrid here. See http-pqc-j21 for quantum-safe transport.\n"))
                 .to(log("pqc-secure").showExchangePattern(false).showBodyType(false));
     }
 }

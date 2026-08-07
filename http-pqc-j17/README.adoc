@@ -19,25 +19,35 @@ Since **Java 17 doesn't support PQC algorithms natively in TLS**, this example d
 
 * **Chimera hybrid certificates**: Combines RSA-2048 + ML-DSA-65 (NIST FIPS 204)
 * **X.509 extensions**: Standard extension OIDs (2.5.29.72-74) for alternative signatures
-* **Application-level validation**: Custom X509TrustManager validates both RSA and ML-DSA-65 signatures during TLS handshake
-* **BouncyCastle 1.83**: Provides ML-DSA-65 post-quantum signature algorithm (JCA provider only)
+* **Application-level validation**: A custom X509TrustManager adds an ML-DSA-65 signature check on top of the standard certificate validation performed during the TLS handshake
+* **BouncyCastle**: Provides the ML-DSA-65 post-quantum signature algorithm (JCA provider only)
 
-This approach validates PQC signatures at the application level rather than relying on Java's TLS stack. For native PQC TLS support (hybrid cipher suites like X25519Kyber768), use Java 21+ with BouncyCastle JSSE provider.
+This approach validates PQC signatures at the application level rather than relying on Java's TLS stack. For native PQC TLS support (hybrid key exchange such as X25519MLKEM768), use Java 21+ with the BouncyCastle JSSE provider.
+
+IMPORTANT: Only the certificate authentication is hybrid here. The connection itself is still protected by classical cryptography, because Java 17 cannot negotiate a post-quantum key exchange. A recorded session remains vulnerable to "harvest now, decrypt later"; see the `http-pqc-j21` example for quantum-safe transport.
 
 NOTE: For detailed diagrams and architecture explanation, see link:PQC-EXPLANATION.adoc[PQC Visual Guide].
 
 == Certificate Generation
 
-Hybrid certificates are automatically generated on every application startup. No manual steps required.
+A hybrid certificate authority and the certificates it issues are generated on every application startup. No manual steps required.
+
+The CA holds both an RSA and an ML-DSA-65 keypair, and signs every certificate it issues with both. It publishes its ML-DSA-65 public key in its own `subjectAltPublicKeyInfo` extension (OID 2.5.29.72), which is what relying parties use to verify the alternative signature on the certificates it issued.
 
 Generated files in `target/certs/`:
 
-* `server-hybrid-keystore.p12` - Server certificate with RSA + ML-DSA-65
-* `server-hybrid-truststore.p12` - Truststore for validating clients
+* `server-hybrid-keystore.p12` - Server certificate and key, with the CA certificate in the chain
+* `server-hybrid-truststore.p12` - Trust anchor the server validates client certificates against, holding the CA certificate
 * `client-hybrid-keystore.p12` - Client certificate with PQC (for success test)
-* `client-hybrid-keystore-cert.pem` - Client certificate in PEM format (for curl testing)
-* `client-hybrid-keystore-key.pem` - Client private key in PEM format (for curl testing)
-* `client-rsa-only-keystore.p12` - Client certificate without PQC (for failure test)
+* `client-hybrid-truststore.p12` - Trust anchor clients validate the server against, holding the CA certificate
+* `client-rsa-only-keystore.p12` - Client certificate issued by the same CA but without PQC (for failure test)
+* `ca-cert.pem` - CA certificate in PEM format, for clients that cannot read PKCS12 truststores (for example `curl --cacert`)
+* `client-hybrid-cert.pem` - Client certificate in PEM format (for curl testing)
+* `client-hybrid-key.pem` - Client private key in PEM format (for curl testing)
+
+The server certificate is issued for `CN=localhost` with subject alternative names `DNS:localhost` and `IP:127.0.0.1`, so clients can verify the server identity rather than having to disable verification.
+
+Because the CA certificate is the trust anchor, an attacker who could forge RSA signatures still could not mint a certificate this example accepts: they would also need the CA's ML-DSA-65 private key. That is the property the hybrid certificate is there to provide.
 
 == Prerequisites
 
@@ -68,22 +78,37 @@ NOTE: With `client-auth=required`, the TLS handshake rejects connections without
 
 PEM files are automatically generated during application startup in `target/certs/`:
 
-* `client-hybrid-keystore-cert.pem` - Hybrid certificate (RSA + ML-DSA-65)
-* `client-hybrid-keystore-key.pem` - Private key for hybrid certificate
+* `client-hybrid-cert.pem` - Hybrid certificate (RSA + ML-DSA-65)
+* `client-hybrid-key.pem` - Private key for hybrid certificate
+* `ca-cert.pem` - CA certificate, used by curl to verify the server
 
 Test with hybrid certificate (should succeed):
 
 [source,shell]
 ----
-curl --cert target/certs/client-hybrid-keystore-cert.pem \
-       --key target/certs/client-hybrid-keystore-key.pem \
-       -k \
+curl --cert target/certs/client-hybrid-cert.pem \
+       --key target/certs/client-hybrid-key.pem \
+       --cacert target/certs/ca-cert.pem \
        https://localhost:8443/pqc/secure
 
 ✓ Hybrid PQC certificate validated at TLS layer!
-Your connection is quantum-safe.
-Both RSA and ML-DSA-65 signatures were validated during TLS handshake.
+
+Your certificate chained to a configured trust anchor and carried a valid
+ML-DSA-65 alternative signature. Both were checked during the TLS handshake.
+...
 ----
+
+Test with the RSA-only certificate. It is issued by the same CA, so it passes chain validation; the handshake fails purely because it carries no ML-DSA-65 alternative signature:
+
+[source,shell]
+----
+curl --cert-type P12 \
+       --cert target/certs/client-rsa-only-keystore.p12:changeit \
+       --cacert target/certs/ca-cert.pem \
+       https://localhost:8443/pqc/secure
+----
+
+curl reports a TLS alert such as `certificate unknown` or `bad certificate`; the exact wording depends on the TLS library it was built against. The application log records the reason the certificate was refused.
 
 == Package and Run the Application
 
@@ -130,7 +155,12 @@ The test suite validates:
 * Hybrid keystores are generated automatically
 * `/pqc/secure` rejects requests without client certificates
 * `/pqc/secure` accepts hybrid certificates (RSA + ML-DSA-65)
-* `/pqc/secure` rejects RSA-only certificates missing PQC extensions
+* `/pqc/secure` rejects an RSA-only certificate issued by the same CA, where the missing ML-DSA-65 signature is the only fault
+* `/pqc/secure` rejects a self-signed hybrid certificate that no trust anchor vouches for, even though its PQC extensions are valid
+* `/pqc/secure` rejects an expired hybrid certificate
+* The ML-DSA-65 signature check rejects a certificate carrying PQC extensions copied from another certificate
+* The ML-DSA-65 signature check rejects a certificate issued by a different CA, and one whose issuer publishes no PQC public key
+* The trust manager rejects untrusted server certificates as well as client ones, and advertises the configured trust anchors
 
 For native mode testing:
 
@@ -157,23 +187,30 @@ Both RSA and ML-DSA-65 signatures must validate for authentication to succeed.
 
 1. Client connects with TLS client certificate
 2. Java's TLS stack invokes our custom `HybridPqcX509TrustManager` during handshake
-3. `CertificatesUtil.validateHybridCertificate()` performs application-level checks:
-   - RSA signature (standard X.509 validation via Java crypto)
-   - ML-DSA-65 algorithm OID (2.5.29.73) - manual extraction
-   - ML-DSA-65 public key (2.5.29.72) - manual extraction
-   - ML-DSA-65 signature (2.5.29.74) - manual verification via BouncyCastle
-4. If all checks pass, TLS handshake continues
-5. If any check fails, TLS handshake is rejected
+3. The trust manager delegates to the platform trust manager that Quarkus built from the configured truststore, which performs the standard X.509 checks: chain building, trust anchor lookup and validity period
+4. Only if those pass, `CertificatesUtil.validateHybridCertificate()` adds the post-quantum checks for each certificate in the chain:
+   - ML-DSA-65 algorithm OID (2.5.29.73) is present and names ML-DSA-65
+   - ML-DSA-65 signature (2.5.29.74) is present
+   - The issuer's ML-DSA-65 public key (2.5.29.72) is located, either from the next certificate in the chain or from the trust anchors
+   - The signature is verified by BouncyCastle over the whole certificate body, using that issuer key
+5. If all checks pass, TLS handshake continues
+6. If any check fails, TLS handshake is rejected
 
-NOTE: This validation happens at the application level, not within Java's TLS implementation. Java 17's TLS stack only handles the standard RSA certificate; our custom code validates the PQC extensions.
+The verification key deliberately comes from the *issuer*, not from the certificate being checked. Verifying an alternative signature against a key carried by the same certificate authenticates nothing, since whoever produced the certificate chose both.
+
+IMPORTANT: The ordering in steps 3 and 4 is the point of this example. Registering a custom `X509TrustManager` *replaces* the platform one rather than adding to it, because JSSE consults only the trust manager it is given. A custom trust manager that performs its own checks without delegating therefore accepts any certificate that satisfies those checks — including a self-signed one that no trust anchor vouches for. Delegating first, then layering the PQC check on top, is what keeps chain, anchor and expiry validation in force.
+
+NOTE: The PQC part of the validation happens at the application level, not within Java's TLS implementation. Java 17's TLS stack only understands the standard RSA certificate; our custom code validates the PQC extensions.
 
 == Important Notes
 
 * **Java 17 Only**: This example is specifically designed for Java 17, which lacks native PQC support in its TLS stack. It demonstrates application-level validation as a workaround. Do not use this approach if you can upgrade to Java 21+.
 
-* **Development Only**: Certificates are regenerated on every startup. For production, use persistent certificates from a trusted CA.
+* **Development Only**: The CA and the certificates it issues are regenerated on every startup, and the CA is self-signed. For production, use persistent certificates from a real CA, and keep the CA's ML-DSA-65 private key protected as carefully as its RSA one — the post-quantum guarantee rests on it.
 
-* **BouncyCastle 1.83**: Uses standardized ML-DSA-65 naming per NIST FIPS 204 (effective August 2024). This example uses JCA provider only, not JSSE. Note that ML-DSA (standardized) and Dilithium (pre-standard) are NOT interoperable.
+* **No revocation checking**: This example performs no CRL or OCSP checks. A production deployment needs them.
+
+* **BouncyCastle**: Uses standardized ML-DSA-65 naming per NIST FIPS 204 (effective August 2024). This example uses the JCA provider only, not JSSE. Note that ML-DSA (standardized) and Dilithium (pre-standard) are NOT interoperable.
 
 == Additional Resources
 
