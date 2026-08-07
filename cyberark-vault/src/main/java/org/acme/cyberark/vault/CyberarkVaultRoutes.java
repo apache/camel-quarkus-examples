@@ -19,41 +19,30 @@ package org.acme.cyberark.vault;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.spi.PropertiesComponent;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class CyberarkVaultRoutes extends RouteBuilder {
-
-    @ConfigProperty(name = "conjur.url")
-    String url;
-    @ConfigProperty(name = "conjur.account")
-    String account;
-    @ConfigProperty(name = "conjur.writer.username")
-    String writerUsername;
-    @ConfigProperty(name = "conjur.writer.apiKey")
-    String writerApiKey;
-    @ConfigProperty(name = "conjur.reader.username")
-    String readerUsername;
-    @ConfigProperty(name = "conjur.reader.apiKey")
-    String readerApiKey;
+    static final String SECRET_ID = "BotApp/secretVar";
 
     @Override
     public void configure() throws Exception {
 
         from("direct:createSecret")
-                .toF("cyberark-vault:secret?operation=createSecret&secretId=BotApp/secretVar&url=%s&account=%s&username=%s&apiKey=%s",
-                        url, account, writerUsername, writerApiKey)
-                .log("Secret created/updated");
+                .toF("cyberark-vault:secret?operation=createSecret&secretId=%s"
+                        + "&url={{conjur.url}}&account={{conjur.account}}"
+                        + "&username=RAW({{conjur.writer.username}})&apiKey=RAW({{conjur.writer.apiKey}})", SECRET_ID)
+                .log("Secret %s created/updated".formatted(SECRET_ID));
 
         from("direct:getSecret")
-                .toF("cyberark-vault:secret?secretId=BotApp/secretVar&url=%s&account=%s&username=%s&apiKey=%s",
-                        url, account, readerUsername, readerApiKey)
-                .log("Retrieved secret: ${body}");
+                .toF("cyberark-vault:secret?secretId=%s"
+                        + "&url={{conjur.url}}&account={{conjur.account}}"
+                        + "&username=RAW({{conjur.reader.username}})&apiKey=RAW({{conjur.reader.apiKey}})", SECRET_ID)
+                .log("Secret %s retrieved successfully".formatted(SECRET_ID));
 
         from("direct:propertyPlaceholder")
                 .process(exchange -> {
                     PropertiesComponent component = exchange.getContext().getPropertiesComponent();
-                    component.resolveProperty("cyberark:BotApp/secretVar").ifPresent(value -> {
+                    component.resolveProperty("cyberark:" + SECRET_ID).ifPresent(value -> {
                         exchange.getMessage().setBody(value);
                     });
                 });
@@ -63,11 +52,11 @@ public class CyberarkVaultRoutes extends RouteBuilder {
                 .doTry()
                 .process(exchange -> {
                     PropertiesComponent component = exchange.getContext().getPropertiesComponent();
-                    component.resolveProperty("cyberark:BotApp/secretVar").ifPresent(value -> {
+                    component.resolveProperty("cyberark:" + SECRET_ID).ifPresent(value -> {
                         exchange.getMessage().setBody(value);
                     });
                 })
-                .log("Property placeholder cyberark:BotApp/secretVar resolved to: ${body}")
+                .log("Property placeholder %s resolved successfully".formatted(SECRET_ID))
                 .doCatch(Exception.class)
                 .log("No secret stored yet. Create one with: curl -X POST http://localhost:8080/cyberark-vault/createSecret -d 'my-secret'")
                 .end();
