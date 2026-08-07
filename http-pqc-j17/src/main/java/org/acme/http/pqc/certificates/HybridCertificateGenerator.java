@@ -39,6 +39,7 @@ import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.cert.X509CertificateHolder;
 import org.bouncycastle.cert.X509v3CertificateBuilder;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509ExtensionUtils;
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
 import org.bouncycastle.operator.ContentSigner;
@@ -147,6 +148,11 @@ public class HybridCertificateGenerator {
         X509v3CertificateBuilder certBuilder = certificateBuilder(caName, caName, rsaKeyPair.getPublic());
         certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(true));
 
+        // The subject key identifier is how relying parties tell two CAs apart when they share a
+        // distinguished name, which happens whenever a CA rolls its key
+        certBuilder.addExtension(Extension.subjectKeyIdentifier, false,
+                new JcaX509ExtensionUtils().createSubjectKeyIdentifier(rsaKeyPair.getPublic()));
+
         // Publish the CA's ML-DSA-65 public key: this is the key that verifies the alternative
         // signature on every certificate the CA issues
         certBuilder.addExtension(ChimeraOids.SUBJECT_ALT_PUBLIC_KEY_INFO, false,
@@ -180,6 +186,14 @@ public class HybridCertificateGenerator {
 
         X509v3CertificateBuilder certBuilder = certificateBuilder(issuerName, subject, rsaKeyPair.getPublic());
         certBuilder.addExtension(Extension.basicConstraints, true, new BasicConstraints(false));
+
+        // The authority key identifier names the key that signed this certificate, so a verifier can
+        // pick the right issuer instead of guessing from the distinguished name
+        JcaX509ExtensionUtils extensionUtils = new JcaX509ExtensionUtils();
+        certBuilder.addExtension(Extension.authorityKeyIdentifier, false,
+                extensionUtils.createAuthorityKeyIdentifier(issuer.certificate));
+        certBuilder.addExtension(Extension.subjectKeyIdentifier, false,
+                extensionUtils.createSubjectKeyIdentifier(rsaKeyPair.getPublic()));
 
         if (subjectAltNames != null) {
             certBuilder.addExtension(Extension.subjectAlternativeName, false, subjectAltNames);

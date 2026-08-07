@@ -35,7 +35,7 @@ public class PqcCamelRoute extends EndpointRouteBuilder {
                         "✓ Hybrid PQC certificate validated at TLS layer!\n\n" +
                                 "Your certificate chained to a configured trust anchor and carried a valid\n" +
                                 "ML-DSA-65 alternative signature. Both were checked during the TLS handshake.\n\n" +
-                                "This demonstrates TLS-layer validation using a custom X509TrustManager that\n" +
+                                "This demonstrates TLS-layer validation using a custom trust manager that\n" +
                                 "adds a post-quantum signature check on top of the standard X.509 checks.\n\n" +
                                 "Note: the connection itself is protected by classical cryptography. Java 17\n" +
                                 "cannot negotiate a post-quantum key exchange, so only the certificate\n" +

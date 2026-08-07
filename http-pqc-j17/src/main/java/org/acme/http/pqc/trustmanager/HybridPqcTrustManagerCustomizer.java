@@ -18,7 +18,7 @@ package org.acme.http.pqc.trustmanager;
 
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.X509ExtendedTrustManager;
 
 import io.quarkus.vertx.http.HttpServerOptionsCustomizer;
 import io.vertx.core.Vertx;
@@ -50,10 +50,10 @@ public class HybridPqcTrustManagerCustomizer implements HttpServerOptionsCustomi
     public void customizeHttpsServer(HttpServerOptions options) {
         LOG.info("Registering custom hybrid PQC TrustManager for TLS-layer validation...");
 
-        X509TrustManager platformTrustManager = platformTrustManager(options);
-        X509TrustManager customTrustManager = new HybridPqcX509TrustManager(platformTrustManager);
+        X509ExtendedTrustManager platformTrustManager = platformTrustManager(options);
+        X509ExtendedTrustManager customTrustManager = new HybridPqcX509TrustManager(platformTrustManager);
 
-        // Wrap the X509TrustManager into Vert.x TrustOptions and register it with the HTTP server
+        // Wrap the trust manager into Vert.x TrustOptions and register it with the HTTP server
         options.setTrustOptions(TrustOptions.wrap(customTrustManager));
 
         LOG.info("Custom hybrid PQC TrustManager registered successfully");
@@ -63,8 +63,15 @@ public class HybridPqcTrustManagerCustomizer implements HttpServerOptionsCustomi
     /**
      * Returns the trust manager Quarkus built from the configured truststore, which performs the
      * standard chain, trust anchor and validity-period checks.
+     *
+     * <p>
+     * An {@link X509ExtendedTrustManager} is required rather than a plain
+     * {@link javax.net.ssl.X509TrustManager}, because only the extended interface can be handed the
+     * {@code Socket} or {@code SSLEngine} that endpoint identification needs. Every JDK provider has
+     * returned the extended form since Java 7, so failing here means something unusual is in play and
+     * is better than quietly wrapping a trust manager that cannot verify hostnames.
      */
-    private X509TrustManager platformTrustManager(HttpServerOptions options) {
+    private X509ExtendedTrustManager platformTrustManager(HttpServerOptions options) {
         TrustOptions trustOptions = options.getTrustOptions();
         if (trustOptions == null) {
             // Without a truststore there is nothing to validate certificate chains against. Failing
@@ -78,14 +85,14 @@ public class HybridPqcTrustManagerCustomizer implements HttpServerOptionsCustomi
         try {
             TrustManagerFactory trustManagerFactory = trustOptions.getTrustManagerFactory(vertx);
             for (TrustManager trustManager : trustManagerFactory.getTrustManagers()) {
-                if (trustManager instanceof X509TrustManager) {
-                    return (X509TrustManager) trustManager;
+                if (trustManager instanceof X509ExtendedTrustManager) {
+                    return (X509ExtendedTrustManager) trustManager;
                 }
             }
         } catch (Exception e) {
             throw new IllegalStateException("Could not obtain a trust manager from the configured truststore", e);
         }
 
-        throw new IllegalStateException("The configured truststore yielded no X509TrustManager");
+        throw new IllegalStateException("The configured truststore yielded no X509ExtendedTrustManager");
     }
 }

@@ -457,7 +457,7 @@ ADVANTAGE: One certificate works for everyone!
 |✅ Yes
 
 |**HybridPqcX509TrustManager**
-|Delegates chain, trust anchor and expiry validation to the platform trust manager, then adds the ML-DSA-65 signature check
+|Delegates chain, trust anchor, expiry and endpoint identification checks to the platform trust manager, then adds the ML-DSA-65 signature check
 |✅ Yes
 
 |**HybridPqcTrustManagerCustomizer**

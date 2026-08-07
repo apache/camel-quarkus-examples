@@ -19,7 +19,7 @@ Since **Java 17 doesn't support PQC algorithms natively in TLS**, this example d
 
 * **Chimera hybrid certificates**: Combines RSA-2048 + ML-DSA-65 (NIST FIPS 204)
 * **X.509 extensions**: Standard extension OIDs (2.5.29.72-74) for alternative signatures
-* **Application-level validation**: A custom X509TrustManager adds an ML-DSA-65 signature check on top of the standard certificate validation performed during the TLS handshake
+* **Application-level validation**: A custom X509ExtendedTrustManager adds an ML-DSA-65 signature check on top of the standard certificate validation performed during the TLS handshake
 * **BouncyCastle**: Provides the ML-DSA-65 post-quantum signature algorithm (JCA provider only)
 
 This approach validates PQC signatures at the application level rather than relying on Java's TLS stack. For native PQC TLS support (hybrid key exchange such as X25519MLKEM768), use Java 21+ with the BouncyCastle JSSE provider.
@@ -171,7 +171,7 @@ mvn clean verify -Dnative
 
 == How It Works (Java 17 Application-Level Validation)
 
-This example works around Java 17's lack of native PQC support by implementing custom certificate validation at the application level, integrated into the TLS handshake via a custom `X509TrustManager`.
+This example works around Java 17's lack of native PQC support by implementing custom certificate validation at the application level, integrated into the TLS handshake via a custom `X509ExtendedTrustManager`.
 
 === Certificate Structure
 
@@ -191,14 +191,16 @@ Both RSA and ML-DSA-65 signatures must validate for authentication to succeed.
 4. Only if those pass, `CertificatesUtil.validateHybridCertificate()` adds the post-quantum checks for each certificate in the chain:
    - ML-DSA-65 algorithm OID (2.5.29.73) is present and names ML-DSA-65
    - ML-DSA-65 signature (2.5.29.74) is present
-   - The issuer's ML-DSA-65 public key (2.5.29.72) is located, either from the next certificate in the chain or from the trust anchors
+   - The issuer's ML-DSA-65 public key (2.5.29.72) is located, either from the next certificate in the chain or from the trust anchors, matching on the authority key identifier rather than the issuer name alone
    - The signature is verified by BouncyCastle over the whole certificate body, using that issuer key
 5. If all checks pass, TLS handshake continues
 6. If any check fails, TLS handshake is rejected
 
-The verification key deliberately comes from the *issuer*, not from the certificate being checked. Verifying an alternative signature against a key carried by the same certificate authenticates nothing, since whoever produced the certificate chose both.
+The verification key deliberately comes from the *issuer*, not from the certificate being checked. Verifying an alternative signature against a key carried by the same certificate authenticates nothing, since whoever produced the certificate chose both. Finding that issuer by distinguished name alone is not enough either: a CA that has rolled its key appears in the truststore twice under one name with two different ML-DSA-65 keys, so the authority key identifier is what tells them apart.
 
-IMPORTANT: The ordering in steps 3 and 4 is the point of this example. Registering a custom `X509TrustManager` *replaces* the platform one rather than adding to it, because JSSE consults only the trust manager it is given. A custom trust manager that performs its own checks without delegating therefore accepts any certificate that satisfies those checks — including a self-signed one that no trust anchor vouches for. Delegating first, then layering the PQC check on top, is what keeps chain, anchor and expiry validation in force.
+IMPORTANT: The ordering in steps 3 and 4 is the point of this example. Registering a custom trust manager *replaces* the platform one rather than adding to it, because JSSE consults only the trust manager it is given. A custom trust manager that performs its own checks without delegating therefore accepts any certificate that satisfies those checks — including a self-signed one that no trust anchor vouches for. Delegating first, then layering the PQC check on top, is what keeps chain, anchor and expiry validation in force.
+
+NOTE: `HybridPqcX509TrustManager` extends `X509ExtendedTrustManager`, not `X509TrustManager`. Only the extended interface receives the `Socket` or `SSLEngine` for the connection, and that context is what the platform needs to perform endpoint identification — hostname verification, for a client checking a server. A wrapper implementing the plain interface loses it. JSSE compensates by wrapping such a trust manager in one of its own that performs the check afterwards, so a stack built around `SSLContext` stays safe, but one that bypasses it — Netty's OpenSSL provider, for instance — applies no such wrapper. Anyone adapting this class for outbound TLS there would silently accept a valid certificate issued for a different host.
 
 NOTE: The PQC part of the validation happens at the application level, not within Java's TLS implementation. Java 17's TLS stack only understands the standard RSA certificate; our custom code validates the PQC extensions.
 
