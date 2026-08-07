@@ -65,19 +65,25 @@ public class RouteTest {
                 .then()
                 .statusCode(200)
                 // Assert values of the first extracted POJO
-                .body("pojos[0].customerSatisfied", is("true"))
+                .body("pojos[0].customerSatisfied", is(true))
                 .body("pojos[0].customerName", is("Sarah London"))
-                .body("pojos[0].customerBirthday", is("10 JULY 1986"))
+                .body("pojos[0].customerBirthday.day", is(10))
+                .body("pojos[0].customerBirthday.month", is(7))
+                .body("pojos[0].customerBirthday.year", is(1986))
                 .body("pojos[0].summary", not(empty()))
                 // Assert values of the second extracted POJO
-                .body("pojos[1].customerSatisfied", is("false"))
+                .body("pojos[1].customerSatisfied", is(false))
                 .body("pojos[1].customerName", is("John Doe"))
-                .body("pojos[1].customerBirthday", is("01 NOVEMBER 2001"))
+                .body("pojos[1].customerBirthday.day", is(1))
+                .body("pojos[1].customerBirthday.month", is(11))
+                .body("pojos[1].customerBirthday.year", is(2001))
                 .body("pojos[1].summary", not(empty()))
                 // Assert values of the third extracted POJO
-                .body("pojos[2].customerSatisfied", is("true"))
+                .body("pojos[2].customerSatisfied", is(true))
                 .body("pojos[2].customerName", is("Kate Boss"))
-                .body("pojos[2].customerBirthday", is("13 AUGUST 1999"))
+                .body("pojos[2].customerBirthday.day", is(13))
+                .body("pojos[2].customerBirthday.month", is(8))
+                .body("pojos[2].customerBirthday.year", is(1999))
                 .body("pojos[2].summary", not(empty()));
     }
 
