@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test Apache HTTP Client with explicit provider selection on PQC-only server.
+ * Test with explicit JSSE provider selection on PQC-only server.
  *
  * Expected results:
  * - BCJSSE: SUCCESS (supports X25519MLKEM768)
