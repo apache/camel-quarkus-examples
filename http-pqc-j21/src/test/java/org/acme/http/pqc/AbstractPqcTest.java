@@ -78,7 +78,11 @@ abstract class AbstractPqcTest {
     void testHttpClientConnection(String securityProvider, boolean expectFailure) throws Exception {
         try {
             SSLContext sslContext = createSslContext(securityProvider);
-            SSLSocketFactory sslSocketFactory = new SSLSocketFactory(sslContext);
+            SSLSocketFactory sslSocketFactory = new SSLSocketFactory(
+                    sslContext,
+                    new String[] { "TLSv1.3" },
+                    null,
+                    SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
 
             LOG.info("Testing with " + securityProvider + " provider on port " + RestAssured.port);
 
