@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test Apache HTTP Client with PQC+fallback configuration.
+ * Test with PQC+fallback configuration.
  *
  * Expected results:
  * - BCJSSE: SUCCESS (supports X25519MLKEM768 and fallback)

@@ -121,7 +121,7 @@ Configure `application.properties` to disable classical fallback:
 jdk.tls.namedGroups=X25519MLKEM768
 ----
 
-To actually test X25519MLKEM768 hybrid key exchange, use a PQC-capable client. The test suite demonstrates this using Apache HttpClient 5 with BouncyCastle JSSE:
+To actually test X25519MLKEM768 hybrid key exchange, use a PQC-capable client. The test suite demonstrates this using RestAssured with a BouncyCastle JSSE-backed SSLContext:
 
 [source,shell]
 ----

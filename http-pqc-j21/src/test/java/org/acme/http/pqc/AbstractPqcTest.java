@@ -19,23 +19,15 @@ package org.acme.http.pqc;
 import java.io.FileInputStream;
 import java.security.KeyStore;
 import java.security.Security;
-import java.util.Arrays;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLParameters;
 import javax.net.ssl.TrustManagerFactory;
 
 import io.restassured.RestAssured;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.config.SSLConfig;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
-import org.apache.hc.client5.http.io.HttpClientConnectionManager;
-import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
-import org.apache.hc.core5.http.HttpResponse;
+import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 import org.jboss.logging.Logger;
@@ -46,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
- * Abstract base class for Apache HttpClient PQC tests with explicit provider selection.
+ * Abstract base class for PQC tests with explicit JSSE provider selection.
  * Tests both BCJSSE (PQC-capable) and SunJSSE (classical only) providers.
  *
  * Certificates are generated before tests via CertificateTestResource.
@@ -84,54 +76,31 @@ abstract class AbstractPqcTest {
     }
 
     void testHttpClientConnection(String securityProvider, boolean expectFailure) throws Exception {
-        boolean failedAsExpected = false;
-
         try {
             SSLContext sslContext = createSslContext(securityProvider);
+            SSLSocketFactory sslSocketFactory = new SSLSocketFactory(sslContext);
 
-            // Create custom SSLConnectionSocketFactory that explicitly sets named groups
-            SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext) {
-                @Override
-                protected void prepareSocket(javax.net.ssl.SSLSocket socket) throws java.io.IOException {
-                    super.prepareSocket(socket);
-                    // Explicitly set named groups on the socket's SSL parameters
-                    String configuredGroups = System.getProperty("jdk.tls.namedGroups", "X25519MLKEM768");
-                    try {
-                        SSLParameters sslParams = socket.getSSLParameters();
-                        String[] namedGroupsArray = configuredGroups.split(",");
-                        for (int i = 0; i < namedGroupsArray.length; i++) {
-                            namedGroupsArray[i] = namedGroupsArray[i].trim();
-                        }
-                        sslParams.setNamedGroups(namedGroupsArray);
-                        sslParams.setProtocols(new String[] { "TLSv1.3" });
-                        socket.setSSLParameters(sslParams);
-                        LOG.info("Set named groups on socket: " + Arrays.toString(namedGroupsArray));
-                    } catch (Exception e) {
-                        LOG.warn("Could not set named groups on socket: " + e.getMessage());
-                    }
-                }
-            };
+            LOG.info("Testing with " + securityProvider + " provider on port " + RestAssured.port);
 
-            HttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-                    .setSSLSocketFactory(sslSocketFactory)
-                    .build();
+            int responseStatus = given()
+                    .config(RestAssuredConfig.config().sslConfig(
+                            SSLConfig.sslConfig().sslSocketFactory(sslSocketFactory)))
+                    .baseUri("https://localhost:" + RestAssured.port)
+                    .when()
+                    .get("/pqc/secure")
+                    .then()
+                    .extract()
+                    .statusCode();
 
-            try (CloseableHttpClient httpClient = HttpClients.custom()
-                    .setConnectionManager(connectionManager)
-                    .build()) {
-
-                HttpGet request = new HttpGet("https://localhost:" + RestAssured.port + "/pqc/secure");
-                int responseStatus = httpClient.execute(request, HttpResponse::getCode);
-
-                if (expectFailure) {
-                    fail(securityProvider + " should have failed but got response status : " + responseStatus);
-                } else {
-                    assertTrue(responseStatus == 200, "Expected response status is 200");
-                }
+            if (expectFailure) {
+                fail(securityProvider + " should have failed but got response status : " + responseStatus);
+            } else {
+                assertTrue(responseStatus == 200, "Expected response status is 200");
             }
         } catch (NoClassDefFoundError | ExceptionInInitializerError | javax.net.ssl.SSLHandshakeException
-                | org.apache.hc.client5.http.HttpHostConnectException e) {
-            assertTrue(e.getMessage().toLowerCase().contains("connection refused"),
+                | java.net.ConnectException e) {
+            String message = e.getMessage().toLowerCase();
+            assertTrue(message.contains("connection refused") || message.contains("handshake_failure"),
                     "Different reason - '%s' - of failure then expected".formatted(e.getMessage()));
         }
     }
