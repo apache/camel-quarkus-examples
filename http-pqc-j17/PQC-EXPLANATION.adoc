@@ -191,21 +191,26 @@ This is a **workaround approach** when you can't modify TLS behavior - demonstra
 │            │  Serial: 1234567890       │                    │
 │            │                           │                    │
 │  ┌─────────▼──────────┐      ┌─────────▼──────────┐         │
-│  │ RSA-2048           │      │ Extension OID      │         │
-│  │ Public Key         │      │ 2.5.29.72:         │         │
-│  │ (Standard field)   │      │ ML-DSA-65 Public   │         │
-│  └────────────────────┘      │ Key                │         │
+│  │ RSA-2048           │      │ CA Extension OID   │         │
+│  │ Public Key         │      │ 2.5.29.72: the     │         │
+│  │ (Standard field)   │      │ CA's ML-DSA-65     │         │
+│  └────────────────────┘      │ Public Key         │         │
 │                              └────────────────────┘         │
 │  ┌────────────────────┐      ┌────────────────────┐         │
 │  │ SHA256withRSA      │      │ Extension OID      │         │
 │  │ Signature          │      │ 2.5.29.74:         │         │
 │  │ [RSA signature     │      │ ML-DSA-65          │         │
-│  │  bytes]            │      │ Signature bytes    │         │
-│  └────────────────────┘      └────────────────────┘         │
+│  │  bytes] by the CA  │      │ Signature bytes    │         │
+│  └────────────────────┘      │ by the CA          │         │
+│                              └────────────────────┘         │
 │                                                             │
 │  Verification: BOTH signatures must be valid!               │
 │  - Old systems: Check RSA only ✓                            │
 │  - PQC systems: Check RSA ✓ AND ML-DSA ✓                    │
+│                                                             │
+│  Both are made by the CA, and the ML-DSA one is verified    │
+│  with the CA's key from the CA certificate. Forging RSA     │
+│  alone is therefore not enough to mint a certificate.       │
 └─────────────────────────────────────────────────────────────┘
 ----
 
@@ -260,13 +265,6 @@ This is a **workaround approach** when you can't modify TLS behavior - demonstra
 │ ┌─────────────────────────────┐                     │
 │ │ Extensions:                 │                     │
 │ │ ┌─────────────────────────┐ │                     │
-│ │ │ OID 2.5.29.72:          │ │                     │
-│ │ │ altSubjectPublicKeyInfo │ │                     │
-│ │ │   Algorithm: ML-DSA-65  │ │ ✓ Post-Quantum      │
-│ │ │   Key: [3082071E...]    │ │                     │
-│ │ │   Size: 1976 bytes      │ │                     │
-│ │ └─────────────────────────┘ │                     │
-│ │ ┌─────────────────────────┐ │                     │
 │ │ │ OID 2.5.29.73:          │ │                     │
 │ │ │ altSignatureAlgorithm   │ │                     │
 │ │ │   Algorithm: ML-DSA-65  │ │                     │
@@ -276,8 +274,15 @@ This is a **workaround approach** when you can't modify TLS behavior - demonstra
 │ │ │ altSignatureValue       │ │                     │
 │ │ │   Signature: [D1L1...]  │ │ ✓ Post-Quantum      │
 │ │ │   Size: 3309 bytes      │ │                     │
+│ │ │   Made by the CA's      │ │                     │
+│ │ │   ML-DSA-65 key over    │ │                     │
+│ │ │   the whole cert body   │ │                     │
 │ │ └─────────────────────────┘ │                     │
 │ └─────────────────────────────┘                     │
+│                                                     │
+│ The CA certificate carries OID 2.5.29.72            │
+│ (subjectAltPublicKeyInfo) holding the CA's          │
+│ ML-DSA-65 public key, which verifies the above.     │
 │ ┌─────────────────────────────┐                     │
 │ │ Signature (PRIMARY):        │                     │
 │ │   Algorithm: SHA256withRSA  │ ✓ Classical         │
@@ -324,8 +329,8 @@ Endpoint: https://localhost:8443/pqc/secure
                 ┌──────────────┴──────────────┐
                 ▼                             ▼
         ┌───────────────┐            ┌────────────────┐
-        │ Validate RSA  │            │ Validate       │
-        │ Signature ✓   │            │ ML-DSA-65 ✓    │
+        │ Validate chain│            │ Validate       │
+        │ to anchor ✓   │            │ ML-DSA-65 ✓    │
         └───────┬───────┘            └────────┬───────┘
                 │                             │
                 └──────────────┬──────────────┘
@@ -371,11 +376,11 @@ Endpoint: https://localhost:8443/pqc/secure
 
 |**Protection Level**
 |⚠️ Demo only, TLS is vulnerable
-|✅ Real security at TLS layer
+|⚠️ Authentication is hybrid, but the key exchange is still classical
 
 |**When to use**
 |Learning, experimenting
-|Production-ready hybrid solution
+|Migrating certificates ahead of a PQC-capable TLS stack
 
 |**Code complexity**
 |Simple (app endpoints)
@@ -387,11 +392,13 @@ Endpoint: https://localhost:8443/pqc/secure
 * **Approach #2** is like having a regular lock on your door (RSA TLS) but demonstrating fancy new locks inside your house (PQC demos)
 * **Approach #3** is like installing a dual-lock system ON YOUR DOOR (Chimera certificates validated at TLS handshake)
 
-Approach #3 provides actual security because:
+Approach #3 strengthens authentication because:
 
 . Invalid certificates are **rejected during TLS handshake** before any data is exchanged
-. Both RSA and ML-DSA-65 signatures must be valid to establish the connection
+. A certificate must chain to a trust anchor, be within its validity period, **and** carry a valid ML-DSA-65 signature to establish the connection
 . Works with the existing TLS infrastructure (backward compatible)
+
+It does **not** make the connection quantum-safe: the key exchange that protects the session is still classical, so a recorded session can be decrypted by a future quantum computer. Only the certificate authentication gains post-quantum protection. Use `http-pqc-j21` for quantum-safe transport.
 
 '''
 
@@ -450,12 +457,16 @@ ADVANTAGE: One certificate works for everyone!
 |✅ Yes
 
 |**HybridPqcX509TrustManager**
-|Validates both RSA and ML-DSA-65 signatures at TLS layer
+|Delegates chain, trust anchor, expiry and endpoint identification checks to the platform trust manager, then adds the ML-DSA-65 signature check
 |✅ Yes
 
+|**HybridPqcTrustManagerCustomizer**
+|Registers the custom TrustManager with the Vert.x HTTP server, passing it the platform trust manager to delegate to
+|N/A
+
 |**SecurityConfiguration**
-|Configures custom TrustManager and client authentication
-|✅ Yes
+|Registers the BouncyCastle provider and generates the keystores at startup
+|N/A
 
 |**/pqc/secure endpoint**
 |Accessible only with valid hybrid PQC certificates
@@ -465,12 +476,12 @@ ADVANTAGE: One certificate works for everyone!
 **Think of it like this:**
 
 * The **transport tunnel** (HTTPS/TLS) still uses classical encryption (Java 17 limitation)
-* But the **authentication** (certificate validation) is quantum-safe with dual signatures
+* But the **authentication** requires a second, post-quantum signature from the CA, so forging RSA is not enough to be let in
 * The **Chimera certificate** is like a dual-lock ID card: RSA works today, ML-DSA-65 protects against future quantum attacks
-* Only clients with valid hybrid certificates can access the secure endpoint
+* Only clients with valid hybrid certificates that chain to the trusted CA can access the secure endpoint
 
 **When Java 21+ becomes standard:**
 
-* The transport itself can be upgraded to full PQC (e.g., Kyber for key exchange)
-* Chimera certificates will work perfectly with full PQC TLS
-* Zero code changes needed - we're already PQC-ready!
+* The transport itself can be upgraded to a post-quantum key exchange (for example ML-KEM)
+* Chimera certificates continue to work, since the PQC data rides in X.509 extensions
+* The custom TrustManager is no longer needed once the TLS stack validates PQC signatures itself
