@@ -17,8 +17,8 @@
 package org.acme.extraction;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.extraction.CustomPojoExtractionService.CustomPojo;
@@ -37,12 +37,8 @@ public class CustomPojoStore {
     }
 
     @Handler
-    String asString() {
-        StringBuilder sb = new StringBuilder("{ \"pojos\": [");
-        String pojoString = pojos.stream().map(CustomPojo::toString).collect(Collectors.joining(","));
-        sb.append(pojoString);
-        sb.append("] }");
-        return sb.toString();
+    Map<String, List<CustomPojo>> listPojos() {
+        return Map.of("pojos", List.copyOf(pojos));
     }
 
 }

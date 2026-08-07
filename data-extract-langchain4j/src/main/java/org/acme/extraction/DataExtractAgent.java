@@ -38,7 +38,7 @@ public class DataExtractAgent implements Agent {
     }
 
     /**
-     * Returns a JSON representation of a {@link CustomPojo}.
+     * Returns a string representation of the extracted {@link CustomPojo}.
      */
     @Override
     public String chat(AiAgentBody<?> aiAgentBody, ToolProvider toolProvider) {
