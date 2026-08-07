@@ -29,7 +29,7 @@ Ensure the aforementioned FTP server is running and do the following to run the 
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -83,8 +83,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 ==== Native mode
@@ -96,8 +96,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dnative
-$ ./target/*-runner
+mvn clean package -DskipTests -Dnative
+./target/*-runner
 ----
 
 ==== Deploying to Kubernetes
@@ -106,7 +106,7 @@ You can build a container image for the application like this. Refer to the http
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dquarkus.container-image.build=true
+mvn clean package -DskipTests -Dquarkus.container-image.build=true
 ----
 
 If you are using a local development cluster like Kind or k3s, you can use host the container image on your local host. Or, with minikube, use the Docker daemon from the cluster virtual machine `eval $(minikube docker-env)`. Otherwise, you'll need to push the image to a registry of your choosing.
@@ -115,7 +115,7 @@ Next apply the necessary resources to the cluster.
 
 [source,shell]
 ----
-$ kubectl apply -f target/kubernetes/kubernetes.yml
+kubectl apply -f target/kubernetes/kubernetes.yml
 
 secret/ftp-credentials created
 service/camel-quarkus-examples-file-bindy-ftp created
@@ -130,7 +130,7 @@ Check pods are running.
 
 [source,shell]
 ----
-$ kubectl get pods
+kubectl get pods
 
 NAME                                                     READY     STATUS    RESTARTS   AGE
 camel-quarkus-examples-file-bindy-ftp-5d48f4d85c-sjl8k   1/1       Running   0          21s
@@ -141,14 +141,14 @@ Tail the application logs.
 
 [source,shell]
 ----
-$ kubectl logs -f camel-quarkus-examples-file-bindy-ftp-5d48f4d85c-sjl8k
+kubectl logs -f camel-quarkus-examples-file-bindy-ftp-5d48f4d85c-sjl8k
 ----
 
 To clean up do.
 
 [source,shell]
 ----
-$ kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-file-bindy-ftp
+kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-file-bindy-ftp
 ----
 
 [NOTE]
@@ -162,7 +162,7 @@ To start a Source To Image (S2I) build and deploy the application.
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dopenshift
+mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dopenshift
 ----
 
 You can check the pod status and tail logs using the commands mentioned above in the Kubernetes section. Use the `oc` binary instead of `kubectl` if preferred.

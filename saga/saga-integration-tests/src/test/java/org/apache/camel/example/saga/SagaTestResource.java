@@ -33,7 +33,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 public class SagaTestResource implements QuarkusTestResourceLifecycleManager {
 
     private static final String LRA_IMAGE = "quay.io/jbosstm/lra-coordinator:7.0.1.Final-3.8.3";
-    private static final String ARTEMIS_IMAGE = "quay.io/arkmq-org/activemq-artemis-broker:artemis.2.51.0";
+    private static final String ARTEMIS_IMAGE = "quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0";
     private static final int LRA_PORT = 8080;
     private static final int ARTEMIS_PORT = 61616;
 

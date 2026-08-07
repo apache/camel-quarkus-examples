@@ -6,13 +6,13 @@
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
 and other general information.
 
-Suppose the volume of https://en.wikipedia.org/wiki/Unstructured_data[unstructured data] grows at a high pace in a given organization.
+Suppose the volume of https://en.wikipedia.org/wiki/Unstructured_data[unstructured data] is growing rapidly in a given organization.
 How could one transform those disseminated gold particles into a conform bullion that could be used in banks.
 For instance, let's imagine an insurance company that would record the transcripts of the conversation when customers are discussing with the hotline.
 There is probably a lot of valuable information that could be extracted from those conversation transcripts.
 In this example, we'll convert those text conversations into Java Objects that could then be used in the rest of the Camel route.
 
-image::schema.png[]
+image::schema.png[Architecture diagram showing unstructured text data being processed through LLM to extract structured Java objects]
 
 In order to achieve this extraction, we'll need a https://en.wikipedia.org/wiki/Large_language_model[Large Language Model (LLM)] and related serving framework that natively supports https://ollama.com/blog/structured-outputs[JSON structured output].
 Here, we choose https://ollama.com/library/granite4.1:3b[granite4.1:3b] served through https://ollama.com/[ollama].

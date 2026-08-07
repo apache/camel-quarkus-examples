@@ -10,7 +10,7 @@ and other general information.
 
 == Prerequisites:
 
-In order to send a message from Artemis Broker to Elasticsearch you need to start two services:
+To send a message from Artemis Broker to Elasticsearch you need to start two services:
 
 1) ActiveMQ Artemis - message broker that is connected to a paho client.
 
@@ -24,7 +24,7 @@ You can also use podman instead of docker for all the steps below.
 
 [source,shell]
 ----
-docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 61616:61616 -p 8161:8161 -p 1883:1883 --name artemis quay.io/arkmq-org/activemq-artemis-broker:artemis.2.51.0
+docker run -d --rm -e AMQ_EXTRA_ARGS="--relax-jolokia" -e AMQ_USER=admin -e AMQ_PASSWORD=admin -p 61616:61616 -p 8161:8161 -p 1883:1883 --name artemis quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0
 ----
 
 Now you can access Artemis on localhost:8161

@@ -47,7 +47,7 @@ NOTE: Certificates use traditional RSA signatures. The PQC protection comes from
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your workspace. Any modifications in your project will automatically take effect in the running application.
@@ -89,10 +89,10 @@ Start the application with fallback configuration and test with curl:
 
 [source,shell]
 ----
-$ mvn quarkus:dev
+mvn quarkus:dev
 
 # In another terminal
-$ curl --cert target/certs/client-keystore.p12:changeit \
+curl --cert target/certs/client-keystore.p12:changeit \
        --cert-type P12 \
        -k \
        https://localhost:xxxxx/pqc/secure
@@ -116,7 +116,7 @@ To actually test X25519MLKEM768 hybrid key exchange, use a PQC-capable client. T
 [source,shell]
 ----
 # Run the test that proves PQC is working
-$ mvn test -Dtest=PqcOnlyTest#testHttpClientWithBCJSSE
+mvn test -Dtest=PqcOnlyTest#testHttpClientWithBCJSSE
 ----
 
 This test uses BouncyCastle JSSE provider which supports X25519MLKEM768, proving the server requires PQC when configured with `jdk.tls.namedGroups=X25519MLKEM768`.
@@ -131,8 +131,8 @@ TIP: Find more details about the JVM mode and Native mode in the Package and run
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-http-pqc-j21 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
 ----
@@ -145,8 +145,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-http-pqc-j21 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
 ...
@@ -158,7 +158,7 @@ Run the tests to verify PQC functionality:
 
 [source,shell]
 ----
-$ mvn clean test
+mvn clean test
 ----
 
 The test suite validates:
@@ -178,20 +178,20 @@ Run individual tests:
 [source,shell]
 ----
 # Test PQC enforcement
-$ mvn clean test -Dtest=PqcOnlyTest
+mvn clean test -Dtest=PqcOnlyTest
 
 # Test backward compatibility
-$ mvn clean test -Dtest=PqcWithFallbackTest
+mvn clean test -Dtest=PqcWithFallbackTest
 
 # Test specific scenario
-$ mvn clean test -Dtest=PqcOnlyTest#testHttpClientWithBCJSSE
+mvn clean test -Dtest=PqcOnlyTest#testHttpClientWithBCJSSE
 ----
 
 For native mode testing:
 
 [source,shell]
 ----
-$ mvn clean verify -Dnative
+mvn clean verify -Dnative
 ----
 
 NOTE: Native mode only tests the fallback scenario (PqcWithFallbackIT) because a native executable can be built with only one `jdk.tls.namedGroups` configuration. Testing both scenarios would require building two separate native executables.

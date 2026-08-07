@@ -10,7 +10,7 @@ and other general information.
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -36,7 +36,7 @@ The `camel-quarkus-observability-services` extension exposes the above capabilit
 === Metrics
 
 You can benefit from both of the https://camel.apache.org/components/next/micrometer-component.html[Camel Micrometer] and https://quarkus.io/guides/micrometer[Quarkus Micrometer] worlds.
-We are able to use multiple ways of creating meters for our custom metrics.
+You can create meters in multiple ways for custom metrics.
 
 First using Camel micrometer component (see link:src/main/java/org/acme/observability/Routes.java[Routes.java]):
 
@@ -107,14 +107,14 @@ To view all Camel metrics do:
 
 [source,shell]
 ----
-$ curl -s localhost:9876/observe/metrics
+curl -s localhost:9876/observe/metrics
 ----
 
 To view only our previously created metrics, use:
 
 [source,shell]
 ----
-$ curl -s localhost:9876/observe/metrics | grep -i 'purpose="example"'
+curl -s localhost:9876/observe/metrics | grep -i 'purpose="example"'
 ----
 
 and you should see 3 lines of different metrics (with the same value, as they are all triggered by the timer).
@@ -127,12 +127,12 @@ Camel provides some out of the box liveness and readiness checks. To see this wo
 
 [source,shell]
 ----
-$ curl -s localhost:9876/observe/health/live
+curl -s localhost:9876/observe/health/live
 ----
 
 [source,shell]
 ----
-$ curl -s localhost:9876/observe/health/ready
+curl -s localhost:9876/observe/health/ready
 ----
 
 The JSON output will contain a checks for verifying whether the `CamelContext` and each individual route is in the 'Started' state.
@@ -207,11 +207,11 @@ The easiest way to visualize the dashboard with working metrics is using Docker 
 [source,shell]
 ----
 # Start the observability stack (Grafana, Prometheus, Tempo)
-$ docker compose -f src/main/docker/docker-compose-grafana.yml up -d
+docker compose -f src/main/docker/docker-compose-grafana.yml up -d
 
 # In another terminal, package and run the application
-$ mvn clean package -DskipTests
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 Access Grafana at http://localhost:3000 (credentials: `admin/admin`). The dashboard is automatically provisioned and ready to use!
@@ -224,7 +224,7 @@ When running in dev mode, Quarkus automatically provisions a Grafana instance wi
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 IMPORTANT: The LGTM dev services Grafana can display *distributed traces* but cannot display *metrics* from the dashboard panels. This is because the Prometheus instance inside the LGTM container cannot scrape metrics from `localhost:9876` on the host machine. For full dashboard functionality, use the Docker Compose setup above.
@@ -274,7 +274,7 @@ When the application is running, the dashboard will show:
 +
 [source,shell]
 ----
-$ curl localhost:8080/greeting
+curl localhost:8080/greeting
 ----
 
 - *Distributed Traces*: Click "Open Tempo Explore" to view complete trace hierarchy with 8 spans showing message flow through Camel endpoints
@@ -305,15 +305,15 @@ You can interact with the https://jolokia.org[Jolokia] endpoint using cURL. For 
 
 [source,shell]
 ----
-$ curl -s 'http://localhost:8778/jolokia/read/org.apache.camel:context=*,type=context,name=*' | jq
+curl -s 'http://localhost:8778/jolokia/read/org.apache.camel:context=*,type=context,name=*' | jq
 ----
 
 https://hawt.io/[Hawtio] can be used to visualize your Camel routes. https://www.jbang.dev/[JBang] is a convenient way to get started.
 
 [source,shell]
 ----
-$ jbang app install hawtio@hawtio/hawtio
-$ hawtio --port 8085
+jbang app install hawtio@hawtio/hawtio
+hawtio --port 8085
 ----
 
 When this example project is run in dev mode, it will be discoverable from Hawtio via the 'Discover' tab.
@@ -332,8 +332,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 1.163s. Listening on: http://0.0.0.0:8080
 ----
@@ -347,8 +347,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.013s. Listening on: http://0.0.0.0:8080
 ...

@@ -56,7 +56,7 @@ For purpose of easier testing this approach we also added Camel Quarkus REST end
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -81,7 +81,7 @@ Then verify it was added with:
 
 [source,shell]
 ----
-$ curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/contact/getAll.xml http://localhost:8080/cxf/services/contact
+curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/contact/getAll.xml http://localhost:8080/cxf/services/contact
 ----
 
 Which should return:
@@ -111,10 +111,10 @@ We can also test our customer service:
 
 [source,shell]
 ----
-$ curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/customer/getByName.xml http://localhost:8080/cxf/services/customer
+curl -X POST -H "Content-Type: text/xml;charset=UTF-8" -d @src/main/resources/requests/customer/getByName.xml http://localhost:8080/cxf/services/customer
 ----
 
-You can observe that we have hardcoded `test` as the name in the `SOAPBody` part in `src/main/resources/requests/customer/getByName.xml` as follows:
+Note that `test` is hardcoded as the name in the `SOAPBody` part in `src/main/resources/requests/customer/getByName.xml` as follows:
 
 [source, xml]
 ----
@@ -166,8 +166,8 @@ To discover WSDLs of our services, you can use:
 
 [source, shell]
 ----
-$ curl "http://localhost:8080/cxf/services/contact?wsdl"
-$ curl "http://localhost:8080/cxf/services/customer?wsdl"
+curl "http://localhost:8080/cxf/services/contact?wsdl"
+curl "http://localhost:8080/cxf/services/customer?wsdl"
 ----
 
 === Interacting via Camel Quarkus CXF producer
@@ -177,12 +177,12 @@ For testing purpose, we've also exposed REST endpoints to easily approach it ext
 Firstly we will add new contact with:
 [source, shell]
 ----
-$ curl -X POST -H "Content-Type: application/json" --data '{"name":"Lukas","address":{"city":"Czech Republic","street":"Random Street"},"type":"OTHER"}' "http://localhost:8080/producer/contact?operationName=addContact"
+curl -X POST -H "Content-Type: application/json" --data '{"name":"Lukas","address":{"city":"Czech Republic","street":"Random Street"},"type":"OTHER"}' "http://localhost:8080/producer/contact?operationName=addContact"
 ----
 Then we will request all contacts with:
 [source, shell]
 ----
-$ curl -X GET "http://localhost:8080/producer/contacts?operationName=getContacts"
+curl -X GET "http://localhost:8080/producer/contacts?operationName=getContacts"
 ----
 
 Which should return something like:
@@ -213,8 +213,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 === Native mode
@@ -226,8 +226,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ----
 
 == Kubernetes
@@ -236,7 +236,7 @@ $ ./target/*-runner
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dkubernetes
+mvn clean package -DskipTests -Dquarkus.kubernetes.deploy=true -Dkubernetes
 ----
 
 You should see one pod running:
@@ -250,7 +250,7 @@ Then use following command to redirect the localhost network to the Kubernetes n
 
 [source,shell]
 ----
-$ kubectl port-forward service/camel-quarkus-examples-cxf-soap 8080:8080
+kubectl port-forward service/camel-quarkus-examples-cxf-soap 8080:8080
 ----
 
 Open another terminal and then follow instructions from <<playground>>.

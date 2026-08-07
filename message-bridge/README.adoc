@@ -8,7 +8,8 @@ and other general information.
 
 == Overview
 
-In this example, a basic REST endpoint is provided for users to dispatch a message to the IBM MQ queue. Subsequently, all messages from the IBM MQ are relayed to an ActiveMQ queue within an XA transaction. To showcase the transaction functionality, a message containing the keyword "rollback" will initiate a transaction rollback. To demonstrate the process of a transaction recovery after a crash, send a message with the keyword "crash".
+This example provides a REST endpoint to dispatch messages to the IBM MQ queue. Subsequently, all messages from the IBM MQ are relayed to an ActiveMQ queue within an XA transaction. To show
+case the transaction functionality, a message containing the keyword "rollback" will initiate a transaction rollback. To demonstrate the process of a transaction recovery after a crash, send a message with the keyword "crash".
 
 Details regarding client configurations can be located in the `src/main/resources/application.properties` file.
 
@@ -21,7 +22,7 @@ docker run \
   -e AMQ_USER=admin \
   -e AMQ_PASSWORD=admin \
   -p 61616:61616 \
-   quay.io/arkmq-org/activemq-artemis-broker
+   quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0
 ----
 
 Then start the IBM MQ broker:
@@ -39,7 +40,7 @@ docker run \
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -134,8 +135,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
 ----

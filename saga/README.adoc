@@ -24,15 +24,15 @@ and there is 15% probability that the payment service fails.
 
 ==== Logical view
 
-image::doc-resources/logic-diagram.png[]
+image::doc-resources/logic-diagram.png[Logical diagram showing saga pattern flow between app, flight service, train service, and payment service]
 
 ==== Compensating a failure
 
-image::doc-resources/compesate-diagram.png[]
+image::doc-resources/compensate-diagram.png[Diagram illustrating compensation flow when payment fails in the saga pattern]
 
 ==== Technical view
 
-image::doc-resources/tech-diagram.png[]
+image::doc-resources/tech-diagram.png[Technical architecture diagram showing HTTP communication with LRA coordinator and AMQ messaging between services]
 
 The communication between services and LRA coordinator (blue connectors) is via HTTP protocol,
 so every service expose REST endpoints called by the LRA, moreover it calls LRA via REST endpoint
@@ -136,7 +136,7 @@ Start Artemis:
 docker run --name artemis \
   -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
   -d -p 61616:61616 \
-  quay.io/artemiscloud/activemq-artemis-broker
+  quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0
 ----
 
 Start Narayana LRA Coordinator Server:
@@ -150,7 +150,7 @@ docker run --network host -e QUARKUS_HTTP_PORT=8080 quay.io/jbosstm/lra-coordina
 
 [source,shell]
 ----
-$ mvn clean package
+mvn clean package
 ----
 
 ==== Native mode
@@ -162,7 +162,7 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
+mvn clean package -Dnative
 ----
 
 ==== Run script to execute services locally
