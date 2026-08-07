@@ -9,7 +9,7 @@ and other general information.
 Suppose an application needs to invoke a costly API. Each time a duplicate message would be processed, then a bunch of money would be lost. In such situations, it could make sense to prevent some duplicate calls by using the https://camel.apache.org/components/latest/eips/idempotentConsumer-eip.html[idempotent consumer] EIP.
 Let's see an example with the schema below:
 
-image::schema.png[]
+image::schema.png[Architecture diagram showing idempotent consumer pattern using JPA repository to prevent duplicate message processing]
 
 As one could see in the schema, using the idempotent consumer pattern in Camel is as simple as creating a route using the `idempotentConsumer` and `idempotentRepository` keywords. In this example, the idempotent repository is a database that is edited and read through JPA. Under the hood, this database will keep track of messages that have already been processed.
 

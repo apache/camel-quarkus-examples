@@ -3,9 +3,10 @@
 
 {cq-description}
 
-Suppose an application connects out to an external service and receives information asynchronously via a TCP socket or websocket. As part of this process, the application receives data, transforms the structure, and publishes that data into an https://developers.redhat.com/topics/kafka-kubernetes[Apache Kafka] topic. In this case, only a single connection can be active at one time because of the possibility of publishing duplicate data (see diagram below).
+Suppose an application connects to an external service and receives information asynchronously via a TCP socket or websocket. As part of this process, the application receives data, transforms the structure, a
+nd publishes that data into an https://developers.redhat.com/topics/kafka-kubernetes[Apache Kafka] topic. In this case, only a single connection can be active at one time because of the possibility of publishing duplicate data (see diagram below).
 
-image::figure1.png[]
+image::figure1.png[Diagram showing leader election pattern preventing duplicate data publication to Kafka]
 
 The quick solution to this problem is actually a fundamental characteristic of Kubernetes. If the deployment is created with the replicas set to 1, then when the controller detects the pod is no longer running, it will attempt to create a new one. However, real-world situations can be more complicated. Some applications require a long startup time due to cache warming needs. When you combine slow startup times (minutes) for the pod with business requirements to minimize the loss of downtime, the default solution becomes unsuitable. In this situation, we will want to have multiple instances up and ready to take over the consumption as quickly as possible.
 
@@ -23,7 +24,7 @@ Within the component's configuration, the developer provides a namespace to desi
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -44,7 +45,7 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package
+mvn clean package
 ----
 
 === Native mode
@@ -56,7 +57,7 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
+mvn clean package -Dnative
 ----
 
 == Local Playground
@@ -72,7 +73,7 @@ Run the packaged application in separate terminals.
 JVM Mode:
 [source,shell]
 ----
-$ java -jar target/quarkus-app/quarkus-run.jar
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 In case you built the application in Native mode:

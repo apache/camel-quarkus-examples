@@ -10,7 +10,7 @@ and other general information.
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
@@ -40,8 +40,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
 ----
@@ -55,8 +55,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.013s.
 ...

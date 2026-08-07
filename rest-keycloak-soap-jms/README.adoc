@@ -90,7 +90,7 @@ Run the application in development mode. Quarkus will automatically start Keyclo
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 The above command compiles the project, starts the application, and starts both Keycloak and AMQ Broker instances via Dev Services.
@@ -112,14 +112,14 @@ For the `customer` user, extract value from response of key `access_token` and c
 
 [source,shell]
 ----
-$ curl -d "client_id=quarkus-client" -d "client_secret=secret" -d "username=customer" -d "password=customer-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
+curl -d "client_id=quarkus-client" -d "client_secret=secret" -d "username=customer" -d "password=customer-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
 ----
 
 For the `admin` user, extract value from response of key `access_token` and call it `ADMIN_TOKEN`:
 
 [source,shell]
 ----
-$ curl -d "client_id=quarkus-client" -d "client_secret=secret" -d "username=admin" -d "password=admin-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
+curl -d "client_id=quarkus-client" -d "client_secret=secret" -d "username=admin" -d "password=admin-pass" -d "grant_type=password" $KEYCLOAK_URL/realms/quarkus/protocol/openid-connect/token
 ----
 
 Now we are ready to try the HTTP endpoints:
@@ -130,7 +130,7 @@ The `customer` user can submit orders (you should receive `200 OK` with the SOAP
 
 [source,shell]
 ----
-$ curl -i -X POST -H "Authorization: Bearer $CUSTOMER_TOKEN" -H "Content-Type: application/json" \
+curl -i -X POST -H "Authorization: Bearer $CUSTOMER_TOKEN" -H "Content-Type: application/json" \
   -d '{"productId":"PRODUCT-001","quantity":5}' \
   $APP_URL/api/orders/submit
 ----
@@ -152,7 +152,7 @@ The `admin` user can also submit orders (same SOAP response format):
 
 [source,shell]
 ----
-$ curl -i -X POST -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
+curl -i -X POST -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: application/json" \
   -d '{"productId":"PRODUCT-002","quantity":10}' \
   $APP_URL/api/orders/submit
 ----
@@ -161,7 +161,7 @@ Without authentication, the request should fail (you should receive `401 Unautho
 
 [source,shell]
 ----
-$ curl -i -X POST -H "Content-Type: application/json" \
+curl -i -X POST -H "Content-Type: application/json" \
   -d '{"productId":"PRODUCT-003","quantity":3}' \
   $APP_URL/api/orders/submit
 ----
@@ -172,14 +172,14 @@ The `customer` user cannot access admin endpoints (you should receive `403 Forbi
 
 [source,shell]
 ----
-$ curl -i -X GET -H "Authorization: Bearer $CUSTOMER_TOKEN" $APP_URL/api/admin/users
+curl -i -X GET -H "Authorization: Bearer $CUSTOMER_TOKEN" $APP_URL/api/admin/users
 ----
 
 The `admin` user can access admin endpoints (you should receive `200 OK` with a list of Keycloak users):
 
 [source,shell]
 ----
-$ curl -i -X GET -H "Authorization: Bearer $ADMIN_TOKEN" $APP_URL/api/admin/users
+curl -i -X GET -H "Authorization: Bearer $ADMIN_TOKEN" $APP_URL/api/admin/users
 ----
 
 ==== SOAP Inventory Service
@@ -189,7 +189,7 @@ You can test it using a SOAP client tool like SoapUI or curl with SOAP envelope:
 
 [source,shell]
 ----
-$ curl -i -X POST -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: text/xml" \
+curl -i -X POST -H "Authorization: Bearer $ADMIN_TOKEN" -H "Content-Type: text/xml" \
   -d '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
         <soap:Body>
           <tns:UpdateStockRequest xmlns:tns="http://acme.org/inventory">
@@ -227,7 +227,7 @@ You can start a Keycloak instance easily via Docker:
 
 [source,shell]
 ----
-$ docker run --name keycloak_amq_demo -p 8082:8080 \
+docker run --name keycloak_amq_demo -p 8082:8080 \
         -e KEYCLOAK_ADMIN=admin -e KEYCLOAK_ADMIN_PASSWORD=admin \
         quay.io/keycloak/keycloak:26.6.1 \
         start-dev
@@ -267,7 +267,7 @@ You can start an AMQ Broker instance via Docker:
 
 [source,shell]
 ----
-$ docker run --name artemis_amq_demo -d -p 61616:61616 -p 8161:8161 \
+docker run --name artemis_amq_demo -d -p 61616:61616 -p 8161:8161 \
         -e AMQ_USER=admin -e AMQ_PASSWORD=admin \
         quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0
 ----
@@ -278,14 +278,14 @@ The broker will be available at `tcp://localhost:61616` for JMS connections and 
 
 [source,shell]
 ----
-$ export QUARKUS_OIDC_AUTH_SERVER_URL=http://localhost:8082/realms/quarkus
-$ export QUARKUS_OIDC_CLIENT_ID=quarkus-client
-$ export QUARKUS_OIDC_CREDENTIALS_SECRET=secret
-$ export QUARKUS_ARTEMIS_URL=tcp://localhost:61616
-$ export QUARKUS_ARTEMIS_USERNAME=admin
-$ export QUARKUS_ARTEMIS_PASSWORD=admin
-$ mvn clean package -DskipTests
-$ java -jar target/quarkus-app/quarkus-run.jar
+export QUARKUS_OIDC_AUTH_SERVER_URL=http://localhost:8082/realms/quarkus
+export QUARKUS_OIDC_CLIENT_ID=quarkus-client
+export QUARKUS_OIDC_CREDENTIALS_SECRET=secret
+export QUARKUS_ARTEMIS_URL=tcp://localhost:61616
+export QUARKUS_ARTEMIS_USERNAME=admin
+export QUARKUS_ARTEMIS_PASSWORD=admin
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
 ----
 
 Now you can go to the <<playground>> section (with the assumption that `KEYCLOAK_URL=http://localhost:8082` and `APP_URL=http://localhost:8081`) and try it yourself.
@@ -299,14 +299,14 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ export QUARKUS_OIDC_AUTH_SERVER_URL=http://localhost:8082/realms/quarkus
-$ export QUARKUS_OIDC_CLIENT_ID=quarkus-client
-$ export QUARKUS_OIDC_CREDENTIALS_SECRET=secret
-$ export QUARKUS_ARTEMIS_URL=tcp://localhost:61616
-$ export QUARKUS_ARTEMIS_USERNAME=admin
-$ export QUARKUS_ARTEMIS_PASSWORD=admin
-$ mvn clean package -DskipTests -Dnative
-$ ./target/*-runner
+export QUARKUS_OIDC_AUTH_SERVER_URL=http://localhost:8082/realms/quarkus
+export QUARKUS_OIDC_CLIENT_ID=quarkus-client
+export QUARKUS_OIDC_CREDENTIALS_SECRET=secret
+export QUARKUS_ARTEMIS_URL=tcp://localhost:61616
+export QUARKUS_ARTEMIS_USERNAME=admin
+export QUARKUS_ARTEMIS_PASSWORD=admin
+mvn clean package -DskipTests -Dnative
+./target/*-runner
 ----
 
 Now you can go to the <<playground>> section (with the assumption that `KEYCLOAK_URL=http://localhost:8082` and `APP_URL=http://localhost:8081`) and try it yourself.
@@ -323,7 +323,7 @@ For a simple Keycloak deployment on Kubernetes:
 
 [source,shell]
 ----
-$ kubectl apply -f - <<EOF
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -384,7 +384,7 @@ For a simple AMQ Broker deployment on Kubernetes:
 
 [source,shell]
 ----
-$ kubectl apply -f - <<EOF
+kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -458,7 +458,7 @@ TIP: To trust self-signed certificates from the Kubernetes API server use `-Dqua
 
 [source,shell]
 ----
-$ kubectl create secret generic quarkus-keycloak \
+kubectl create secret generic quarkus-keycloak \
     --from-literal=QUARKUS_OIDC_CREDENTIALS_SECRET=secret \
     --from-literal=QUARKUS_ARTEMIS_URL=tcp://artemis-broker:61616 \
     --from-literal=QUARKUS_ARTEMIS_USERNAME=admin \
@@ -471,7 +471,7 @@ For local Docker Desktop Kubernetes (without pushing to a registry):
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Pkubernetes \
+mvn clean package -DskipTests -Pkubernetes \
     -Dquarkus.container-image.build=true \
     -Dquarkus.container-image.push=false \
     -Dquarkus.kubernetes.image-pull-policy=Never \
@@ -488,7 +488,7 @@ For production clusters with a container registry:
 
 [source,shell]
 ----
-$ mvn clean package -DskipTests -Pkubernetes \
+mvn clean package -DskipTests -Pkubernetes \
     -Dquarkus.container-image.registry=<your-registry> \
     -Dquarkus.container-image.group=<your-group> \
     -Dquarkus.container-image.push=true \
@@ -503,7 +503,7 @@ You can check the pod status:
 
 [source,shell]
 ----
-$ kubectl get pods -l app.kubernetes.io/name=camel-quarkus-examples-rest-keycloak-soap-jms
+kubectl get pods -l app.kubernetes.io/name=camel-quarkus-examples-rest-keycloak-soap-jms
 NAME                                                     READY   STATUS    RESTARTS   AGE
 camel-quarkus-examples-rest-keycloak-soap-jms-xxx-xxx       1/1     Running   0          10m
 ----
@@ -516,7 +516,7 @@ IMPORTANT: Due to JWT token issuer validation, the access token must be obtained
 
 [source,shell]
 ----
-$ kubectl exec deployment/camel-quarkus-examples-rest-keycloak-soap-jms -- sh -c '
+kubectl exec deployment/camel-quarkus-examples-rest-keycloak-soap-jms -- sh -c '
 TOKEN=$(curl -s http://keycloak:8080/realms/quarkus/protocol/openid-connect/token \
   -d "username=customer" \
   -d "password=customer-pass" \
@@ -541,7 +541,7 @@ Expected response:
 
 [source,shell]
 ----
-$ kubectl exec deployment/camel-quarkus-examples-rest-keycloak-soap-jms -- sh -c '
+kubectl exec deployment/camel-quarkus-examples-rest-keycloak-soap-jms -- sh -c '
 CUSTOMER_TOKEN=$(curl -s http://keycloak:8080/realms/quarkus/protocol/openid-connect/token \
   -d "username=customer" \
   -d "password=customer-pass" \
@@ -560,7 +560,7 @@ Expected: `HTTP 403`
 
 [source,shell]
 ----
-$ kubectl exec deployment/camel-quarkus-examples-rest-keycloak-soap-jms -- sh -c '
+kubectl exec deployment/camel-quarkus-examples-rest-keycloak-soap-jms -- sh -c '
 ADMIN_TOKEN=$(curl -s http://keycloak:8080/realms/quarkus/protocol/openid-connect/token \
   -d "username=admin" \
   -d "password=admin-pass" \
@@ -586,15 +586,15 @@ To clean up all Kubernetes resources:
 [source,shell]
 ----
 # Delete the application
-$ kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-rest-keycloak-soap-jms
-$ kubectl delete secret quarkus-keycloak
-$ kubectl delete ingress camel-quarkus-examples-rest-keycloak-soap-jms
+kubectl delete all -l app.kubernetes.io/name=camel-quarkus-examples-rest-keycloak-soap-jms
+kubectl delete secret quarkus-keycloak
+kubectl delete ingress camel-quarkus-examples-rest-keycloak-soap-jms
 
 # Delete Keycloak
-$ kubectl delete deployment,service keycloak
+kubectl delete deployment,service keycloak
 
 # Delete AMQ Broker
-$ kubectl delete deployment,service artemis-broker
+kubectl delete deployment,service artemis-broker
 ----
 
 == Feedback

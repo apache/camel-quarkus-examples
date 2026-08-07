@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
         - name: activemq
-          image: quay.io/artemiscloud/activemq-artemis-broker
+          image: quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0
           ports:
             - containerPort: 61616
           env:

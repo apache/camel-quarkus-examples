@@ -17,7 +17,7 @@ environment via Docker Compose:
 
 [source,shell]
 ----
-$ ./start-conjur.sh
+./start-conjur.sh
 ----
 
 The script starts the containers, initializes the account, loads the security policy and prints the
@@ -39,7 +39,7 @@ To stop the Docker-based Conjur environment:
 
 [source,shell]
 ----
-$ ./start-conjur.sh stop
+./start-conjur.sh stop
 ----
 
 == Start in the Development mode
@@ -48,7 +48,7 @@ With the environment variables set, start the example in dev mode:
 
 [source,shell]
 ----
-$ mvn clean compile quarkus:dev
+mvn clean compile quarkus:dev
 ----
 
 Then look at the log output in the console. There is a timer route that periodically resolves the secret
@@ -57,7 +57,7 @@ To store a secret, open a new terminal and run:
 
 [source,shell]
 ----
-$ curl -X POST http://localhost:8080/cyberark-vault/createSecret -d 'my-secret-value'
+curl -X POST http://localhost:8080/cyberark-vault/createSecret -d 'my-secret-value'
 ----
 
 Following messages will show the resolved secret value. As we run the example in Quarkus Dev Mode, you can
@@ -78,8 +78,8 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_
 
 [source,shell]
 ----
-$ mvn clean package
-$ java -jar target/quarkus-app/quarkus-run.jar
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 1.163s.
 ----
@@ -93,8 +93,8 @@ To prepare a native executable using GraalVM, run the following command:
 
 [source,shell]
 ----
-$ mvn clean package -Dnative
-$ ./target/*-runner
+mvn clean package -Dnative
+./target/*-runner
 ...
 [io.quarkus] (main) camel-quarkus-examples-... started in 0.013s.
 ...
@@ -106,7 +106,7 @@ By default, the tests use testcontainers to start a local Conjur environment aut
 
 [source,shell]
 ----
-$ mvn clean verify
+mvn clean verify
 ----
 
 To run the tests against an external Conjur instance instead, set the environment variables described
