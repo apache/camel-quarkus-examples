@@ -66,6 +66,8 @@ Extract, Transform and Load related logs should be output as below:
 2023-11-14 15:12:55,897 INFO  [route17] (Camel (camel-9) thread #9 - timer://insertCamel) -> Loading transformed data in target database
 2023-11-14 15:12:55,904 INFO  [route17] (Camel (camel-9) thread #9 - timer://insertCamel) -> Transforming review for hotel 'Small Hotel'
 2023-11-14 15:12:55,909 INFO  [route17] (Camel (camel-9) thread #9 - timer://insertCamel) -> Loading transformed data in target database
+2023-11-14 15:12:55,915 INFO  [route17] (Camel (camel-9) thread #9 - timer://insertCamel) -> Transforming review for hotel 'O'Brien's Hotel'
+2023-11-14 15:12:55,919 INFO  [route17] (Camel (camel-9) thread #9 - timer://insertCamel) -> Loading transformed data in target database
 ----
 
 === Packaging and running the application

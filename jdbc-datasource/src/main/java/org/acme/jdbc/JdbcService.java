@@ -16,8 +16,10 @@
  */
 package org.acme.jdbc;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.agroal.DataSource;
@@ -39,10 +41,13 @@ public class JdbcService {
 
         StringBuilder sb = new StringBuilder();
 
-        ResultSet rs = targetDb.getConnection().createStatement().executeQuery("SELECT (hotel_name, review) FROM Target");
+        try (Connection connection = targetDb.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery("SELECT (hotel_name, review) FROM Target")) {
 
-        while (rs.next()) {
-            sb.append(rs.getString(1));
+            while (rs.next()) {
+                sb.append(rs.getString(1));
+            }
         }
 
         return sb.toString();
