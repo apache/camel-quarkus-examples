@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 
 @ApplicationScoped
@@ -29,13 +30,13 @@ public class KeycloakAdminRoute extends RouteBuilder {
 
     @Override
     public void configure() {
-        // Error handling for Keycloak operations
+        // Error handling for Keycloak operations. Exception details are logged, not returned to the caller
         onException(Exception.class)
                 .handled(true)
                 .setHeader("Content-Type", constant("application/json"))
                 .setHeader("CamelHttpResponseCode", constant(500))
-                .setBody(constant("{\"error\": \"Internal server error\", \"message\": \"${exception.message}\"}"))
-                .log("Error in Keycloak admin route: ${exception.message}");
+                .setBody(constant("{\"error\": \"Internal server error\"}"))
+                .log(LoggingLevel.ERROR, "Error in Keycloak admin route: ${exception.message}");
 
         rest("/api/admin")
                 .get("/users")
