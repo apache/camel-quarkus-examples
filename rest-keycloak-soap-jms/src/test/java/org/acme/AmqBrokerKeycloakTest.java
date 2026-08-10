@@ -18,12 +18,14 @@ package org.acme;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.keycloak.client.KeycloakTestClient;
+import io.restassured.http.ContentType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
@@ -54,19 +56,16 @@ public class AmqBrokerKeycloakTest {
     public void orderSubmissionWithAuthenticationShouldSucceed() {
         // With valid customer token, order submission should succeed
         // This validates the complete flow: REST → Keycloak auth → SOAP (sync) + JMS (async)
-        String response = given()
+        given()
                 .auth().oauth2(getCustomerAccessToken())
                 .header("Content-Type", "application/json")
                 .body(SAMPLE_ORDER_JSON)
                 .when().post("/api/orders/submit")
                 .then()
                 .statusCode(Response.Status.OK.getStatusCode())
-                .extract().asString();
-
-        // Verify the SOAP response was received (synchronous response)
-        assertTrue(
-                response.contains("success") && response.contains("true"),
-                "Response should contain SOAP success result: " + response);
+                .contentType(ContentType.JSON)
+                .body("success", is(true))
+                .body("message", is("Stock updated successfully"));
     }
 
     @Test

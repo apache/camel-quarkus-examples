@@ -20,6 +20,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.inventory.UpdateStockRequest;
 import org.acme.inventory.UpdateStockResponse;
 import org.acme.model.Order;
+import org.acme.model.OrderResponse;
+import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 
@@ -35,6 +37,7 @@ public class RestOrderRoute extends RouteBuilder {
                 .produces("application/json")
                 .bindingMode(RestBindingMode.json)
                 .type(Order.class)
+                .outType(OrderResponse.class)
                 .to("direct:process-order");
 
         // Main route: REST → SOAP (synchronous) + async event notification
@@ -53,17 +56,15 @@ public class RestOrderRoute extends RouteBuilder {
                 })
                 // Sync: Call SOAP service and wait for response
                 .to("cxf:bean:inventoryServiceClient")
-                // Return SOAP response to REST client
+                // Return SOAP response to REST client, JSON encoding is handled by the REST binding
                 .process(exchange -> {
                     UpdateStockResponse soapResponse = exchange.getIn().getBody(UpdateStockResponse.class);
-                    String jsonResponse = String.format(
-                            "{\"success\":%b,\"message\":\"%s\",\"newStock\":%d}",
+                    exchange.getIn().setBody(new OrderResponse(
                             soapResponse.isSuccess(),
                             soapResponse.getMessage(),
-                            soapResponse.getNewStock());
-                    exchange.getIn().setBody(jsonResponse);
-                    exchange.getIn().setHeader("Content-Type", "application/json");
-                });
+                            soapResponse.getNewStock()));
+                })
+                .setHeader(Exchange.CONTENT_TYPE).constant("application/json");
 
         // Async event publisher: send to JMS topic
         from("direct:order-events")
