@@ -335,6 +335,8 @@
                             <exclude>**/README</exclude>
                             <exclude>**/pom.xml.versionsBackup</exclude>
                             <exclude>**/quarkus.log*</exclude>
+                            <exclude>**/mqjms.log*</exclude>
+                            <exclude>**/*.lck</exclude>
                         </excludes>
                         <mapping>
                             <java>SLASHSTAR_STYLE</java>
