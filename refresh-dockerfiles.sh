@@ -78,7 +78,7 @@ for EXAMPLE_DIR in */; do
             for DOCKERFILE in "$TARGET_DOCKER_DIR"/*; do
                 if [ -f "$DOCKERFILE" ]; then
                     echo "    - Replacing 'temp-quarkus-project' with '$PROJECT_NAME' in $DOCKERFILE"
-                    sed -i "" "s/temp-quarkus-project/$PROJECT_NAME/g" "$DOCKERFILE"
+                    sed "s/temp-quarkus-project/$PROJECT_NAME/g" "$DOCKERFILE" > "$DOCKERFILE.tmp" && mv "$DOCKERFILE.tmp" "$DOCKERFILE"
                 fi
             done
             echo "    - Running mvn license:format in $EXAMPLE_DIR"
