@@ -27,7 +27,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cq-maven-plugin.version>4.27.2</cq-maven-plugin.version>
+        <cq-maven-plugin.version>4.27.3</cq-maven-plugin.version>
         <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.13.0</impsort-maven-plugin.version>
         <license-maven-plugin.version>5.1.2</license-maven-plugin.version>
