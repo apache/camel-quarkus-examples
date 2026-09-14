@@ -27,6 +27,9 @@ QUARKUS_MAVEN_PLUGIN_VERSION=$("$PROJECT_ROOT/mvnw" -f timer-log/pom.xml help:ev
 QUARKUS_MAVEN_PLUGIN_GROUP_ID=$("$PROJECT_ROOT/mvnw" -f timer-log/pom.xml help:evaluate -Dexpression=quarkus.platform.group-id -q -DforceStdout)
 QUARKUS_MAVEN_PLUGIN_ARTIFACT_ID="quarkus-maven-plugin"
 
+# The java version used in the generated JVM mode Dockerfile
+JAVA_VERSION=21
+
 if [ -z "$QUARKUS_MAVEN_PLUGIN_VERSION" ] || [ -z "$QUARKUS_MAVEN_PLUGIN_GROUP_ID" ] || [ -z "$QUARKUS_MAVEN_PLUGIN_ARTIFACT_ID" ]; then
     echo "Error: Could not extract all Quarkus platform properties from timer-log/pom.xml"
     exit 1
@@ -46,7 +49,8 @@ echo "Generating temporary Quarkus project with Quarkus Maven Plugin..."
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=temp-quarkus-project \
     -DnoCode=true \
-    -Dextensions="resteasy-reactive"
+    -Dextensions="resteasy-reactive" \
+    -DjavaVersion=${JAVA_VERSION}
 
 if [ $? -ne 0 ]; then
     echo "Error: Quarkus project generation failed."
