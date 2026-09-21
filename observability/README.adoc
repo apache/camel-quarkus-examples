@@ -19,6 +19,10 @@ workspace. Any modifications in your project will automatically take effect in t
 TIP: Please refer to the Development mode section of
 https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
 
+NOTE: Dev mode requires a working container runtime such as Docker or Podman. The Quarkus Observability dev service
+uses it to run a Grafana OTel LGTM container, which the application exports traces to. See the <<_tracing,Tracing>>
+section for details. Set `quarkus.observability.enabled=false` if you would rather not have the container started.
+
 === Camel Observability Services
 
 This project includes the `camel-quarkus-observability-services` extension.
@@ -121,6 +125,9 @@ and you should see 3 lines of different metrics (with the same value, as they ar
 
 NOTE: Maybe you've noticed the Prometheus output format. If you would rather use the JSON format, please follow the Quarkus Micrometer management interface https://quarkus.io/guides/micrometer#management-interface[configuration guide].
 
+In dev mode only, the same registry is also served from `localhost:8080/q/metrics`, so that the Grafana dev service
+can scrape it. See <<_dev_mode_metrics,Dev mode metrics>>.
+
 === Health endpoint
 
 Camel provides some out of the box liveness and readiness checks. To see this working, interrogate the `/observe/health/live` and `/observe/health/ready` endpoints on port `9876`:
@@ -146,99 +153,73 @@ You can also directly leverage MicroProfile Health APIs to create checks. Class 
 
 To be able to diagnose problems in Camel Quarkus applications, it's useful to instrument method calls, HTTP interactions etc with OpenTelemetry.
 
-This example is pre-configured to send traces to Tempo via OTLP on `http://localhost:4317`. The behavior differs based on how you run the application:
+The OpenTelemetry SDK is disabled by default by `camel-quarkus-observability-services`, so `application.properties` enables it:
 
-==== Dev Mode (quarkus:dev)
-
-When running `mvn clean compile quarkus:dev`, the Quarkus Observability dev service is automatically enabled (see https://quarkus.io/guides/observability-devservices-lgtm[Observability Dev Services with Grafana OTel LGTM]).
-
-The dev service automatically:
-- Starts a Grafana LGTM container with Tempo for tracing
-- Overrides the `quarkus.otel.exporter.otlp.traces.endpoint` property to point to the dev service container
-- Assigns a random port to Grafana (check logs for `grafana.endpoint=http://localhost:XXXXX`)
-
-To view traces in dev mode, find the Grafana endpoint in logs and browse to it.
-
-==== Docker Compose Mode (Recommended)
-
-When running the packaged application with Docker Compose (see Grafana Dashboards section above), traces are sent to the Tempo container at `localhost:4317`.
-
-The OpenTelemetry configuration in `application.properties` is already set:
-
-[source, text]
+[source, properties]
 ----
-quarkus.otel.exporter.otlp.traces.endpoint = http://localhost:4317
 quarkus.otel.sdk.disabled=false
 ----
 
-Traces are automatically visible in Grafana at http://localhost:3000.
+Note that no OTLP exporter endpoint is configured. Where the traces are sent depends on how the application is run.
 
-==== Cloud/Kubernetes Deployment
+==== Dev mode
 
-For cloud or Kubernetes deployments, override the OTLP endpoint using an environment variable:
+In dev mode, the https://quarkus.io/guides/observability-devservices-lgtm[Grafana OTel LGTM dev service] starts a
+container running Grafana, Tempo, Loki, Prometheus and an OpenTelemetry collector, and configures the application to
+export to it.
 
-[source, shell]
+NOTE: Do not set `quarkus.otel.exporter.otlp.endpoint` (or its per signal variants) in `application.properties`. It
+takes precedence over what the dev service configures, and traces then go nowhere.
+
+Grafana is at http://localhost:3000 (`admin` / `admin`). The port is pinned with
+`%dev.quarkus.observability.lgtm.grafana-port` so that it does not change on every restart.
+
+To view traces, choose *Explore*, select the *Tempo* data source and search for `{name="POST /greeting"}` - the timer
+route produces one of those every 10 seconds. Requests you send yourself show up as `{name="GET /greeting"}`:
+
+[source,shell]
 ----
-export QUARKUS_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://tempo-service:4317
+curl -s localhost:8080/greeting
 ----
 
-Or use property placeholders in `application.properties`:
+Metrics and logs land in the same Grafana instance, see the <<_grafana_dashboard,Grafana dashboard>> section.
 
-[source, text]
+==== Package and run
+
+When the packaged application is run outside of dev mode, there is no dev service and the Quarkus defaults apply, which
+is OTLP over gRPC to `http://localhost:4317`. Point the application at your own collector, Tempo or Jaeger instance with:
+
+[source,shell]
 ----
-quarkus.otel.exporter.otlp.traces.endpoint = http://${TEMPO_HOST:localhost}:4317
+export QUARKUS_OTEL_EXPORTER_OTLP_ENDPOINT=http://my-collector:4317
+----
+
+Or configure it in `application.properties`:
+
+[source, properties]
+----
+quarkus.otel.exporter.otlp.endpoint = http://${OTEL_COLLECTOR_HOST:localhost}:4317
 ----
 
 NOTE: For information about other OpenTelemetry exporters, refer to the Camel Quarkus OpenTelemetry https://camel.apache.org/camel-quarkus/next/reference/extensions/opentelemetry.html#extensions-opentelemetry-usage-exporters[extension documentation].
 
-==== Understanding Traces
+==== Understanding traces
 
-The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace should be different. When viewing a trace, you should see
-a hierarchy of 8 spans showing the progression of the message exchange through each endpoint.
+The `platform-http` consumer route introduces a random delay to simulate latency, hence the overall time of each trace
+should be different. When viewing a trace, you should see a hierarchy of spans showing the progression of the message
+exchange, from the inbound `platform-http` request, through the HTTP call to the `/greeting-provider` endpoint, down to
+the individual Camel processors.
 
-=== Grafana Dashboards
+=== Grafana dashboard
 
-This example includes a pre-configured Grafana dashboard to visualize metrics, distributed traces, and JVM statistics.
+This example ships a Grafana dashboard at
+link:src/main/resources/META-INF/grafana/grafana-dashboard-camel-quarkus-observability.json[grafana-dashboard-camel-quarkus-observability.json].
+Any dashboard placed in `META-INF/grafana` is provisioned automatically into the Grafana instance of the LGTM dev
+service, so in dev mode it is available straight away, listed as *Camel Quarkus Observability Dashboard*.
 
-==== Quick Start with Docker Compose (Recommended)
+image::docs/images/grafana-dashboard.png[Grafana Dashboard showing Camel Quarkus observability metrics]
 
-The easiest way to visualize the dashboard with working metrics is using Docker Compose with static ports:
-
-[source,shell]
-----
-# Start the observability stack (Grafana, Prometheus, Tempo)
-docker compose -f src/main/docker/docker-compose-grafana.yml up -d
-
-# In another terminal, package and run the application
-mvn clean package -DskipTests
-java -jar target/quarkus-app/quarkus-run.jar
-----
-
-Access Grafana at http://localhost:3000 (credentials: `admin/admin`). The dashboard is automatically provisioned and ready to use!
-
-NOTE: To stop the observability stack: `docker compose -f src/main/docker/docker-compose-grafana.yml down -v`
-
-==== Alternative: Dev Mode with Manual Dashboard Import
-
-When running in dev mode, Quarkus automatically provisions a Grafana instance with dynamic ports:
-
-[source,shell]
-----
-mvn clean compile quarkus:dev
-----
-
-IMPORTANT: The LGTM dev services Grafana can display *distributed traces* but cannot display *metrics* from the dashboard panels. This is because the Prometheus instance inside the LGTM container cannot scrape metrics from `localhost:9876` on the host machine. For full dashboard functionality, use the Docker Compose setup above.
-
-To view traces in dev mode:
-
-1. Find the Grafana endpoint in logs: `grafana.endpoint=http://localhost:XXXXX`
-2. Access Grafana (credentials: `admin/admin`)
-3. Navigate to *Explore* → Select *Tempo* datasource
-4. Query traces with: `{name="POST /greeting"}`
-
-==== Dashboard Contents
-
-The Camel Quarkus Observability Dashboard includes four main sections:
+It is organised in four sections:
 
 *Custom Application Metrics*
 
@@ -254,7 +235,7 @@ The Camel Quarkus Observability Dashboard includes four main sections:
 
 *Distributed Tracing*
 
-- *Distributed Traces*: Information panel with link to Tempo Explore for viewing detailed traces
+- *Distributed Traces*: Information panel describing how to view traces in Tempo
 
 *JVM & System Metrics*
 
@@ -263,39 +244,30 @@ The Camel Quarkus Observability Dashboard includes four main sections:
 - *Garbage Collection Pause Time*: GC pause duration by type
 - *Active HTTP Connections*: Current number of active requests
 
-==== What You'll See
+The dashboard auto-refreshes every 5 seconds. The timer route drives some of the metrics on its own, and you can
+generate more traffic with `curl localhost:8080/greeting` in a loop.
 
-image::docs/images/grafana-dashboard.png[Grafana Dashboard showing Camel Quarkus observability metrics]
+==== Dev mode metrics
 
-When the application is running, the dashboard will show:
+The dev service can only scrape metrics from the application HTTP port, whereas `camel-quarkus-observability-services`
+serves them from the management interface. To bridge that gap,
+link:src/main/java/org/acme/observability/devmode/DevModeMetricsEndpoint.java[DevModeMetricsEndpoint.java] exposes the
+same registry on `/q/metrics` in dev mode. It is not part of the packaged application.
 
-- *Timer Counter*: Increments automatically every 10 seconds (from the timer route)
-- *Greeting Metrics*: Increase when you call the endpoint:
-+
-[source,shell]
+IMPORTANT: On Linux, uncomment the following in `application.properties`, otherwise the dev service cannot reach the
+application and the metrics panels stay empty.
+
+[source, properties]
 ----
-curl localhost:8080/greeting
+%dev.quarkus.http.host = 0.0.0.0
 ----
 
-- *Distributed Traces*: Click "Open Tempo Explore" to view complete trace hierarchy with 8 spans showing message flow through Camel endpoints
-- *JVM Metrics*: Real-time memory, CPU, and GC statistics
+==== Logs
 
-TIP: The dashboard auto-refreshes every 5 seconds. Generate some traffic using `curl` in a loop to see the metrics change in real-time.
+`quarkus.otel.logs.enabled=true` exports log records over OTLP as well. They are searchable in Loki via *Explore* or
+the bundled *Quarkus OpenTelemetry Logging* dashboard, and each record carries the `trace_id` and `span_id` of the
+exchange that produced it.
 
-==== Docker Compose Details
-
-The Docker Compose setup includes:
-
-- *Grafana* on http://localhost:3000 with the dashboard automatically provisioned
-- *Prometheus* on http://localhost:9090 scraping metrics from the application every 5 seconds
-- *Tempo* on http://localhost:3200 receiving distributed traces via OTLP
-
-The application exposes:
-- Metrics at `http://localhost:9876/observe/metrics` (scraped by Prometheus)
-- Traces sent to Tempo at `http://localhost:4317` (OTLP gRPC)
-- Health checks at `http://localhost:9876/observe/health/live` and `/observe/health/ready`
-
-All services use **static ports** for easy access and documentation.
 
 === Jolokia & Hawtio
 
