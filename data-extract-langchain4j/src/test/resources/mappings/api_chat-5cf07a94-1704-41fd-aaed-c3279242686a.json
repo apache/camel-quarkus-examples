@@ -1,5 +1,5 @@
 {
-  "id" : "bc242ba3-eb22-4c60-9bab-22fabf382956",
+  "id" : "5cf07a94-1704-41fd-aaed-c3279242686a",
   "name" : "api_chat",
   "request" : {
     "url" : "/api/chat",
@@ -12,13 +12,13 @@
   },
   "response" : {
     "status" : 200,
-    "body" : "{\"model\":\"granite4.1:3b\",\"created_at\":\"2026-05-27T17:05:40.026864606Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1986,\\n    \\\"month\\\": 7,\\n  \\\"day\\\": 10\\n  },\\n  \\\"summary\\\": \\\"The customer, Sarah London, called to declare an accident on her main vehicle. The operator confirmed that all expenses related to the accident will be reimbursed.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11120222180,\"load_duration\":1206826475,\"prompt_eval_count\":189,\"prompt_eval_duration\":3962041623,\"eval_count\":87,\"eval_duration\":4859237798}",
+    "body" : "{\"model\":\"granite4.1:3b\",\"created_at\":\"2026-09-25T13:38:05.835599711Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Sarah London\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1986,\\n    \\\"month\\\": 7,\\n    \\\"day\\\": 10\\n  },\\n  \\\"summary\\\": \\\"The customer, Sarah London, is calling to declare an accident on her main vehicle. She inquires about the possibility of reimbursement for all related expenses, and the operator confirms that this will be possible.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11605548210,\"load_duration\":915343897,\"prompt_eval_count\":189,\"prompt_eval_duration\":5685357448,\"eval_count\":96,\"eval_duration\":4197022561}",
     "headers" : {
-      "Date" : "Wed, 27 May 2026 17:05:40 GMT",
+      "Date" : "Fri, 25 Sep 2026 13:38:05 GMT",
       "Content-Type" : "application/json; charset=utf-8"
     }
   },
-  "uuid" : "bc242ba3-eb22-4c60-9bab-22fabf382956",
+  "uuid" : "5cf07a94-1704-41fd-aaed-c3279242686a",
   "persistent" : true,
-  "insertionIndex" : 6
+  "insertionIndex" : 3
 }

@@ -52,7 +52,8 @@
         <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
 
-        <langchain4j.version>1.19.3</langchain4j.version>
+        <!-- the Quarkus LangChain4j release Camel Quarkus is built against -->
+        <quarkiverse-langchain4j.version>1.13.3</quarkiverse-langchain4j.version>
         <wiremock.version>3.13.2</wiremock.version>
     </properties>
 
@@ -60,9 +61,9 @@
         <dependencies>
             <!-- Import BOM -->
             <dependency>
-                <groupId>dev.langchain4j</groupId>
-                <artifactId>langchain4j-bom</artifactId>
-                <version>${langchain4j.version}</version>
+                <groupId>io.quarkiverse.langchain4j</groupId>
+                <artifactId>quarkus-langchain4j-bom</artifactId>
+                <version>${quarkiverse-langchain4j.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -102,15 +103,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-langchain4j-agent</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-bean</artifactId>
         </dependency>
         <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-ollama</artifactId>
+            <groupId>io.quarkiverse.langchain4j</groupId>
+            <artifactId>quarkus-langchain4j-ollama</artifactId>
         </dependency>
 
         <!-- Test -->
