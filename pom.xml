@@ -56,6 +56,7 @@
         <module>jta-jpa</module>
         <module>kafka</module>
         <module>kamelet-chucknorris</module>
+        <module>langchain4j-ingest-rag</module>
         <module>message-bridge</module>
         <module>netty-custom-correlation</module>
         <module>observability</module>

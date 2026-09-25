@@ -95,6 +95,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/kamelet-chucknorris"
   },
   {
+    "title": "LangChain4j Ingest RAG",
+    "description": "Shows how to build a RAG document Q\u0026A where a folder of documents is ingested into a vector store by the langchain4j-ingest extension and an AI service answers questions grounded in them",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/langchain4j-ingest-rag"
+  },
+  {
     "title": "Leader election in Kubernetes: A Camel Quarkus Master example",
     "description": "Shows how to use Camel master component.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/cluster-leader-election"
