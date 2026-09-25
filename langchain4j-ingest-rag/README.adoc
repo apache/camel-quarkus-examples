@@ -1,0 +1,139 @@
+= LangChain4j Ingest RAG: A Camel Quarkus example
+:cq-example-description: An example that shows how to build a RAG document Q&A where a folder of documents is ingested into a vector store by the langchain4j-ingest extension and an AI service answers questions grounded in them
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+== What the example does
+
+The goal is to answer questions using only the content of your own documents, the
+https://en.wikipedia.org/wiki/Retrieval-augmented_generation[RAG] pattern.
+
+* The `documents/` folder is the knowledge base. The `camel-quarkus-langchain4j-ingest` extension reads every file in it, splits the text into overlapping segments, embeds them and writes them to a https://github.com/pgvector/pgvector[pgvector] store. The whole pipeline is declared in `application.properties`; there is no route and no ingestion code.
+* `DocumentAssistant` is a plain Quarkus LangChain4j `@RegisterAiService` interface. The `camel-quarkus-langchain4j-embeddingstore` extension, which the ingest extension depends on, produces a `RetrievalAugmentor` from the application's embedding store and model, and Quarkus LangChain4j picks it up, so every question is augmented with the retrieved segments. Again, no RAG code.
+* The embedding model runs in-process (`all-MiniLM-L6-v2`), registered by Quarkus LangChain4j from the `langchain4j-embeddings-all-minilm-l6-v2` dependency, so ingestion and retrieval need no API key. Only the chat model is served by https://ollama.com/[Ollama].
+
+Three endpoints show the steps:
+
+* `GET /search?q=...` returns the segments closest to the question, with the document they came from.
+* `GET /chat/preview?q=...` returns the prompt the assistant would send, the question plus the retrieved context, without calling a model.
+* `GET /chat?q=...` asks the assistant.
+
+== Prerequisites
+
+* Docker, for the pgvector database that Quarkus Dev Services start in dev and test mode.
+* Ollama serving the chat model. Install it from https://ollama.com/[ollama.com] and pull the model once:
++
+[source,shell]
+----
+ollama pull llama3.2
+----
++
+Or run it in a container:
++
+[source,shell]
+----
+docker run --rm -d -v cqex-ingest-ollama:/root/.ollama -p 11434:11434 --name cqex-ingest-ollama docker.io/ollama/ollama:0.24.0
+docker exec -it cqex-ingest-ollama ollama pull llama3.2
+----
++
+An Ollama running elsewhere, or another model, is selected with environment variables:
++
+[source,shell]
+----
+export OLLAMA_BASE_URL=http://ollama.example.com:11434
+export OLLAMA_MODEL=llama3.2
+----
+
+== Start in the Development mode
+
+[source,shell]
+----
+mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your
+workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+A pgvector database is started for you, and the log shows the folder being ingested:
+
+[source,shell]
+----
+INFO  [org.apa.cam.qua.com.lan.ing.IngestRoutes] (main) Ingestion pipeline 'docs': source=file:documents
+----
+
+Then ask questions:
+
+[source,shell]
+----
+curl "http://localhost:8080/chat?q=What%20is%20the%20return%20policy%3F"
+curl "http://localhost:8080/chat?q=How%20do%20I%20reset%20my%20password%3F"
+curl "http://localhost:8080/chat?q=Our%20users%20can%20log%20in%20but%20synchronization%20is%20very%20slow%20with%20high%20CPU%20usage%20and%20no%20error%20codes.%20What%20network%20configuration%20might%20cause%20this%3F"
+----
+
+To see what retrieval found, and what the model was given, without calling the model:
+
+[source,shell]
+----
+curl "http://localhost:8080/search?q=What%20is%20the%20return%20policy%3F"
+curl "http://localhost:8080/chat/preview?q=What%20is%20the%20return%20policy%3F"
+----
+
+Drop your own `.md` or `.txt` files into `documents/`: a new or edited file is picked up on the next poll of the running application, and the whole folder is indexed again on every start.
+
+=== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+Outside of dev mode there are no Dev Services, so start a pgvector database first. The connection details below are the ones configured for the `prod` profile in `application.properties`:
+
+[source,shell]
+----
+docker run --rm -d --name pgvector -p 5432:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=documents docker.io/pgvector/pgvector:pg17
+----
+
+==== JVM mode
+
+[source,shell]
+----
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
+----
+
+==== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+mvn clean package -DskipTests -Dnative
+./target/*-runner
+----
+
+== Testing
+
+The tests start pgvector through Dev Services and ingest the `documents/` folder. The chat model is played by a WireMock server answering the Ollama API with canned replies, so no model is needed. The fake model knows the answer only when the retrieved document text is part of the request, so a correct answer proves that retrieval grounded the prompt. To run them against a real Ollama instead, export `OLLAMA_BASE_URL` (and `OLLAMA_MODEL`) as shown above.
+
+[source,shell]
+----
+# JVM mode
+mvn clean test
+
+# native mode
+mvn clean verify -Dnative
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
