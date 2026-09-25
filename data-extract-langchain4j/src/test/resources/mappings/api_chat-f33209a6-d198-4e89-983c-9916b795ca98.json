@@ -1,5 +1,5 @@
 {
-  "id" : "d0e262d3-6c01-4f8e-a595-617dae7f3687",
+  "id" : "f33209a6-d198-4e89-983c-9916b795ca98",
   "name" : "api_chat",
   "request" : {
     "url" : "/api/chat",
@@ -12,13 +12,13 @@
   },
   "response" : {
     "status" : 200,
-    "body" : "{\"model\":\"granite4.1:3b\",\"created_at\":\"2026-05-27T17:06:10.934259518Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Kate Boss\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1999,\\n    \\\"month\\\": 8,\\n    \\\"day\\\": 13\\n  },\\n  \\\"summary\\\": \\\"The customer, Kate Boss, contacted the operator at a police station after an accident and needed proof of insurance for documentation. The operator located the correct insurance contract despite an initial name discrepancy (Hart vs. Boss) and arranged for her husband to receive the proof of insurance at the front desk of the office.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":16366935207,\"load_duration\":43297370,\"prompt_eval_count\":339,\"prompt_eval_duration\":7507887080,\"eval_count\":119,\"eval_duration\":7022991464}",
+    "body" : "{\"model\":\"granite4.1:3b\",\"created_at\":\"2026-09-25T13:38:38.112715116Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": true,\\n  \\\"customerName\\\": \\\"Kate Boss\\\",\\n  \\\"customerBirthday\\\": {\\n    \\\"year\\\": 1999,\\n    \\\"month\\\": 8,\\n    \\\"day\\\": 13\\n  },\\n  \\\"summary\\\": \\\"The customer, Kate Boss, contacted the operator at a police station after an accident and needed proof of insurance for the police. She initially provided her name as Hart but corrected it to Boss upon realizing her marital name change. The operator located her contract records and confirmed everything was in order, then instructed how to obtain the proof of insurance from the front desk where her husband would pick it up.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":16800078407,\"load_duration\":36501414,\"prompt_eval_count\":339,\"prompt_eval_duration\":9627064333,\"eval_count\":135,\"eval_duration\":5968955985}",
     "headers" : {
-      "Date" : "Wed, 27 May 2026 17:06:10 GMT",
+      "Date" : "Fri, 25 Sep 2026 13:38:38 GMT",
       "Content-Type" : "application/json; charset=utf-8"
     }
   },
-  "uuid" : "d0e262d3-6c01-4f8e-a595-617dae7f3687",
+  "uuid" : "f33209a6-d198-4e89-983c-9916b795ca98",
   "persistent" : true,
-  "insertionIndex" : 4
+  "insertionIndex" : 1
 }

@@ -1,5 +1,5 @@
 {
-  "id" : "862490ff-9aa9-45d3-b4dc-1dc489ac6dda",
+  "id" : "1185138d-1018-48a9-9212-5227e0eebf90",
   "name" : "api_chat",
   "request" : {
     "url" : "/api/chat",
@@ -12,13 +12,13 @@
   },
   "response" : {
     "status" : 200,
-    "body" : "{\"model\":\"granite4.1:3b\",\"created_at\":\"2026-05-27T17:05:54.559691677Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": false,\\n  \\\"customerName\\\": \\\"John Doe\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 2001, \\\"month\\\": 11, \\\"day\\\": 1},\\n  \\\"summary\\\": \\\"Customer John Doe is upset because the insurance only reimbursed half of his expenses due to an accident. He claims he was never notified about the automatic cancellation of the full reimbursement option that was free for one year at the time of subscription.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":14490804900,\"load_duration\":44741877,\"prompt_eval_count\":341,\"prompt_eval_duration\":7048672674,\"eval_count\":102,\"eval_duration\":5948503371}",
+    "body" : "{\"model\":\"granite4.1:3b\",\"created_at\":\"2026-09-25T13:38:21.297963885Z\",\"message\":{\"role\":\"assistant\",\"content\":\"{\\n  \\\"customerSatisfied\\\": false,\\n  \\\"customerName\\\": \\\"John Doe\\\",\\n  \\\"customerBirthday\\\": {\\\"year\\\": 2001, \\\"month\\\": 11, \\\"day\\\": 1},\\n  \\\"summary\\\": \\\"Customer John Doe is dissatisfied with the insurance company because they were reimbursed only half of their expenses due to an accident. The customer claims they should have been notified about the automatic cancellation of the full reimbursement option, which was free for one year at subscription but not renewed automatically without notification.\\\"\\n}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":15394534722,\"load_duration\":42916548,\"prompt_eval_count\":341,\"prompt_eval_duration\":9494266325,\"eval_count\":111,\"eval_duration\":4915997002}",
     "headers" : {
-      "Date" : "Wed, 27 May 2026 17:05:54 GMT",
+      "Date" : "Fri, 25 Sep 2026 13:38:21 GMT",
       "Content-Type" : "application/json; charset=utf-8"
     }
   },
-  "uuid" : "862490ff-9aa9-45d3-b4dc-1dc489ac6dda",
+  "uuid" : "1185138d-1018-48a9-9212-5227e0eebf90",
   "persistent" : true,
-  "insertionIndex" : 5
+  "insertionIndex" : 2
 }

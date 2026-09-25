@@ -22,9 +22,17 @@ import java.util.Locale;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.service.V;
+import io.quarkiverse.langchain4j.RegisterAiService;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.apache.camel.Handler;
 
-@RegisterForReflection
+/**
+ * The AI service is implemented by Quarkus LangChain4j and backed by the Ollama chat model configured in
+ * application.properties. No chat memory is used, so that each extraction is independent of the previous ones.
+ */
+@RegisterAiService(chatMemoryProviderSupplier = RegisterAiService.NoChatMemoryProviderSupplier.class)
+@ApplicationScoped
 public interface CustomPojoExtractionService {
 
     @RegisterForReflection(registerFullHierarchy = true)
@@ -66,5 +74,6 @@ public interface CustomPojoExtractionService {
      * The text parameter of this method is automatically injected as {{text}} in the CUSTOM_POJO_EXTRACT_PROMPT.
      */
     @UserMessage(CUSTOM_POJO_EXTRACT_PROMPT)
+    @Handler
     CustomPojo extractFromText(@V("text") String text);
 }

@@ -113,9 +113,7 @@ Notice how all of this is computed simultaneously during a single LLM inference.
 At the end, the application should have extracted 3 POJOs.
 For each of them, it could be interesting to compare the unstructured input text and the corresponding structured POJO.
 
-Details of the LangChain4j `AiService` setup can be found in class `CustomPojoExtractionService`.
-
-Details of the custom data extract `camel-langchain4j-agent` AI agent implementation can be found in classes `DataExtractAgent` and `DataExtractAgentConfiguration`.
+More details can be found in the `src/main/java/org/acme/extraction/CustomPojoExtractionService.java` class, a https://docs.quarkiverse.io/quarkus-langchain4j/dev/index.html[Quarkus LangChain4j] AI service that is invoked from the Camel route with the `bean` EIP.
 
 ==== Native mode
 
