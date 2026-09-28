@@ -30,13 +30,13 @@ public class CustomPojoStore {
     private static final Logger LOG = Logger.getLogger(CustomPojoStore.class);
     private List<CustomPojo> pojos = new CopyOnWriteArrayList<>();
 
+    @Handler
     CustomPojo addPojo(CustomPojo pojo) {
         LOG.info("An extracted POJO has been added to the store: " + pojo);
         pojos.add(pojo);
         return pojo;
     }
 
-    @Handler
     Map<String, List<CustomPojo>> listPojos() {
         return Map.of("pojos", List.copyOf(pojos));
     }
