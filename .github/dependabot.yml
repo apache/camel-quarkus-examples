@@ -30,13 +30,7 @@ updates:
       interval: "daily"
   - package-ecosystem: "maven"
     target-branch: "camel-quarkus-main"
-    groups:
-      maven:
-        applies-to: version-updates
-        patterns:
-        - "*"
-    directories:
-      - "**/*"
+    directory: "/"
     schedule:
       interval: "daily"
     registries:
