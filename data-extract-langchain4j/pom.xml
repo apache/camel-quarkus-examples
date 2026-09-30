@@ -53,7 +53,7 @@
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
 
         <!-- the Quarkus LangChain4j release Camel Quarkus is built against -->
-        <quarkiverse-langchain4j.version>1.13.3</quarkiverse-langchain4j.version>
+        <quarkiverse-langchain4j.version>1.14.0</quarkiverse-langchain4j.version>
         <wiremock.version>3.13.2</wiremock.version>
     </properties>
 
