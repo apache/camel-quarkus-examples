@@ -22,7 +22,7 @@
 
     <artifactId>camel-quarkus-examples-langchain4j-ingest-rag</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
-    <version>3.40.0-SNAPSHOT</version>
+    <version>3.40.0</version>
 
     <name>Camel Quarkus :: Examples :: LangChain4j Ingest RAG</name>
     <description>Camel Quarkus Example :: RAG document Q&amp;A over a folder ingested by the langchain4j-ingest extension</description>
