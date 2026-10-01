@@ -24,7 +24,7 @@ The test suite verifies:
 
 ### Prerequisites
 
-- Java 17+
+- Java 21+
 - Maven 3.9+
 - Docker (for Testcontainers)
 

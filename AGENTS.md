@@ -14,7 +14,7 @@ core (e.g. GitHub issues instead of JIRA).
 ## Project Info
 
 - Build: Maven 3.9+ (use the provided `./mvnw` wrapper)
-- Java: 17+ (CI also exercises JDK 21)
+- Java: 21+ (CI also exercises JDK 25)
 - BOMs: `quarkus-bom` + `quarkus-camel-bom` (extension versions are inherited,
   never pinned per-dependency)
 - Tests: `@QuarkusTest` (JVM) and `@QuarkusIntegrationTest` (packaged/native)
@@ -84,7 +84,7 @@ mvn license:check formatter:validate impsort:check
 ```
 
 CI validates platform compatibility (`cq:examples-check-platform`), license and
-formatting, compilation, tests, and native builds (Linux/Windows, JDK 17/21).
+formatting, compilation, tests, and native builds (Linux/Windows, JDK 21/25).
 
 ## Conventions
 

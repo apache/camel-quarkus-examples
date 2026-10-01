@@ -45,7 +45,7 @@ import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.jboss.logging.Logger;
 
 /**
- * Utility class for generating and persisting PQC-ready certificates for Java 21.
+ * Utility class for generating and persisting PQC-ready certificates.
  * These certificates use RSA keys and are compatible with BouncyCastle JSSE provider
  * which enables PQC hybrid key exchange (X25519MLKEM768) at the TLS layer.
  *

@@ -20,12 +20,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>camel-quarkus-examples-http-pqc-j17</artifactId>
+    <artifactId>camel-quarkus-examples-http-pqc</artifactId>
     <groupId>org.apache.camel.quarkus.examples</groupId>
     <version>4.0.0-SNAPSHOT</version>
 
     <name>Camel Quarkus :: Examples :: HTTP PQC</name>
-    <description>Camel Quarkus Example :: HTTP with Post-Quantum Cryptography</description>
+    <description>Camel Quarkus Example :: HTTP with Post-Quantum Cryptography using X25519MLKEM768</description>
 
     <properties>
         <quarkus.platform.version>3.40.1</quarkus.platform.version>
@@ -38,14 +38,14 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
 
         <formatter-maven-plugin.version>2.29.0</formatter-maven-plugin.version>
         <impsort-maven-plugin.version>1.13.0</impsort-maven-plugin.version>
         <license-maven-plugin.version>5.1.2</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
-        <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
+        <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
     </properties>
 
@@ -83,8 +83,20 @@
             <artifactId>camel-quarkus-support-bouncycastle</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bctls-jdk18on</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
             <artifactId>camel-quarkus-microprofile-health</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-timer</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.quarkus</groupId>
+            <artifactId>camel-quarkus-jackson</artifactId>
         </dependency>
 
         <!-- Test -->
@@ -208,6 +220,33 @@
         </pluginManagement>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>${maven-resources-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>copy-certificates-to-classes</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/certs</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}/certs</directory>
+                                    <includes>
+                                        <include>*.p12</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
@@ -275,6 +314,7 @@
             </activation>
             <properties>
                 <quarkus.native.enabled>true</quarkus.native.enabled>
+                <jdk.tls.namedGroups>X25519MLKEM768,x25519,secp256r1</jdk.tls.namedGroups>
             </properties>
             <build>
                 <plugins>
@@ -290,6 +330,7 @@
                                 <configuration>
                                     <systemPropertyVariables>
                                         <quarkus.native.enabled>${quarkus.native.enabled}</quarkus.native.enabled>
+                                        <jdk.tls.namedGroups>${jdk.tls.namedGroups}</jdk.tls.namedGroups>
                                     </systemPropertyVariables>
                                 </configuration>
                             </execution>

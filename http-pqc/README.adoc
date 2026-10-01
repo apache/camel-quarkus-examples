@@ -1,13 +1,11 @@
-= HTTP with Post-Quantum Cryptography (PQC): A Camel Quarkus example (Java 21)
-:cq-example-description: An example that shows how to implement quantum-resistant TLS using Java 21 with BouncyCastle JSSE provider for native PQC support with hybrid cipher suites
+= HTTP with Post-Quantum Cryptography (PQC): A Camel Quarkus example
+:cq-example-description: An example that shows how to implement quantum-resistant TLS using the BouncyCastle JSSE provider for native PQC support with hybrid cipher suites
 
 {cq-description}
 
-This example shows how to implement quantum-resistant TLS on **Java 21** using hybrid cipher suites that combine classical ECDH with post-quantum ML-KEM-768 key exchange (X25519MLKEM768). The TLS stack natively negotiates and uses PQC algorithms.
+This example shows how to implement quantum-resistant TLS using hybrid cipher suites that combine classical ECDH with post-quantum ML-KEM-768 key exchange (X25519MLKEM768). The TLS stack natively negotiates and uses PQC algorithms.
 
-NOTE: CI runs with jdk17, therefore CI on this example is disabled (via profile)!
-
-IMPORTANT: This example uses **native PQC TLS support** via BouncyCastle JSSE provider. Java 21 supports PQC hybrid cipher suites at the TLS protocol level. For Java 17, see the http-pqc-j17 example which uses application-level validation.
+IMPORTANT: This example uses **native PQC TLS support** via BouncyCastle JSSE provider, which supports PQC hybrid cipher suites at the TLS protocol level.
 
 TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites and other general information.
 
@@ -15,16 +13,16 @@ TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Ca
 
 Post-Quantum Cryptography (PQC) protects against "harvest now, decrypt later" attacks where adversaries capture encrypted data today to decrypt when quantum computers become available.
 
-=== Java 21 Approach
+=== Approach
 
-**Java 21 supports PQC algorithms natively in TLS** when using BouncyCastle JSSE provider. This example demonstrates:
+**PQC algorithms are supported natively in TLS** when using BouncyCastle JSSE provider. This example demonstrates:
 
 * **Hybrid cipher suites**: X25519MLKEM768 combines classical X25519 ECDH with quantum-resistant ML-KEM-768 (NIST FIPS 203)
 * **TLS-level key exchange**: PQC negotiation happens at the TLS protocol layer, not application level
 * **BouncyCastle JSSE provider**: Replaces SunJSSE to enable PQC cipher suites in TLS 1.3
 * **Configurable fallback**: Can configure classical fallback algorithms for backward compatibility
 
-This approach provides true PQC support at the TLS protocol level, unlike Java 17's application-level validation workaround.
+This approach provides true PQC support at the TLS protocol level, rather than relying on application-level validation.
 
 == Certificate Generation
 
@@ -144,7 +142,7 @@ TIP: Find more details about the JVM mode and Native mode in the Package and run
 mvn clean package
 java -jar target/quarkus-app/quarkus-run.jar
 ...
-[io.quarkus] (main) camel-quarkus-examples-http-pqc-j21 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
+[io.quarkus] (main) camel-quarkus-examples-http-pqc started in ?.?s. Listening on: https://0.0.0.0:xxxxx
 ----
 
 === Native Mode
@@ -158,7 +156,7 @@ To prepare a native executable using GraalVM, run the following command:
 mvn clean package -Dnative
 ./target/*-runner
 ...
-[io.quarkus] (main) camel-quarkus-examples-http-pqc-j21 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
+[io.quarkus] (main) camel-quarkus-examples-http-pqc started in ?.?s. Listening on: https://0.0.0.0:xxxxx
 ...
 ----
 
@@ -206,9 +204,9 @@ mvn clean verify -Dnative
 
 NOTE: Native mode only tests the fallback scenario (PqcWithFallbackIT) because a native executable can be built with only one `jdk.tls.namedGroups` configuration. Testing both scenarios would require building two separate native executables.
 
-== How It Works (Java 21 Native TLS Support)
+== How It Works (Native TLS Support)
 
-This example uses Java 21's native PQC support via BouncyCastle JSSE provider, which replaces the standard SunJSSE provider.
+This example uses native PQC support via BouncyCastle JSSE provider, which replaces the standard SunJSSE provider.
 
 === Key Exchange vs Certificate Signatures
 
@@ -254,8 +252,6 @@ jdk.tls.namedGroups=X25519MLKEM768,x25519,secp256r1
 The server will prefer the first algorithm but fall back to subsequent ones if the client doesn't support PQC.
 
 == Important Notes
-
-* **Java 21 Required**: This example requires Java 21 or higher. Java 21 is the first LTS version with PQC support in the TLS stack. Do not attempt to run this example on Java 17 or earlier.
 
 * **BouncyCastle JSSE Provider**: The example uses BouncyCastle JSSE (not just JCA provider) registered at position 2 in the security provider list. This replaces SunJSSE for TLS operations while keeping other JCA providers for standard cryptographic operations.
 
