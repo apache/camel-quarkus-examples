@@ -49,6 +49,7 @@
         <module>health</module>
         <module>http-log</module>
         <module>http-pqc</module>
+        <module>http-pqc-j25</module>
         <module>jdbc-datasource</module>
         <module>jms-jpa</module>
         <module>jpa-idempotent-repository</module>
