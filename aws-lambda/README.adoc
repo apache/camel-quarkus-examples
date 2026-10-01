@@ -80,7 +80,7 @@ https://quarkus.io/guides/amazon-lambda#extra-build-generated-files[Please click
 
 3. Give the name for your function which should be unique
 
-4. Select Java 17 (Corretto) as Runtime
+4. Select Java 21 as Runtime
 
 5. Under Permission feel free to create / use existing role to give the required permission for your lambda function
 

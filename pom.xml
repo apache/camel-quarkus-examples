@@ -48,8 +48,7 @@
         <module>file-split-log-xml</module>
         <module>health</module>
         <module>http-log</module>
-        <module>http-pqc-j17</module>
-        <module>http-pqc-j21</module>
+        <module>http-pqc</module>
         <module>jdbc-datasource</module>
         <module>jms-jpa</module>
         <module>jpa-idempotent-repository</module>
