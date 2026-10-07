@@ -114,14 +114,14 @@ jobs:
           ./mvnw ${MAVEN_ARGS} clean install -DskipTests -Dquarkus.build.skip \
             -Dscalpel.enabled=true \
             -Dscalpel.mode=report \
-            -Dscalpel.reportFile=${{ runner.temp }}/scalpel-report.json
+            -Dscalpel.reportFile=scalpel-report.json
       - name: Fail if there are uncommitted changes
         shell: bash
         run: |
           [[ -z $(git status --porcelain) ]] || { echo 'There are uncommitted changes'; git status; exit 1; }
       - name: Setup Integration Test Matrix
         id: set-itest-matrix
-        run: bash .github/generate-test-matrix.sh '${{ runner.temp }}/scalpel-report.json' >> $GITHUB_OUTPUT
+        run: bash .github/generate-test-matrix.sh scalpel-report.json >> $GITHUB_OUTPUT
       - name: Tar Maven Repo
         shell: bash
         run: |
