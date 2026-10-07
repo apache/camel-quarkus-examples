@@ -7,6 +7,9 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 
+# Scalpel
+scalpel-report.json
+
 # Eclipse
 .project
 .classpath
