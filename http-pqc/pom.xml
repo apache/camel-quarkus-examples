@@ -329,7 +329,6 @@
                                 </goals>
                                 <configuration>
                                     <systemPropertyVariables>
-                                        <quarkus.native.enabled>${quarkus.native.enabled}</quarkus.native.enabled>
                                         <jdk.tls.namedGroups>${jdk.tls.namedGroups}</jdk.tls.namedGroups>
                                     </systemPropertyVariables>
                                 </configuration>

@@ -301,11 +301,6 @@
                                     <goal>integration-test</goal>
                                     <goal>verify</goal>
                                 </goals>
-                                <configuration>
-                                    <systemPropertyVariables>
-                                        <quarkus.native.enabled>${quarkus.native.enabled}</quarkus.native.enabled>
-                                    </systemPropertyVariables>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
