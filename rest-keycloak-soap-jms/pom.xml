@@ -146,7 +146,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.camel.quarkus</groupId>
-            <artifactId>camel-quarkus-junit5</artifactId>
+            <artifactId>camel-quarkus-junit</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
