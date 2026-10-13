@@ -1,5 +1,17 @@
 # Apache Camel Quarkus Examples - AI Agent Guidelines
 
+## Building an application from these examples
+
+If you are using these examples to build a Camel Quarkus application:
+
+- Apache Camel LLM index: https://camel.apache.org/llms.txt
+- Camel Quarkus documentation and extensions: https://camel.apache.org/camel-quarkus/latest/
+- Any Apache Camel or Camel Quarkus documentation page is available as LLM-friendly Markdown by replacing `.html` with `.md` in its URL (for example, https://camel.apache.org/camel-quarkus/latest/reference/extensions/kafka.md).
+- Prefer the Camel CLI and the [Camel MCP server](https://camel.apache.org/manual/camel-jbang-mcp.html) (linked from the index above) to inspect components, their endpoint options and the catalog. Do not invent component URIs or options — verify them against the catalog or documentation.
+- If your project uses the YAML DSL, write routes in the canonical YAML DSL format, and use the Camel MCP server to validate their structure.
+
+## Contributing examples to this repository
+
 Guidelines for AI agents contributing examples to **apache/camel-quarkus-examples**.
 
 This repository contains runnable example applications that demonstrate Apache
