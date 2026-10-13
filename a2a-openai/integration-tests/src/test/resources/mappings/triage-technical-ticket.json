@@ -1,0 +1,57 @@
+{
+  "name": "triage-technical-ticket",
+  "request": {
+    "method": "POST",
+    "url": "/chat/completions",
+    "bodyPatterns": [
+      {
+        "contains": "You are the first-line triage agent"
+      },
+      {
+        "contains": "Mobile app crashes on login"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "chatcmpl-stub-triage-technical-ticket",
+      "object": "chat.completion",
+      "created": 0,
+      "model": "gpt-5-mini-2025-08-07",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "{\"category\": \"TECHNICAL\", \"priority\": \"URGENT\", \"summary\": \"The Android app version 4.2.1 crashes right after login on a Pixel 8 and reinstalling did not help.\"}",
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 321,
+        "completion_tokens": 102,
+        "total_tokens": 423,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 51,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "service_tier": "default",
+      "system_fingerprint": null
+    }
+  }
+}
