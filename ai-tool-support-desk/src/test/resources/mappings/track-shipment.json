@@ -1,0 +1,176 @@
+{
+  "mappings": [
+    {
+      "name": "track-shipment-tool-call-1",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "Where is my order 1003 right now?"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-376",
+          "object": "chat.completion",
+          "created": 1791886007,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_track_order",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "get_order",
+                      "arguments": "{\"orderId\":1003}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1453,
+            "completion_tokens": 20,
+            "total_tokens": 1473
+          }
+        }
+      }
+    },
+    {
+      "name": "track-shipment-tool-call-2",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_track_order"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "contains": "MOUSE-M5"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-146",
+          "object": "chat.completion",
+          "created": 1791886022,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_track_shipment",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "track_shipment",
+                      "arguments": "{\"orderId\":1003}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1361,
+            "completion_tokens": 21,
+            "total_tokens": 1382
+          }
+        }
+      }
+    },
+    {
+      "name": "track-shipment-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_track_shipment"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "contains": "OUT_FOR_DELIVERY"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-844",
+          "object": "chat.completion",
+          "created": 1791886038,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Your order 1003 (Wireless mouse M5) is currently **OUT FOR DELIVERY** and should arrive today. If you have any questions about the delivery or need further assistance, feel free to ask!"
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1329,
+            "completion_tokens": 44,
+            "total_tokens": 1373
+          }
+        }
+      }
+    }
+  ]
+}

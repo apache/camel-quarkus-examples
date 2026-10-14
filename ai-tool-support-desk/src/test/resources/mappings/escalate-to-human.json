@@ -1,0 +1,113 @@
+{
+  "mappings": [
+    {
+      "name": "escalate-to-human-tool-call",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "I want to talk to a human, the mouse of order 1003 is urgent for my work."
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-491",
+          "object": "chat.completion",
+          "created": 1791885986,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_escalate",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "escalate_to_human",
+                      "arguments": "{\"priority\":\"URGENT\",\"summary\":\"Customer wants to speak with a human support engineer immediately regarding an urgent issue with mouse in order 1003.\"}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1512,
+            "completion_tokens": 51,
+            "total_tokens": 1563
+          }
+        }
+      }
+    },
+    {
+      "name": "escalate-to-human-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_escalate"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "contains": "opened"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-458",
+          "object": "chat.completion",
+          "created": 1791886005,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "A support engineer has been notified about your urgent request for assistance with order 1003. You should receive a response via email shortly. If you need anything else in the meantime, feel free to let me know!"
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1390,
+            "completion_tokens": 44,
+            "total_tokens": 1434
+          }
+        }
+      }
+    }
+  ]
+}
