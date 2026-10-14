@@ -55,6 +55,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-pqc"
   },
   {
+    "title": "HTTP with Post-Quantum Cryptography (PQC) (Java 25)",
+    "description": "Shows how to implement quantum-resistant TLS with the Quarkus TLS registry, using the hybrid X25519MLKEM768 key exchange built into the JDK (Java 27, or Java 25 from its October 2026 update)",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-pqc-j25"
+  },
+  {
     "title": "HTTP with vanilla JAX-RS or with Camel `platform-http` component",
     "description": "Shows how to create HTTP endpoints using either the RESTEasy",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/http-log"
