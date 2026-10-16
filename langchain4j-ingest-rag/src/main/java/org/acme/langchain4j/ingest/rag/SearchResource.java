@@ -29,7 +29,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-import org.apache.camel.quarkus.component.langchain4j.ingest.core.IngestService;
+import org.apache.camel.component.langchain4j.ingest.LangChain4jIngest;
 
 @Path("/search")
 public class SearchResource {
@@ -51,7 +51,8 @@ public class SearchResource {
                 .matches().stream()
                 .map(match -> Map.<String, Object> of(
                         "score", match.score(),
-                        "document", String.valueOf(match.embedded().metadata().getString(IngestService.METADATA_DOCUMENT_ID)),
+                        "document",
+                        String.valueOf(match.embedded().metadata().getString(LangChain4jIngest.METADATA_DOCUMENT_ID)),
                         "text", match.embedded().text()))
                 .toList();
     }
