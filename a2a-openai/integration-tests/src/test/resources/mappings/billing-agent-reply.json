@@ -1,0 +1,57 @@
+{
+  "name": "billing-agent-reply",
+  "request": {
+    "method": "POST",
+    "url": "/chat/completions",
+    "bodyPatterns": [
+      {
+        "contains": "You are a billing support specialist"
+      },
+      {
+        "contains": "Charged twice for my Pro subscription"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "chatcmpl-stub-billing-agent-reply",
+      "object": "chat.completion",
+      "created": 0,
+      "model": "gpt-5-mini-2025-08-07",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Hello,\n\nThank you for letting us know, and sorry for the trouble. I can see that invoices INV-20931 and INV-20932 cover the same Pro plan period, so one of them is a duplicate charge.\n\nWhat happens next:\n- We will confirm the duplicate payment on your account and refund it to the original payment method.\n- Refunds are issued within five business days once confirmed. You will receive an email as soon as it has been sent.\n\nThere is nothing you need to do right now. If you do not see the refund within five business days, just reply to this message.\n\nKind regards,\nAcme Billing Support",
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 402,
+        "completion_tokens": 274,
+        "total_tokens": 676,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 137,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "service_tier": "default",
+      "system_fingerprint": null
+    }
+  }
+}

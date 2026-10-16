@@ -1,0 +1,57 @@
+{
+  "name": "billing-agent-direct-reply",
+  "request": {
+    "method": "POST",
+    "url": "/chat/completions",
+    "bodyPatterns": [
+      {
+        "contains": "You are a billing support specialist"
+      },
+      {
+        "contains": "charged twice for my Pro subscription this month"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "chatcmpl-stub-billing-agent-direct-reply",
+      "object": "chat.completion",
+      "created": 0,
+      "model": "gpt-5-mini-2025-08-07",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Hello,\n\nThank you for contacting us, and sorry for the inconvenience. We will check the two payments on your account and refund the duplicate one to the original payment method. Refunds are issued within five business days once confirmed, and you will receive an email when it has been sent.\n\nThere is nothing you need to do right now.\n\nKind regards,\nAcme Billing Support",
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 356,
+        "completion_tokens": 211,
+        "total_tokens": 567,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 105,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "service_tier": "default",
+      "system_fingerprint": null
+    }
+  }
+}

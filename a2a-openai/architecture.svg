@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" width="1100" height="620" font-family="Helvetica, Arial, sans-serif">
+  <title>A2A support ticket triage architecture</title>
+  <defs>
+    <!-- Quarkus icon, taken from the official Quarkus logo -->
+    <symbol id="quarkus" viewBox="0 0 194 194">
+      <polygon fill="#4695eb" points="126.05 34.6 96.61 51.59 126.05 68.59 126.05 34.6"/>
+      <polygon fill="#ff004a" points="67.17 34.6 67.17 68.59 96.61 51.59 67.17 34.6"/>
+      <polygon fill="#091313" points="126.05 68.59 96.61 51.59 67.17 68.59 96.61 85.59 126.05 68.59"/>
+      <polygon fill="#4695eb" points="36.13 88.36 65.57 105.36 65.57 71.37 36.13 88.36"/>
+      <polygon fill="#ff004a" points="65.57 139.35 95.01 122.36 65.57 105.36 65.57 139.35"/>
+      <polygon fill="#091313" points="65.57 71.37 65.57 105.36 95.01 122.36 95.01 88.36 65.57 71.37"/>
+      <polygon fill="#4695eb" points="127.65 139.35 127.65 105.36 98.21 122.36 127.65 139.35"/>
+      <polygon fill="#ff004a" points="157.09 88.36 127.65 71.37 127.65 105.36 157.09 88.36"/>
+      <polygon fill="#091313" points="98.21 122.36 127.65 105.36 127.65 71.37 98.21 88.36 98.21 122.36"/>
+      <path fill="#4695eb" d="M160.5,1H32.72A31.81,31.810,0,0,0,1,32.72V160.5a31.81,31.81,0,0,0,31.72,31.72h87.51L96.61,134.85,79.48,171.07H32.72A10.71,10.71,0,0,1,22.15,160.5V32.72A10.71,10.71,0,0,1,32.72,22.15H160.5a10.71,10.71,0,0,1,10.57,10.57V160.5a10.71,10.71,0,0,1-10.57,10.57H132.77l8.71,21.15h19a31.81,31.81,0,0,0,31.72-31.72V32.72A31.81,31.81,0,0,0,160.5,1Z"/>
+    </symbol>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#091313"/>
+    </marker>
+    <marker id="arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a9399"/>
+    </marker>
+  </defs>
+
+  <rect width="1100" height="620" fill="#ffffff"/>
+
+  <!-- Customer -->
+  <g>
+    <circle cx="80" cy="128" r="16" fill="none" stroke="#091313" stroke-width="2.5"/>
+    <path d="M48,184 a32,32 0 0 1 64,0" fill="none" stroke="#091313" stroke-width="2.5"/>
+    <text x="80" y="210" text-anchor="middle" font-size="16" font-weight="bold" fill="#091313">Customer</text>
+    <text x="80" y="230" text-anchor="middle" font-size="13" fill="#5b6770">web UI or curl</text>
+  </g>
+
+  <!-- Orchestrator application -->
+  <rect x="180" y="40" width="660" height="240" rx="12" fill="#f3f8fe" stroke="#4695eb" stroke-width="2"/>
+  <use href="#quarkus" x="198" y="54" width="30" height="30"/>
+  <text x="238" y="75" font-size="18" font-weight="bold" fill="#091313">orchestrator<tspan dx="8" font-size="14" font-weight="normal" fill="#5b6770">:8080</tspan></text>
+
+  <rect x="205" y="130" width="185" height="100" rx="8" fill="#ffffff" stroke="#091313" stroke-width="1.5"/>
+  <text x="297" y="162" text-anchor="middle" font-size="15" font-weight="bold" fill="#091313">Receive ticket</text>
+  <text x="297" y="186" text-anchor="middle" font-size="13" font-family="Menlo, Consolas, monospace" fill="#c7004a">platform-http</text>
+  <text x="297" y="208" text-anchor="middle" font-size="13" fill="#5b6770">POST /tickets</text>
+
+  <rect x="420" y="130" width="190" height="100" rx="8" fill="#ffffff" stroke="#091313" stroke-width="1.5"/>
+  <text x="515" y="162" text-anchor="middle" font-size="15" font-weight="bold" fill="#091313">Triage agent</text>
+  <text x="515" y="186" text-anchor="middle" font-size="13" font-family="Menlo, Consolas, monospace" fill="#c7004a">openai</text>
+  <text x="515" y="208" text-anchor="middle" font-size="13" fill="#5b6770">category, priority, summary</text>
+
+  <rect x="640" y="130" width="175" height="100" rx="8" fill="#ffffff" stroke="#091313" stroke-width="1.5"/>
+  <text x="727" y="162" text-anchor="middle" font-size="15" font-weight="bold" fill="#091313">Delegate</text>
+  <text x="727" y="186" text-anchor="middle" font-size="13" font-family="Menlo, Consolas, monospace" fill="#c7004a">a2a</text>
+  <text x="727" y="208" text-anchor="middle" font-size="13" fill="#5b6770">by category</text>
+
+  <line x1="140" y1="180" x2="203" y2="180" stroke="#091313" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <line x1="390" y1="180" x2="418" y2="180" stroke="#091313" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="610" y1="180" x2="638" y2="180" stroke="#091313" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- OpenAI API -->
+  <rect x="900" y="40" width="180" height="540" rx="12" fill="#f5f6f7" stroke="#8a9399" stroke-width="2"/>
+  <text x="990" y="300" text-anchor="middle" font-size="18" font-weight="bold" fill="#091313">OpenAI API</text>
+  <text x="990" y="324" text-anchor="middle" font-size="13" fill="#5b6770">or any OpenAI</text>
+  <text x="990" y="342" text-anchor="middle" font-size="13" fill="#5b6770">compatible API</text>
+  <text x="990" y="360" text-anchor="middle" font-size="13" fill="#5b6770">(Ollama, vLLM, ...)</text>
+
+  <!-- Triage agent to OpenAI -->
+  <polyline points="515,130 515,105 898,105" fill="none" stroke="#8a9399" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow-muted)"/>
+  <text x="860" y="98" text-anchor="end" font-size="12" fill="#5b6770">chat completion (structured output)</text>
+
+  <!-- Delegation -->
+  <line x1="727" y1="230" x2="727" y2="320" stroke="#091313" stroke-width="2"/>
+  <line x1="515" y1="320" x2="755" y2="320" stroke="#091313" stroke-width="2"/>
+  <line x1="280" y1="320" x2="515" y2="320" stroke="#8a9399" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="515" y1="320" x2="515" y2="368" stroke="#091313" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="755" y1="320" x2="755" y2="368" stroke="#091313" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="280" y1="320" x2="280" y2="368" stroke="#8a9399" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow-muted)"/>
+  <text x="745" y="260" font-size="12" fill="#5b6770">A2A JSON-RPC</text>
+  <text x="745" y="276" font-size="12" fill="#5b6770">X-API-Key</text>
+  <text x="523" y="348" font-size="12" font-weight="bold" fill="#091313">BILLING</text>
+  <text x="763" y="348" font-size="12" font-weight="bold" fill="#091313">TECHNICAL</text>
+  <text x="288" y="348" font-size="12" font-weight="bold" fill="#5b6770">GENERAL</text>
+
+  <!-- Escalation -->
+  <rect x="180" y="370" width="200" height="170" rx="12" fill="#ffffff" stroke="#8a9399" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="280" y="440" text-anchor="middle" font-size="16" font-weight="bold" fill="#091313">Escalated</text>
+  <text x="280" y="460" text-anchor="middle" font-size="16" font-weight="bold" fill="#091313">to a human</text>
+  <text x="280" y="488" text-anchor="middle" font-size="13" fill="#5b6770">no specialist agent</text>
+
+  <!-- Billing agent application -->
+  <rect x="410" y="370" width="210" height="170" rx="12" fill="#f3f8fe" stroke="#4695eb" stroke-width="2"/>
+  <use href="#quarkus" x="424" y="382" width="26" height="26"/>
+  <text x="458" y="401" font-size="16" font-weight="bold" fill="#091313">billing-agent<tspan dx="6" font-size="13" font-weight="normal" fill="#5b6770">:8081</tspan></text>
+  <text x="515" y="432" text-anchor="middle" font-size="13" fill="#5b6770">Billing Support Agent</text>
+  <rect x="430" y="446" width="170" height="74" rx="8" fill="#ffffff" stroke="#091313" stroke-width="1.5"/>
+  <text x="515" y="470" text-anchor="middle" font-size="13" font-family="Menlo, Consolas, monospace" fill="#c7004a">a2a → openai</text>
+  <text x="515" y="490" text-anchor="middle" font-size="13" fill="#5b6770">drafts the reply</text>
+  <text x="515" y="508" text-anchor="middle" font-size="13" fill="#5b6770">serves agent card</text>
+
+  <!-- Technical agent application -->
+  <rect x="650" y="370" width="210" height="170" rx="12" fill="#f3f8fe" stroke="#4695eb" stroke-width="2"/>
+  <use href="#quarkus" x="664" y="382" width="26" height="26"/>
+  <text x="698" y="401" font-size="16" font-weight="bold" fill="#091313">technical-agent<tspan dx="6" font-size="13" font-weight="normal" fill="#5b6770">:8082</tspan></text>
+  <text x="755" y="432" text-anchor="middle" font-size="13" fill="#5b6770">Technical Support Agent</text>
+  <rect x="670" y="446" width="170" height="74" rx="8" fill="#ffffff" stroke="#091313" stroke-width="1.5"/>
+  <text x="755" y="470" text-anchor="middle" font-size="13" font-family="Menlo, Consolas, monospace" fill="#c7004a">a2a → openai</text>
+  <text x="755" y="490" text-anchor="middle" font-size="13" fill="#5b6770">drafts the reply</text>
+  <text x="755" y="508" text-anchor="middle" font-size="13" fill="#5b6770">serves agent card</text>
+
+  <!-- Specialist agents to OpenAI -->
+  <polyline points="860,455 898,455" fill="none" stroke="#8a9399" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow-muted)"/>
+  <polyline points="515,540 515,565 898,565" fill="none" stroke="#8a9399" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow-muted)"/>
+  <text x="635" y="585" font-size="12" fill="#5b6770">chat completion</text>
+</svg>

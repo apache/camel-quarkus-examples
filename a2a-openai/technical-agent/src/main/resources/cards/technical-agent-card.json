@@ -1,0 +1,44 @@
+{
+  "protocolVersion": "1.0",
+  "name": "Technical Support Agent",
+  "description": "Drafts replies to customer support tickets about product defects, errors, outages and how-to questions",
+  "version": "1.0.0",
+  "provider": {
+    "name": "Acme Customer Care",
+    "url": "https://support.example.com"
+  },
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    {
+      "id": "draft-technical-reply",
+      "name": "Draft technical reply",
+      "description": "Drafts a reply to a technical support ticket with troubleshooting steps",
+      "tags": ["technical", "bugs", "errors", "troubleshooting"],
+      "examples": ["The mobile app crashes every time I open the settings screen"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    }
+  ],
+  "securitySchemes": {
+    "apiKey": {
+      "apiKeySecurityScheme": {
+        "location": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "securityRequirements": [
+    {
+      "schemes": {
+        "apiKey": {
+          "list": []
+        }
+      }
+    }
+  ]
+}
