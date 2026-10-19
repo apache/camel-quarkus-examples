@@ -16,8 +16,27 @@
  */
 package org.acme.master;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.stream.Stream;
+
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @QuarkusIntegrationTest
 class MasterIT extends MasterTest {
+
+    @Override
+    protected Path logFilePath(TestLog testLog) throws IOException {
+        Path configuredPath = testLog.getLogFilePath();
+        try (Stream<Path> paths = Files.list(configuredPath.getParent())) {
+            return paths.filter(path -> path.getFileName().toString().startsWith("test-"))
+                    .map(path -> path.resolve(configuredPath.getFileName()))
+                    .filter(Files::exists)
+                    .max(Comparator.comparing(path -> path.toFile().lastModified()))
+                    .orElse(configuredPath);
+        }
+    }
 }

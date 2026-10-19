@@ -18,9 +18,9 @@ package org.acme.amqp;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -35,13 +35,13 @@ public class AmqpTest {
 
     @Disabled("Requires a running ActiveMQ broker.")
     @Test
-    public void testTimerLog() {
+    public void testTimerLog(TestLog testLog) {
         Config config = ConfigProvider.getConfig();
         String greeting = config.getValue("greeting.message", String.class);
 
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> Assertions
-                        .assertTrue(new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8)
+                        .assertTrue(new String(Files.readAllBytes(testLog.getLogFilePath()), StandardCharsets.UTF_8)
                                 .contains(greeting)));
     }
 }

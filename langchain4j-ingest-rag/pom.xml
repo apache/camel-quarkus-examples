@@ -28,7 +28,7 @@
     <description>Camel Quarkus Example :: RAG document Q&amp;A over a folder ingested by the langchain4j-ingest extension</description>
 
     <properties>
-        <quarkus.platform.version>3.40.1</quarkus.platform.version>
+        <quarkus.platform.version>4.0.0.Beta1</quarkus.platform.version>
         <camel-quarkus.platform.version>4.0.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
@@ -49,7 +49,7 @@
         <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
 
         <!-- the Quarkus LangChain4j release Camel Quarkus is built against -->
-        <quarkiverse-langchain4j.version>1.14.2</quarkiverse-langchain4j.version>
+        <quarkiverse-langchain4j.version>2.0.0.Beta1</quarkiverse-langchain4j.version>
         <wiremock.version>3.13.2</wiremock.version>
     </properties>
 

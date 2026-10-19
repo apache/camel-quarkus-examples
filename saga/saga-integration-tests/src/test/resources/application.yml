@@ -27,7 +27,7 @@ quarkus:
     level: INFO
     min-level: DEBUG
     file:
-      enable: true
+      enabled: true
       path: target/quarkus.log
 
 camel:

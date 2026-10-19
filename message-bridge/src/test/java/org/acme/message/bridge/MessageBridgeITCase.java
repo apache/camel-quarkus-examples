@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import org.acme.message.bridge.resource.IBMMQTestResource;
@@ -40,11 +41,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 // The crash test will kill the app, so it must be executed last as there is no way to restart the application
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MessageBridgeITCase {
-    private static final File LOG_FILE = new File("target/quarkus.log");
 
     @Test
     @Order(1)
-    public void shouldSendMessageToActiveMQTest() {
+    public void shouldSendMessageToActiveMQTest(TestLog testLog) {
         final String message = UUID.randomUUID().toString();
         RestAssured
                 .given()
@@ -52,12 +52,13 @@ public class MessageBridgeITCase {
                 .post("/message");
 
         Awaitility.await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertThat(Files.readString(LOG_FILE.toPath())).contains("ActiveMQ received: " + message));
+                .untilAsserted(
+                        () -> assertThat(Files.readString(testLog.getLogFilePath())).contains("ActiveMQ received: " + message));
     }
 
     @Test
     @Order(2)
-    public void shouldRollbackMessageTest() {
+    public void shouldRollbackMessageTest(TestLog testLog) {
         final String message = UUID.randomUUID() + "-rollback";
         RestAssured
                 .given()
@@ -65,7 +66,7 @@ public class MessageBridgeITCase {
                 .post("/message");
 
         Awaitility.await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertThat(Files.readString(LOG_FILE.toPath()))
+                .untilAsserted(() -> assertThat(Files.readString(testLog.getLogFilePath()))
                         .containsSubsequence(
                                 "Sending message from IBMMQ to ActiveMQ: " + message,
                                 "Simulated rollback",
@@ -75,7 +76,7 @@ public class MessageBridgeITCase {
 
     @Test
     @Order(3)
-    public void shouldCrashTest() {
+    public void shouldCrashTest(TestLog testLog) {
         final String message = UUID.randomUUID() + "-crash";
         RestAssured
                 .given()
@@ -83,7 +84,7 @@ public class MessageBridgeITCase {
                 .post("/message");
 
         Awaitility.await().atMost(5, TimeUnit.SECONDS)
-                .untilAsserted(() -> assertThat(Files.readString(LOG_FILE.toPath())).contains("Crashing the system"));
+                .untilAsserted(() -> assertThat(Files.readString(testLog.getLogFilePath())).contains("Crashing the system"));
         File tmDir = Paths
                 .get(ConfigProvider.getConfig().getValue("quarkus.transaction-manager.object-store.directory", String.class),
                         "ShadowNoFileLockStore", "defaultStore", "StateManager", "BasicAction", "TwoPhaseCoordinator",
