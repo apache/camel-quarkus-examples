@@ -1,0 +1,5 @@
+id,customer,type,amount
+ORD-001,Acme Corp,priority,1500.00
+ORD-002,Wayne Enterprises,standard,250.00
+ORD-003,Stark Industries,priority,8900.00
+ORD-004,Daily Planet,standard,75.50

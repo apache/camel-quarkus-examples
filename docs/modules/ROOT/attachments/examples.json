@@ -125,6 +125,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/platform-http-security-keycloak"
   },
   {
+    "title": "Quarkus to Camel Quarkus",
+    "description": "Shows how to add Camel to an existing Quarkus application, step by step",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/quarkus-to-camel-quarkus"
+  },
+  {
     "title": "REST to SOAP with Keycloak and JMS",
     "description": "Demonstrates REST-to-SOAP synchronous bridging with Keycloak security and asynchronous JMS topic events",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/rest-keycloak-soap-jms"
