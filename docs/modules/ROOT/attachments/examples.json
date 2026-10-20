@@ -1,5 +1,10 @@
 [
   {
+    "title": "A2A Support Ticket Triage with OpenAI",
+    "description": "Shows how to build an AI agent that triages customer support tickets with OpenAI and delegates them to specialist agents using the Agent-to-Agent (A2A) protocol",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/a2a-openai"
+  },
+  {
     "title": "AMQP",
     "description": "Shows how to produce and consume messages to an ActiveMQ Artemis broker using AMQP.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/amqp"

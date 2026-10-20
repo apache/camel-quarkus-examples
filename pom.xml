@@ -35,6 +35,7 @@
 
     <!-- Keep sorted alphabetically -->
     <modules>
+        <module>a2a-openai</module>
         <module>amqp</module>
         <module>artemis-elasticsearch</module>
         <module>aws-lambda</module>

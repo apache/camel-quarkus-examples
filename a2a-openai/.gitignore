@@ -1,0 +1,6 @@
+# Written by run.sh and run.ps1
+/*.log
+/*.pid
+
+# The root .gitignore ignores app.* for the Saga example
+!/orchestrator/src/main/resources/META-INF/resources/app.*
