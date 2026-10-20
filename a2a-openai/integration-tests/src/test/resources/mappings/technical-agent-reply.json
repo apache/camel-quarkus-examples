@@ -1,0 +1,57 @@
+{
+  "name": "technical-agent-reply",
+  "request": {
+    "method": "POST",
+    "url": "/chat/completions",
+    "bodyPatterns": [
+      {
+        "contains": "You are a technical support specialist"
+      },
+      {
+        "contains": "Mobile app crashes on login"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "chatcmpl-stub-technical-agent-reply",
+      "object": "chat.completion",
+      "created": 0,
+      "model": "gpt-5-mini-2025-08-07",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Hello,\n\nThank you for reporting this, and sorry that the app is not letting you in. Please try the following steps:\n\n1. Open Android Settings > Apps > Acme, then clear the cache and the storage of the app and sign in again.\n2. Make sure the device is not using a battery saver or VPN profile that blocks background connections.\n3. Update to the latest version from the Play Store, as 4.2.1 is no longer the current release.\n\nIf the app still crashes, please reply with the exact time of the last crash and whether you use a Google or an email based login, so that we can look at the logs from our side.\n\nKind regards,\nAcme Technical Support",
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 411,
+        "completion_tokens": 298,
+        "total_tokens": 709,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 149,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "service_tier": "default",
+      "system_fingerprint": null
+    }
+  }
+}

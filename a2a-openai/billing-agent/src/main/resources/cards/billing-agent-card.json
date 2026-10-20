@@ -1,0 +1,44 @@
+{
+  "protocolVersion": "1.0",
+  "name": "Billing Support Agent",
+  "description": "Drafts replies to customer support tickets about invoices, payments, refunds and subscriptions",
+  "version": "1.0.0",
+  "provider": {
+    "name": "Acme Customer Care",
+    "url": "https://support.example.com"
+  },
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["text/plain"],
+  "skills": [
+    {
+      "id": "draft-billing-reply",
+      "name": "Draft billing reply",
+      "description": "Drafts a reply to a billing related support ticket, including refund and invoice questions",
+      "tags": ["billing", "payments", "refunds", "subscriptions"],
+      "examples": ["I was charged twice for my subscription this month"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    }
+  ],
+  "securitySchemes": {
+    "apiKey": {
+      "apiKeySecurityScheme": {
+        "location": "header",
+        "name": "X-API-Key"
+      }
+    }
+  },
+  "securityRequirements": [
+    {
+      "schemes": {
+        "apiKey": {
+          "list": []
+        }
+      }
+    }
+  ]
+}
