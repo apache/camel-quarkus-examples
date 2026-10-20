@@ -27,6 +27,7 @@ core (e.g. GitHub issues instead of JIRA).
 
 - Build: Maven 3.9+ (use the provided `./mvnw` wrapper)
 - Java: 21+ (CI also exercises JDK 25)
+- GraalVM 25+ / Mandrel 25+ for native builds
 - BOMs: `quarkus-bom` + `quarkus-camel-bom` (extension versions are inherited,
   never pinned per-dependency)
 - Tests: `@QuarkusTest` (JVM) and `@QuarkusIntegrationTest` (packaged/native)
@@ -84,12 +85,15 @@ mvn clean compile quarkus:dev
 mvn clean package
 java -jar target/quarkus-app/quarkus-run.jar
 
-# native build + run (needs GraalVM or the container builder)
+# native build + run
 mvn clean package -Dnative
 ./target/*-runner
 
 # tests
 mvn clean test
+
+# native build + @QuarkusIntegrationTest (*IT) tests
+mvn clean verify -Dnative
 
 # license / formatting / imports (run before pushing)
 mvn license:check formatter:validate impsort:check
@@ -123,8 +127,8 @@ formatting, compilation, tests, and native builds (Linux/Windows, JDK 21/25).
    ```
 2. Implement the routes/beans under `org.acme.<domain>.<feature>`, configure
    `application.properties`, add tests, and complete the generated `README.adoc`.
-3. Verify locally: `mvn clean test`, `mvn quarkus:dev`, and — if the example is
-   expected to — `mvn clean package -Dnative`.
+3. Verify locally: `mvn clean test`, `mvn quarkus:dev`, and
+   `mvn clean verify -Dnative`.
 4. Run `mvn license:check formatter:validate impsort:check`.
 5. Open the PR from your fork **against `camel-quarkus-main`**, reference the
    GitHub issue (if any), and request review from active committers.
