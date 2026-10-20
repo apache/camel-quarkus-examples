@@ -63,11 +63,15 @@ class Langchain4jIngestRagTest {
 
     }
 
-    /** Ingestion runs in the background after startup: wait until the return policy is searchable. */
+    /**
+     * Ingestion runs in the background after startup: wait until the return policy is searchable. The other documents
+     * also mention "30 days", so the hit must come from the policy document itself.
+     */
     static List<Map<String, Object>> awaitReturnPolicy() {
         return await().atMost(3, TimeUnit.MINUTES).pollInterval(1, TimeUnit.SECONDS)
                 .until(() -> search("How long do I have to return a product?"),
-                        hits -> hits.stream().anyMatch(hit -> String.valueOf(hit.get("text")).contains("30 days")));
+                        hits -> hits.stream().anyMatch(hit -> "company-policy.md".equals(hit.get("document"))
+                                && String.valueOf(hit.get("text")).contains("within 30 days of delivery")));
     }
 
     static List<Map<String, Object>> search(String question) {
