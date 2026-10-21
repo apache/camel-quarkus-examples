@@ -17,10 +17,10 @@
 package org.acme.spring.redis;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -32,10 +32,10 @@ import static org.awaitility.Awaitility.await;
 class SpringRedisTest {
 
     @Test
-    public void testSendAndReceive() {
+    public void testSendAndReceive(TestLog testLog) {
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    String log = Files.readString(Paths.get("target/quarkus.log"));
+                    String log = Files.readString(testLog.getLogFilePath());
                     Assertions.assertTrue(log.contains("Received value: Hello Redis!"));
                     Assertions.assertTrue(log.contains("Received message: Hello Redis from the topic!"));
                 });

@@ -16,12 +16,14 @@
  */
 package org.acme.main;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
@@ -33,7 +35,7 @@ import static org.awaitility.Awaitility.await;
 public class VariablesTest {
 
     @Test
-    public void testVariables() {
+    public void testVariables(TestLog testLog) {
         Config config = ConfigProvider.getConfig();
         String greeting = config.getValue("camel.variable.greeting", String.class);
         String contextName = config.getValue("camel.context.name", String.class);
@@ -42,9 +44,13 @@ public class VariablesTest {
         Pattern p = Pattern.compile(String.format(".* %s from %s: \\d.*", greeting, contextName), Pattern.DOTALL);
 
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
-            String log = new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8);
+            String log = new String(Files.readAllBytes(logFilePath(testLog)), StandardCharsets.UTF_8);
             return log.contains(String.format("%s : %s", greeting, initRandom)) &&
                     p.matcher(log).matches();
         });
+    }
+
+    protected Path logFilePath(TestLog testLog) throws IOException {
+        return testLog.getLogFilePath();
     }
 }

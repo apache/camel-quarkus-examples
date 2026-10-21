@@ -18,9 +18,9 @@ package org.acme.file.xml;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -30,10 +30,10 @@ import static org.awaitility.Awaitility.await;
 public class FileSplitLogXmlTest {
 
     @Test
-    public void testFileSplitLogXml() {
+    public void testFileSplitLogXml(TestLog testLog) {
         // Verify that all 10 items were output to the log
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
-            String log = new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8);
+            String log = new String(Files.readAllBytes(testLog.getLogFilePath()), StandardCharsets.UTF_8);
             return log.contains("line 10 contains: Richard,WILSON");
         });
     }

@@ -17,12 +17,12 @@
 package org.apache.camel.example.saga;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import org.awaitility.Awaitility;
@@ -40,7 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @QuarkusTest
 @QuarkusTestResource(SagaTestResource.class)
 public class SagaBasicTest {
-    private static final String LOG_FILE = "target/quarkus.log";
     private static final Logger LOG = Logger.getLogger(SagaBasicTest.class.getName());
 
     /**
@@ -48,7 +47,7 @@ public class SagaBasicTest {
      * Payment service has 15% random failure rate, so either scenario is valid.
      */
     @Test
-    public void testSagaWithLRAAndRandomOutcomes() throws Exception {
+    public void testSagaWithLRAAndRandomOutcomes(TestLog testLog) throws Exception {
         // Trigger saga asynchronously (may timeout on payment failure, which is expected)
         CompletableFuture.runAsync(() -> {
             try {
@@ -63,7 +62,7 @@ public class SagaBasicTest {
         // Wait for saga to start and process fully
         // In native mode, we need to wait longer for all messages to be logged
         await().atMost(60, TimeUnit.SECONDS).untilAsserted(() -> {
-            String log = Files.readString(Paths.get(LOG_FILE));
+            String log = Files.readString(testLog.getLogFilePath());
             assertTrue(log.contains("Executing saga #1"), "Saga should start with LRA");
 
             // Wait until we see evidence of completion (success or failure)
@@ -78,7 +77,7 @@ public class SagaBasicTest {
                 .pollInterval(Duration.ofMillis(250))
                 .atMost(Duration.ofMinutes(1))
                 .untilAsserted(() -> {
-                    String log = Files.readString(Paths.get(LOG_FILE));
+                    String log = Files.readString(testLog.getLogFilePath());
 
                     // Verify LRA coordinator is used
                     assertTrue(log.contains("lra-coordinator"), "Should use LRA coordinator");

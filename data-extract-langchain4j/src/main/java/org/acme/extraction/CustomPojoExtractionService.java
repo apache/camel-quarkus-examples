@@ -35,10 +35,12 @@ import org.apache.camel.Handler;
 @ApplicationScoped
 public interface CustomPojoExtractionService {
 
+    // Boxed / int fields avoid a native mode deserialization issue with primitive boolean and short fields
+    // https://github.com/quarkusio/quarkus/issues/57275
     @RegisterForReflection(registerFullHierarchy = true)
     class CustomPojo {
         @JsonProperty(required = true)
-        public boolean customerSatisfied;
+        public Boolean customerSatisfied;
         @JsonProperty(required = true)
         public String customerName;
         @JsonProperty(required = true)
@@ -59,9 +61,9 @@ public interface CustomPojoExtractionService {
         @JsonProperty(required = true)
         public int year;
         @JsonProperty(required = true)
-        public short month;
+        public int month;
         @JsonProperty(required = true)
-        public short day;
+        public int day;
     }
 
     String CUSTOM_POJO_EXTRACT_PROMPT = "Extract information about a customer from the transcript delimited by triple backticks: ```{{text}}```."

@@ -16,10 +16,12 @@
  */
 package org.acme.netty.custom.correlation;
 
+import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,15 +32,19 @@ import static org.awaitility.Awaitility.await;
 class NettyCustomCorrelationTest {
 
     @Test
-    public void testWithCorrelation() {
+    public void testWithCorrelation(TestLog testLog) {
         await().atMost(20L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    String log = Files.readString(Paths.get("target/quarkus.log"));
+                    String log = Files.readString(logFilePath(testLog));
                     //we should receive both correlated and uncorrelated response
                     Assertions.assertTrue(log.contains("(correct reply)"));
                     Assertions.assertFalse(log.contains("(wrong reply)"));
                     //we should wait for at least 5 responses
                     Assertions.assertTrue(log.contains("Server response: #5"));
                 });
+    }
+
+    protected Path logFilePath(TestLog testLog) throws IOException {
+        return testLog.getLogFilePath();
     }
 }

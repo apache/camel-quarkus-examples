@@ -16,11 +16,13 @@
  */
 package org.acme.master;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -30,11 +32,14 @@ import static org.awaitility.Awaitility.await;
 public class MasterTest {
 
     @Test
-    public void testLog() {
+    public void testLog(TestLog testLog) {
         await().atMost(30L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
-            String log = new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8);
+            String log = new String(Files.readAllBytes(logFilePath(testLog)), StandardCharsets.UTF_8);
             return log.contains("Clustered route (timer)");
         });
     }
 
+    protected Path logFilePath(TestLog testLog) throws IOException {
+        return testLog.getLogFilePath();
+    }
 }

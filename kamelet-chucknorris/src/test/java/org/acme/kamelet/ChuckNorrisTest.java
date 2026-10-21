@@ -17,11 +17,11 @@
 package org.acme.kamelet;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +31,9 @@ import static org.awaitility.Awaitility.await;
 @QuarkusTest
 public class ChuckNorrisTest {
     @Test
-    public void chuckNorrisKamelet() {
+    public void chuckNorrisKamelet(TestLog testLog) {
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
-            List<String> log = Files.readAllLines(Paths.get("target/quarkus.log"));
+            List<String> log = Files.readAllLines(testLog.getLogFilePath());
             return log.stream().anyMatch(line -> line.matches(".*timer.*Chuck.*"));
         });
     }

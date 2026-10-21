@@ -16,7 +16,7 @@
  */
 package org.acme.observability.devmode;
 
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 import io.quarkus.arc.profile.IfBuildProfile;
 import io.vertx.ext.web.Router;
 import jakarta.enterprise.context.ApplicationScoped;

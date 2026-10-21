@@ -18,9 +18,9 @@ package org.acme.http;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
+import io.quarkus.test.common.TestLog;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
@@ -31,13 +31,13 @@ import static org.awaitility.Awaitility.await;
 public class HttpLogTest {
 
     @Test
-    public void testHttpLog() {
+    public void testHttpLog(TestLog testLog) {
         RestAssured.get("/camel/hello")
                 .then()
                 .statusCode(200);
 
         await().atMost(10L, TimeUnit.SECONDS).pollDelay(1, TimeUnit.SECONDS).until(() -> {
-            String log = new String(Files.readAllBytes(Paths.get("target/quarkus.log")), StandardCharsets.UTF_8);
+            String log = new String(Files.readAllBytes(testLog.getLogFilePath()), StandardCharsets.UTF_8);
             return log.contains("Camel runs on");
         });
     }
