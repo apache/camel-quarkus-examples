@@ -94,10 +94,6 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-resteasy-jackson</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-kubernetes-config</artifactId>
-        </dependency>
 
         <!-- For oauth use case -->
         <dependency>
@@ -341,6 +337,10 @@
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-container-image-jib</artifactId>
                 </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes-config</artifactId>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -361,6 +361,10 @@
                 <dependency>
                     <groupId>io.quarkus</groupId>
                     <artifactId>quarkus-container-image-openshift</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.quarkus</groupId>
+                    <artifactId>quarkus-kubernetes-config</artifactId>
                 </dependency>
             </dependencies>
         </profile>
