@@ -22,6 +22,7 @@ import java.util.Map;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -41,12 +42,16 @@ public class SagaTestResource implements QuarkusTestResourceLifecycleManager {
     private GenericContainer<?> artemisContainer;
     private Network network;
 
+    private static String image(String property, String defaultImage) {
+        return ConfigProvider.getConfig().getOptionalValue(property, String.class).orElse(defaultImage);
+    }
+
     @Override
     public Map<String, String> start() {
         network = Network.newNetwork();
 
         // Start Artemis broker
-        artemisContainer = new GenericContainer<>(ARTEMIS_IMAGE)
+        artemisContainer = new GenericContainer<>(image("artemis.container.image", ARTEMIS_IMAGE))
                 .withNetwork(network)
                 .withNetworkAliases("artemis")
                 .withEnv("AMQ_USER", "admin")
@@ -58,7 +63,7 @@ public class SagaTestResource implements QuarkusTestResourceLifecycleManager {
         artemisContainer.start();
 
         // Start LRA Coordinator
-        lraContainer = new GenericContainer<>(LRA_IMAGE)
+        lraContainer = new GenericContainer<>(image("lra-coordinator.container.image", LRA_IMAGE))
                 .withNetwork(network)
                 .withNetworkAliases("lra-coordinator")
                 .withEnv("QUARKUS_HTTP_PORT", String.valueOf(LRA_PORT))

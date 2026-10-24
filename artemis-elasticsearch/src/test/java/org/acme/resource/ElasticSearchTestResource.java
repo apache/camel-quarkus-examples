@@ -21,6 +21,7 @@ import java.util.Map;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -29,14 +30,15 @@ import org.testcontainers.utility.DockerImageName;
 
 public class ElasticSearchTestResource implements QuarkusTestResourceLifecycleManager {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticSearchTestResource.class);
+    private static final String DEFAULT_IMAGE = "mirror.gcr.io/elastic/elasticsearch:9.1.0";
+    private static final String PPC64LE_IMAGE = "icr.io/ppc64le-oss/elasticsearch-ppc64le:8.3.3";
     private ElasticsearchContainer container;
 
     @Override
     public Map<String, String> start() {
-        String imageName = "mirror.gcr.io/elastic/elasticsearch:9.1.0";
-        if ("ppc64le".equals(SystemUtils.OS_ARCH)) {
-            imageName = "icr.io/ppc64le-oss/elasticsearch-ppc64le:8.3.3";
-        }
+        String imageName = ConfigProvider.getConfig()
+                .getOptionalValue("elasticsearch.container.image", String.class)
+                .orElseGet(() -> "ppc64le".equals(SystemUtils.OS_ARCH) ? PPC64LE_IMAGE : DEFAULT_IMAGE);
 
         DockerImageName parsedImageName = DockerImageName.parse(imageName)
                 .asCompatibleSubstituteFor("docker.elastic.co/elasticsearch/elasticsearch");

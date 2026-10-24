@@ -21,6 +21,7 @@ import java.util.Map;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -28,14 +29,15 @@ public class CustomPahoTestResource implements QuarkusTestResourceLifecycleManag
     private static final String AMQ_USER = "admin";
     private static final String AMQ_PASSWORD = "admin";
     private static final String AMQ_EXTRA_ARGS = "--relax-jolokia --no-autotune --mapped --no-fsync --java-options=-Dbrokerconfig.maxDiskUsage=-1";
+    private static final String DEFAULT_IMAGE = "quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0";
+    private static final String PPC64LE_IMAGE = "icr.io/ppc64le-oss/activemq-artemis-broker-ppc64le:2.0.2";
     private GenericContainer<?> container;
 
     @Override
     public Map<String, String> start() {
-        String imageName = "quay.io/arkmq-org/activemq-artemis-broker:artemis.2.52.0";
-        if ("ppc64le".equals(SystemUtils.OS_ARCH)) {
-            imageName = "icr.io/ppc64le-oss/activemq-artemis-broker-ppc64le:2.0.2";
-        }
+        String imageName = ConfigProvider.getConfig()
+                .getOptionalValue("artemis.container.image", String.class)
+                .orElseGet(() -> "ppc64le".equals(SystemUtils.OS_ARCH) ? PPC64LE_IMAGE : DEFAULT_IMAGE);
 
         container = new GenericContainer<>(DockerImageName.parse(imageName))
                 .withExposedPorts(61616, 8161, 1883)
