@@ -47,7 +47,6 @@
         <module>fhir</module>
         <module>file-bindy-ftp</module>
         <module>file-split-log-xml</module>
-        <module>health</module>
         <module>http-log</module>
         <module>http-pqc</module>
         <module>jdbc-datasource</module>

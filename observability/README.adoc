@@ -149,6 +149,24 @@ You'll see these listed in the health JSON as 'custom-liveness-check' and 'custo
 
 You can also directly leverage MicroProfile Health APIs to create checks. Class `CamelUptimeHealthCheck` demonstrates how to register a readiness check.
 
+==== Supervised routes
+
+The example enables the Camel supervising route controller (`camel.routecontroller.enabled = true` in `application.properties`).
+If a route fails to start, for example because a remote system it consumes from is unavailable, the application
+still starts. The controller then keeps trying to start the route in the background, with a backoff between each attempt.
+
+While the controller is restarting a route, the `camel-routes` readiness check reports that route as DOWN.
+If every restart attempt fails, the route is reported as DOWN by default, or as UNKNOWN if you set
+`camel.routecontroller.unhealthy-on-exhausted = false`. You can tune the backoff with options such as
+`camel.routecontroller.back-off-max-attempts` and `camel.routecontroller.back-off-delay`.
+
+`application.properties` also has commented examples of the `camel.health.*` options. You can use them to turn the
+built-in checks on or off, exclude checks with `camel.health.exclude-pattern`, or change how much detail the health
+endpoints show with `camel.health.exposure-level`.
+
+TIP: Refer to the https://camel.apache.org/manual/route-controller.html[route controller] and https://camel.apache.org/manual/health-check.html[health check]
+documentation for the full list of options.
+
 === Tracing
 
 To be able to diagnose problems in Camel Quarkus applications, it's useful to instrument method calls, HTTP interactions etc with OpenTelemetry.
