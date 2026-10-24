@@ -63,6 +63,7 @@
         <module>openapi-contract-first</module>
         <module>platform-http-security-keycloak</module>
         <module>quarkus-rest-json</module>
+        <module>quarkus-to-camel-quarkus</module>
         <module>rest-json</module>
         <module>rest-keycloak-soap-jms</module>
         <module>saga</module>

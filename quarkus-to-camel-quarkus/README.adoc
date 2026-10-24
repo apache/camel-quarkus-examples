@@ -1,0 +1,108 @@
+= Quarkus to Camel Quarkus: A Camel Quarkus example
+:cq-example-description: An example that shows how to add Camel to an existing Quarkus application, step by step
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites and other general information.
+
+== Overview
+
+This example contains two modules that demonstrate a before/after approach to adding Camel Quarkus to an existing Quarkus application:
+
+**quarkus-orders** — the starting point: a plain Quarkus REST application for managing orders, with no Camel dependency.
+
+**camel-quarkus-orders** — the enhanced version: the same application extended with Camel routes that add:
+
+* **Kafka event publishing** via the `direct` and `kafka` components
+* **HTTP calls with retries** to a loyalty notification service, with exception handling and back-off
+* **CSV file ingestion** using the `file` and `csv` components, with split/transform processing
+
+== Prerequisites
+
+The `camel-quarkus-orders` module requires a Kafka broker. In development mode (`mvn quarkus:dev`) and during tests (`mvn test`), Quarkus Dev Services automatically starts a Strimzi Kafka container without any manual setup needed.
+
+== Start in Development mode
+
+You can run either module independently.
+
+=== Plain Quarkus application (quarkus-orders)
+
+[source,shell]
+----
+cd quarkus-orders
+mvn clean compile quarkus:dev
+----
+
+=== Camel-enhanced application (camel-quarkus-orders)
+
+[source,shell]
+----
+cd camel-quarkus-orders
+mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+=== Try it out
+
+Create an order:
+
+[source,shell]
+----
+curl -X POST http://localhost:8080/api/orders \
+  -H "Content-Type: application/json" \
+  -d '{"id":"ORD-001","customer":"Acme Corp","type":"priority","amount":1500.00}'
+----
+
+List orders:
+
+[source,shell]
+----
+curl http://localhost:8080/api/orders
+----
+
+In the `camel-quarkus-orders` version, creating an order also triggers a Camel route that publishes to Kafka and notifies a mock loyalty service.
+
+To test CSV file ingestion (camel-quarkus-orders only), drop a CSV file into `orders/incoming` (relative to the directory where the app was started):
+
+[source,shell]
+----
+cp sample-data/orders.csv orders/incoming/
+----
+
+The file is processed, orders are stored, and the file is moved to `orders/done`.
+
+=== Package and run the application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+==== JVM mode
+
+[source,shell]
+----
+cd camel-quarkus-orders
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
+----
+
+==== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+cd camel-quarkus-orders
+mvn clean package -DskipTests -Dnative
+./target/*-runner
+----
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.
