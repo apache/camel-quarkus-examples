@@ -1,0 +1,57 @@
+{
+  "name": "technical-agent-direct-reply",
+  "request": {
+    "method": "POST",
+    "url": "/chat/completions",
+    "bodyPatterns": [
+      {
+        "contains": "You are a technical support specialist"
+      },
+      {
+        "contains": "settings screen"
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": "chatcmpl-stub-technical-agent-direct-reply",
+      "object": "chat.completion",
+      "created": 0,
+      "model": "gpt-5-mini-2025-08-07",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "Hello,\n\nThank you for reporting this, and sorry for the trouble. Please try the following steps:\n\n1. Force close the app, then open it again and go to the settings screen.\n2. Clear the cache of the app from the system settings of your device.\n3. Update to the latest version from the app store.\n\nIf the app still crashes, please reply with your device model, the app version and the time of the last crash so that we can check the logs.\n\nKind regards,\nAcme Technical Support",
+            "refusal": null,
+            "annotations": []
+          },
+          "logprobs": null,
+          "finish_reason": "stop"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 349,
+        "completion_tokens": 205,
+        "total_tokens": 554,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "audio_tokens": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 105,
+          "audio_tokens": 0,
+          "accepted_prediction_tokens": 0,
+          "rejected_prediction_tokens": 0
+        }
+      },
+      "service_tier": "default",
+      "system_fingerprint": null
+    }
+  }
+}

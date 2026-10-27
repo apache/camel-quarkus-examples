@@ -1,0 +1,149 @@
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Support Ticket Triage</title>
+    <link rel="stylesheet" href="app.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+<header class="masthead">
+    <div class="brand">
+        <span class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path d="M4 6h16M4 12h10M4 18h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/><circle cx="19" cy="16" r="3.2" fill="currentColor"/></svg>
+        </span>
+        <div>
+            <h1>Support Ticket Triage</h1>
+            <p class="tagline">Camel Quarkus &middot; OpenAI &middot; Agent-to-Agent protocol</p>
+        </div>
+        <p class="llm" id="llm" hidden>
+            <span class="llm-dot" aria-hidden="true"></span>
+            <span class="llm-provider"></span>
+            <span class="llm-model"></span>
+        </p>
+    </div>
+</header>
+
+<main class="layout">
+    <section class="panel" aria-labelledby="compose-title">
+        <h2 id="compose-title">New ticket</h2>
+        <div class="samples" role="group" aria-label="Sample tickets">
+            <span class="samples-label">Try a sample</span>
+            <button type="button" class="chip" data-sample="billing">Billing</button>
+            <button type="button" class="chip" data-sample="technical">Technical</button>
+            <button type="button" class="chip" data-sample="general">General</button>
+        </div>
+        <form id="ticket-form" novalidate>
+            <label for="subject">Subject</label>
+            <input id="subject" name="subject" type="text" maxlength="200" autocomplete="off" required
+                   placeholder="What is the problem about?">
+            <label for="body">
+                Message
+                <span class="counter" id="body-counter">0 / 4000</span>
+            </label>
+            <textarea id="body" name="body" rows="8" maxlength="4000" required
+                      placeholder="Describe the problem as the customer would"></textarea>
+            <div class="actions">
+                <button type="submit" id="submit" class="primary">
+                    <span class="label">Submit ticket</span>
+                    <span class="spinner" aria-hidden="true"></span>
+                </button>
+                <button type="button" id="new-ticket" class="secondary">New ticket</button>
+                <span class="hint">Ctrl / &#8984; + Enter</span>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel" aria-labelledby="flow-title">
+        <div class="panel-head">
+            <h2 id="flow-title">Flow</h2>
+            <span class="elapsed" id="elapsed" aria-live="polite"></span>
+        </div>
+        <ol class="flow" id="flow">
+            <li class="node" data-node="ticket">
+                <span class="node-title">Ticket</span>
+                <span class="node-sub">POST /tickets</span>
+            </li>
+            <li class="edge" data-edge="triage" aria-hidden="true"></li>
+            <li class="node" data-node="triage">
+                <span class="node-title">Triage agent</span>
+                <span class="node-sub">openai:chat-completion</span>
+            </li>
+            <li class="edge" data-edge="route" aria-hidden="true">
+                <svg class="connectors" id="connectors" focusable="false">
+                    <g class="connector" data-branch="BILLING"><path/><polygon/></g>
+                    <g class="connector" data-branch="TECHNICAL"><path/><polygon/></g>
+                    <g class="connector" data-branch="GENERAL"><path/><polygon/></g>
+                </svg>
+            </li>
+            <li class="branches">
+                <div class="node" data-node="BILLING">
+                    <span class="node-title">Billing agent</span>
+                    <span class="node-sub">A2A &middot; :8081</span>
+                </div>
+                <div class="node" data-node="TECHNICAL">
+                    <span class="node-title">Technical agent</span>
+                    <span class="node-sub">A2A &middot; :8082</span>
+                </div>
+                <div class="node" data-node="GENERAL">
+                    <span class="node-title">Human</span>
+                    <span class="node-sub">Escalated</span>
+                </div>
+            </li>
+        </ol>
+
+        <div id="result" class="result" aria-live="polite">
+            <p class="placeholder">Submit a ticket to see how it is triaged and which agent drafts the reply.</p>
+        </div>
+    </section>
+
+    <section class="panel history-panel" aria-labelledby="history-title">
+        <div class="panel-head">
+            <h2 id="history-title">This session</h2>
+            <button type="button" class="link" id="clear-history" hidden>Clear</button>
+        </div>
+        <ul id="history" class="history"></ul>
+        <p class="placeholder" id="history-empty">Tickets you submit appear here.</p>
+    </section>
+</main>
+
+<template id="result-template">
+    <div class="badges">
+        <span class="badge category"></span>
+        <span class="badge priority"></span>
+        <span class="badge status"></span>
+    </div>
+    <p class="summary"></p>
+    <div class="reply-wrap">
+        <div class="reply-head">
+            <span class="handled-by"></span>
+            <button type="button" class="link copy">Copy reply</button>
+        </div>
+        <pre class="reply"></pre>
+    </div>
+    <dl class="meta">
+        <dt>Ticket</dt><dd class="ticket-id"></dd>
+        <dt>A2A task</dt><dd class="task-id"></dd>
+    </dl>
+</template>
+</body>
+</html>
