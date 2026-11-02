@@ -19,9 +19,13 @@ package org.acme.orders;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 @ApplicationScoped
 public class OrderEventRoute extends RouteBuilder {
+
+    @ConfigProperty(name = "loyalty.api.url")
+    String loyaltyApiUrl;
 
     @Override
     public void configure() {
@@ -40,7 +44,7 @@ public class OrderEventRoute extends RouteBuilder {
                 .to("kafka:order-events")
                 .log("Order event sent to Kafka")
                 .setHeader("Content-Type", constant("application/json"))
-                .to("http://{{loyalty.api.url}}/api/loyalty/notify")
+                .to("http://" + loyaltyApiUrl + "/api/loyalty/notify")
                 .log("Loyalty service notified");
     }
 }
