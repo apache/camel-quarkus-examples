@@ -173,12 +173,12 @@ The test suite validates:
 
 * **PqcOnlyTest**: Proves X25519MLKEM768 is enforced
   - BCJSSE client ✓ succeeds (supports X25519MLKEM768)
-  - SunJSSE client ✗ fails (no PQC support)
+  - SunJSSE client restricted to classical named groups ✗ fails (no PQC support offered)
   - This proves the server requires PQC with no classical fallback
 
 * **PqcWithFallbackTest**: Demonstrates backward compatibility
   - BCJSSE client ✓ succeeds (uses X25519MLKEM768)
-  - SunJSSE client ✓ succeeds (falls back to secp256r1)
+  - SunJSSE client ✓ succeeds (falls back to a classical group on JDK builds without X25519MLKEM768 support)
   - This proves gradual migration is possible
 
 Run individual tests:

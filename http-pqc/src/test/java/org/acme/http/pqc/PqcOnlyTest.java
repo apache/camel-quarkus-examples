@@ -27,13 +27,15 @@ import org.junit.jupiter.api.Test;
  *
  * Expected results:
  * - BCJSSE: SUCCESS (supports X25519MLKEM768)
- * - SunJSSE: FAILURE (does not support X25519MLKEM768)
+ * - SunJSSE restricted to classical named groups: FAILURE (no key exchange group in common with the server)
  *
- * This proves that X25519MLKEM768 requires BouncyCastle JSSE.
+ * This proves that the server rejects clients that do not offer X25519MLKEM768. The client is restricted explicitly
+ * because SunJSSE supports X25519MLKEM768 on recent JDK builds (e.g. 25.0.5+).
  *
  * Note: @Order(2) ensures this test runs AFTER PqcWithFallbackTest.
- * SunJSSE's static initialization fails with PQC-only config and permanently marks the
- * class as failed. The fallback test must run first to validate SunJSSE works with classical algorithms.
+ * On JDK builds where SunJSSE does not support X25519MLKEM768, its static initialization fails with PQC-only config
+ * and permanently marks the class as failed. The fallback test must run first to validate SunJSSE works with
+ * classical algorithms.
  *
  * This test doesn't have a native *IT child, because the native executable can be build only with 1 configuration.
  */
@@ -54,6 +56,6 @@ class PqcOnlyTest extends AbstractPqcTest {
 
     @Test
     void testHttpClientWithSunJSSE() throws Exception {
-        testHttpClientConnection("SunJSSE", true);
+        testHttpClientConnection("SunJSSE", true, "x25519", "secp256r1");
     }
 }

@@ -22,6 +22,8 @@ import java.security.Security;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 import io.restassured.RestAssured;
@@ -39,7 +41,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Abstract base class for PQC tests with explicit JSSE provider selection.
- * Tests both BCJSSE (PQC-capable) and SunJSSE (classical only) providers.
+ * Tests both BCJSSE (PQC-capable) and SunJSSE (PQC-capable only on recent JDK builds, e.g. 25.0.5+) providers.
  *
  * Certificates are generated before tests via CertificateTestResource.
  */
@@ -75,14 +77,24 @@ abstract class AbstractPqcTest {
                 .statusCode(200);
     }
 
-    void testHttpClientConnection(String securityProvider, boolean expectFailure) throws Exception {
+    void testHttpClientConnection(String securityProvider, boolean expectFailure, String... clientNamedGroups)
+            throws Exception {
         try {
             SSLContext sslContext = createSslContext(securityProvider);
             SSLSocketFactory sslSocketFactory = new SSLSocketFactory(
                     sslContext,
                     new String[] { "TLSv1.3" },
                     null,
-                    SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+                    SSLSocketFactory.STRICT_HOSTNAME_VERIFIER) {
+                @Override
+                protected void prepareSocket(SSLSocket socket) {
+                    if (clientNamedGroups.length > 0) {
+                        SSLParameters sslParameters = socket.getSSLParameters();
+                        sslParameters.setNamedGroups(clientNamedGroups);
+                        socket.setSSLParameters(sslParameters);
+                    }
+                }
+            };
 
             LOG.info("Testing with " + securityProvider + " provider on port " + RestAssured.port);
 
