@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  *
  * Expected results:
  * - BCJSSE: SUCCESS (supports X25519MLKEM768 and fallback)
- * - SunJSSE: SUCCESS (ignores X25519MLKEM768, uses secp256r1 fallback)
+ * - SunJSSE: SUCCESS (uses a classical fallback on JDK builds without X25519MLKEM768 support)
  *
  * Note: @Order(1) ensures this test runs BEFORE PqcOnlyTest in JVM mode.
  * This test must run first because SunJSSE can successfully initialize with the fallback
