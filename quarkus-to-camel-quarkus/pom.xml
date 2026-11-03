@@ -29,7 +29,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <quarkus.platform.version>4.0.0.Beta1</quarkus.platform.version>
+        <quarkus.platform.version>4.0.0.Beta2</quarkus.platform.version>
         <camel-quarkus.platform.version>4.0.0-SNAPSHOT</camel-quarkus.platform.version>
 
         <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
