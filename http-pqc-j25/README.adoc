@@ -1,0 +1,184 @@
+= HTTP with Post-Quantum Cryptography (PQC): A Camel Quarkus example (Java 25)
+:cq-example-description: An example that shows how to implement quantum-resistant TLS with the Quarkus TLS registry, using the hybrid X25519MLKEM768 key exchange built into the JDK (Java 27, or Java 25 from its October 2026 update)
+
+{cq-description}
+
+This example serves a Camel `platform-http` endpoint over TLS 1.3 with a hybrid post-quantum key exchange: X25519MLKEM768 combines classical X25519 ECDH with the quantum-resistant ML-KEM-768 (NIST FIPS 203). The key exchange is configured through the Quarkus TLS registry and performed by the TLS implementation of the JDK (JEP 527), so no security provider or native library is needed.
+
+NOTE: CI runs with JDK 21 and 25. The tests skip themselves on a JDK without post-quantum TLS support, so they run on the JDK 25 job once it uses the October 2026 update, and locally with Java 25 (October 2026 update) or Java 27.
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites and other general information.
+
+== What is Post-Quantum Cryptography?
+
+Post-Quantum Cryptography (PQC) protects against "harvest now, decrypt later" attacks, where adversaries capture encrypted data today to decrypt it once quantum computers become available. A hybrid key exchange keeps the classical security even if the post-quantum algorithm turns out to be broken.
+
+NOTE: Certificates use traditional RSA signatures. The PQC protection comes from the hybrid key exchange negotiated during the TLS handshake, not from the certificate signatures. For Java 21 without that update, see the `http-pqc` example (hybrid key exchange with the BouncyCastle JSSE provider); the `http-pqc-j17` example on the `main` branch (Camel Quarkus 3.40.x) shows post-quantum certificate signatures validated by the application on Java 17.
+
+== How it works
+
+The JDK supports the hybrid post-quantum groups in its TLS 1.3 implementation since https://openjdk.org/jeps/527[JEP 527], see <<prerequisites>> for the Java versions, and offers X25519MLKEM768 first by default. On such a JDK a PQC capable client negotiates the hybrid group out of the box, even with the default `relaxed` policy of the Quarkus TLS registry. What the registry adds is enforcement, configured with a single property in `application.properties`:
+
+[source,properties]
+----
+quarkus.tls.pqc-enforcement-policy = client-negotiated
+----
+
+The policy decides which key exchange groups the server offers:
+
+* `relaxed` (default): no enforcement, the TLS engine uses its own defaults.
+* `client-negotiated`: X25519MLKEM768, SecP256r1MLKEM768 and SecP384r1MLKEM1024 are offered first, then the classical groups X25519, secp256r1, x448, secp384r1 and secp521r1. PQC capable clients negotiate a hybrid group, other clients fall back to a classical one.
+* `strict`: only X25519MLKEM768, SecP256r1MLKEM768 and SecP384r1MLKEM1024 are offered. Clients that do not negotiate a post-quantum group are rejected.
+
+Two more properties are available. `quarkus.tls.key-exchange-groups` replaces the groups of the policy with an explicit, ordered list, and `quarkus.tls.ssl-engine` forces `openssl` or `jdkssl` instead of the automatic selection.
+
+With `client-negotiated` and `strict`, Quarkus checks at startup that the TLS engine supports post-quantum key exchange and uses the JDK TLS implementation when it does. On a JDK without that support the application fails to start unless the OpenSSL engine (OpenSSL 3.5+ on Linux, `io.smallrye:smallrye-openssl` dependency) is available, see the https://quarkus.io/guides/tls-registry-reference[Quarkus TLS registry reference]. The check reads the default named groups of the JDK, so a `jdk.tls.namedGroups` system property that leaves out the hybrid groups disables the support, and with it the tests of this example.
+
+IMPORTANT: When you set `quarkus.tls.key-exchange-groups` with `strict`, list post-quantum groups only. Vert.x treats a list containing a classical group as invalid under `strict` and replaces the whole list with the default post-quantum groups, so the server then accepts more groups than configured (https://github.com/quarkusio/quarkus/issues/56774[quarkusio/quarkus#56774], closed as working as intended). With `client-negotiated`, the list is applied as configured, and the default post-quantum groups are prepended to a list without any. With `relaxed`, a startup warning says that post-quantum groups are ignored, but the list is applied as well (https://github.com/quarkusio/quarkus/issues/56773[quarkusio/quarkus#56773]).
+
+The server keystore and truststore are also taken from the TLS registry (`quarkus.tls.key-store.*` and `quarkus.tls.trust-store.*`), mutual TLS is enforced with `quarkus.http.ssl.client-auth=required`.
+
+== Certificate Generation
+
+The `smallrye-certificate-generator-maven-plugin` generates a self-signed server certificate (`CN=localhost`, subject alternative names `localhost` and `127.0.0.1`) and a client certificate in `target/certs` during the `generate-resources` phase, so they exist for dev mode, tests and packaged runs alike:
+
+* `pqc-keystore.p12` - server keystore
+* `pqc-server-truststore.p12` - server truststore, trusts the client certificate
+* `pqc-client-keystore.p12` - client keystore
+* `pqc-client-truststore.p12` - client truststore, trusts the server certificate
+* `pqc.crt`, `pqc-client.crt`, `pqc-client.key` - PEM variants for tools such as `curl`
+
+The password of all stores is `changeit`, for demonstration only. The application reads the stores from `target/certs` relative to its working directory, so start it from this directory in JVM and native mode alike. Run `mvn clean` to regenerate the certificates.
+
+[[prerequisites]]
+== Prerequisites
+
+* Java 25 with the October 2026 update, or Java 27 or higher, see the note below
+* Maven 3.9 or later
+* GraalVM (for native mode only)
+
+NOTE: JEP 527 shipped in Java 27 on 15 September 2026. Oracle plans to deliver it to JDK 25 with the October 2026 update (Critical Patch Update of 20 October 2026) and to JDK 21 and 17 in the first half of 2027; other distributions follow the OpenJDK update schedule. The example detects the support at runtime: until the JDK 25 update is available, run it with Java 27, and JDK 21 and 17 work as well once they are updated.
+
+== Start in Development Mode
+
+[source,shell]
+----
+mvn clean compile quarkus:dev
+----
+
+The above command compiles the project, starts the application and lets the Quarkus tooling watch for changes in your workspace. Any modifications in your project will automatically take effect in the running application.
+
+TIP: Please refer to the Development mode section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+The application starts on a random HTTPS port with mutual TLS (mTLS) enabled. The only endpoint, `/pqc/secure`, requires a client certificate. The actual port is displayed in the startup logs:
+
+[source]
+----
+Listening on: https://0.0.0.0:xxxxx
+----
+
+=== Manual Testing
+
+`curl` linked against OpenSSL 3.5+ negotiates X25519MLKEM768 (check `curl --version`). Older versions fall back to a classical group, which the default `client-negotiated` policy allows:
+
+[source,shell]
+----
+curl --curves X25519MLKEM768 \
+     --cert target/certs/pqc-client.crt --key target/certs/pqc-client.key \
+     --cacert target/certs/pqc.crt \
+     https://localhost:xxxxx/pqc/secure
+Secure data delivered via Post-Quantum Cryptography (PQC)!
+...
+----
+
+To see which group was negotiated:
+
+[source,shell]
+----
+openssl s_client -groups X25519MLKEM768 \
+     -cert target/certs/pqc-client.crt -key target/certs/pqc-client.key \
+     -CAfile target/certs/pqc.crt \
+     -connect localhost:xxxxx </dev/null 2>/dev/null | grep "Negotiated TLS1.3 group"
+Negotiated TLS1.3 group: X25519MLKEM768
+----
+
+=== Rejecting Classical Clients
+
+The `pqc-only` configuration profile in `application.properties` switches to the `strict` policy, so only the post-quantum groups are offered:
+
+[source,properties]
+----
+%pqc-only.quarkus.tls.pqc-enforcement-policy = strict
+----
+
+Activate it with `mvn quarkus:dev -Dquarkus.profile=pqc-only` or `java -Dquarkus.profile=pqc-only -jar target/quarkus-app/quarkus-run.jar`. `curl --curves X25519 ...` then fails with a handshake failure while `curl --curves X25519MLKEM768 ...` succeeds. The `PqcOnlyTest` runs with this profile.
+
+== Package and Run the Application
+
+Once you are done with developing you may want to package and run the application.
+
+TIP: Find more details about the JVM mode and Native mode in the Package and run section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_package_and_run_the_application[Camel Quarkus User guide]
+
+=== JVM Mode
+
+[source,shell]
+----
+mvn clean package
+java -jar target/quarkus-app/quarkus-run.jar
+...
+[io.quarkus] (main) camel-quarkus-examples-http-pqc-j25 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
+----
+
+=== Native Mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+IMPORTANT: Post-quantum key exchange in a native executable is expected to work once the native image is built on a JDK with post-quantum TLS support, but it is not verified yet: GraalVM and Mandrel builds with that support do not exist, and Vert.x detects the support reflectively, which may need extra registration in native mode. With the current builder JDKs, start the executable with `-Dquarkus.tls.pqc-enforcement-policy=relaxed`, which disables the post-quantum enforcement; the example was verified that way with a Mandrel 25 build.
+
+To prepare a native executable using GraalVM, run the following command:
+
+[source,shell]
+----
+mvn clean package -Dnative
+./target/*-runner
+...
+[io.quarkus] (main) camel-quarkus-examples-http-pqc-j25 started in ?.?s. Listening on: https://0.0.0.0:xxxxx
+----
+
+== Testing
+
+[source,shell]
+----
+mvn clean test
+----
+
+Two JDK HTTP clients are used, each offering a single key exchange group through `SSLParameters.setNamedGroups`: a PQC capable client with X25519MLKEM768 and a classical client with X25519.
+
+* `PqcWithFallbackTest` - default configuration, `client-negotiated`
+  - PQC client: succeeds, X25519MLKEM768 is negotiated
+  - classical client: succeeds, the server falls back to X25519
+* `PqcOnlyTest` - `pqc-only` profile, `strict`
+  - PQC client: succeeds
+  - classical client: fails with a handshake failure
+
+The tests are skipped on a JDK without post-quantum TLS support. The native variants `PqcWithFallbackIT` and `PqcOnlyIT` (`mvn clean verify -Dnative`) assume that the native image is built with the same JDK line as the one running the tests.
+
+== Key Exchange Groups
+
+The hybrid groups offered by both policies, in the order of preference (classical security is kept even if ML-KEM is broken):
+
+* `X25519MLKEM768` - X25519 + ML-KEM-768, NIST security level 3, enabled by default by JEP 527
+* `SecP256r1MLKEM768` - secp256r1 + ML-KEM-768, NIST security level 3
+* `SecP384r1MLKEM1024` - secp384r1 + ML-KEM-1024, NIST security level 5
+
+== References
+
+* https://quarkus.io/guides/tls-registry-reference[Quarkus TLS registry reference]
+* https://openjdk.org/jeps/527[JEP 527 - Post-Quantum Hybrid Key Exchange for TLS 1.3]
+* https://blogs.oracle.com/java/post-quantum-cryptography-in-long-term-support-jdk-releases[Oracle - Post-Quantum Cryptography in Long-Term Support JDK Releases]
+* https://csrc.nist.gov/pubs/fips/203/final[NIST FIPS 203 - ML-KEM Standard]
+* https://datatracker.ietf.org/doc/draft-ietf-tls-ecdhe-mlkem/[IETF draft - Hybrid key exchange in TLS 1.3]
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

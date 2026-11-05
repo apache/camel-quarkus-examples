@@ -1,0 +1,33 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.acme.http.pqc;
+
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.TestProfile;
+import org.acme.http.pqc.profiles.PqcOnlyProfile;
+import org.junit.jupiter.api.condition.EnabledIf;
+
+/**
+ * Native variant of {@link PqcOnlyTest}. A native executable can only use the JDK TLS implementation, so the native
+ * image has to be built on a JDK supporting post-quantum key exchange (JEP 527). The test assumes that the native
+ * image is built with the same JDK line as the one running the tests and is skipped otherwise.
+ */
+@QuarkusIntegrationTest
+@TestProfile(PqcOnlyProfile.class)
+@EnabledIf("isJdkPqcAvailable")
+class PqcOnlyIT extends PqcOnlyTest {
+}
