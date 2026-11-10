@@ -29,7 +29,7 @@ public class PqcCamelRoute extends EndpointRouteBuilder {
             "Connection details:\n" +
             "- TLS key exchange: negotiated according to the server's PQC policy\n" +
             "- Provider: SunJSSE (JDK 25, no Bouncy Castle)\n\n" +
-            "The hybrid X25519MLKEM768 key exchange protects the session key against\n" +
+            "When X25519MLKEM768 is negotiated, it protects the session key against\n" +
             "harvest-now-decrypt-later attacks. Authentication is classical (RSA).";
 
     @Override

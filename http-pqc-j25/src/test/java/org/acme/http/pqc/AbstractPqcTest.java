@@ -16,6 +16,7 @@
  */
 package org.acme.http.pqc;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,7 +83,9 @@ abstract class AbstractPqcTest {
 
     /** Mutual TLS: a client without a certificate is rejected, even when it offers the hybrid group. */
     void assertRejectedWithoutClientCertificate() {
-        assertThrows(SSLException.class, () -> request(HYBRID_GROUPS, false).get("/pqc/secure"));
+        // TLS 1.3 reports the missing certificate after the handshake, so the failure may be a plain IOException
+        // (e.g. SocketException) instead of an SSLException
+        assertThrows(IOException.class, () -> request(HYBRID_GROUPS, false).get("/pqc/secure"));
     }
 
     /**
@@ -97,7 +100,7 @@ abstract class AbstractPqcTest {
                 SSLParameters parameters = socket.getSSLParameters();
                 parameters.setProtocols(new String[] { "TLSv1.3" });
                 if (namedGroups != null) {
-                    NamedGroups.set(parameters, namedGroups);
+                    parameters.setNamedGroups(namedGroups);
                 }
                 socket.setSSLParameters(parameters);
             }
