@@ -26,9 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import io.vertx.core.json.JsonObject;
 import org.junit.jupiter.api.Assertions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,15 +229,14 @@ public class CyberarkVaultTestResource implements QuarkusTestResourceLifecycleMa
                 "conjur", "policy", "load", "-b", "root", "-f", "/policy/BotApp.yml");
         Assertions.assertEquals(0, er.getExitCode(), "Policy load failed with: " + er.getStderr());
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonNode = objectMapper.readTree(er.getStdout());
+        JsonObject createdRoles = new JsonObject(er.getStdout()).getJsonObject("created_roles");
 
         result.put("conjur.reader.username", "host/BotApp/myDemoApp");
         result.put("conjur.reader.apiKey",
-                jsonNode.get("created_roles").get(CONJUR_ACCOUNT + ":host:BotApp/myDemoApp").get("api_key").textValue());
+                createdRoles.getJsonObject(CONJUR_ACCOUNT + ":host:BotApp/myDemoApp").getString("api_key"));
         result.put("conjur.writer.username", "user/Dave@BotApp");
         result.put("conjur.writer.apiKey",
-                jsonNode.get("created_roles").get(CONJUR_ACCOUNT + ":user:Dave@BotApp").get("api_key").textValue());
+                createdRoles.getJsonObject(CONJUR_ACCOUNT + ":user:Dave@BotApp").getString("api_key"));
 
         clientContainer.execInContainer("conjur", "logout");
 
