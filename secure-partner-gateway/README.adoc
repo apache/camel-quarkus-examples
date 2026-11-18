@@ -1,0 +1,289 @@
+= Secure Partner Gateway: A Camel Quarkus example
+:cq-example-description: An example that serves as a reference for securing and auditing an HTTP API: OIDC authentication, RBAC, tenant isolation, idempotency and a tamper-evident audit trail
+
+{cq-description}
+
+TIP: Check the https://camel.apache.org/camel-quarkus/latest/first-steps.html[Camel Quarkus User guide] for prerequisites
+and other general information.
+
+NOTE: For the basics of securing `platform-http` with Keycloak, see the
+https://github.com/apache/camel-quarkus-examples/tree/main/platform-http-security-keycloak[Platform HTTP security with Keycloak] example.
+This one is the advanced version: tenant isolation, abuse limits and an audit trail.
+
+Partner systems submit orders to the gateway. The gateway authenticates and authorizes every call, keeps partners
+apart, validates, deduplicates and rate-limits the orders, stores them and writes a tamper-evident audit trail.
+Auditors query and verify that trail.
+
+[cols="2,1,5"]
+|===
+|Endpoint |Role |Behavior
+
+|`POST /api/orders`
+|`partner`
+|Needs an `Idempotency-Key` header (8 to 64 letters, digits, `-` or `_`). Answers `202` with the `orderId`.
+A retry with the same key gets `200` and the same `orderId`, or `409` while the first request still runs: retry later.
+The key alone identifies a retry, so a retry with another body also gets the first order.
+`400` for an invalid key or order, `413` above 64 KB, `415` or `406` for other media types, `429` with `Retry-After`
+above the rate limit.
+
+|`GET /api/orders/{id}`
+|`partner`
+|Own orders only. An order of another partner gets `404`, like an unknown one.
+
+|`GET /api/audit?actor=&action=&limit=`
+|`auditor`
+|Audit records, newest first. `limit` from 1 to 999, at most 500 records are returned, 50 by default.
+
+|`GET /api/audit/verify`
+|`auditor`
+|Recomputes the hash chain: `{"valid":true,"checked":42}` or `{"valid":false,"checked":6,"brokenAtSeq":7}`.
+|===
+
+Every endpoint answers `401` without a valid token, and `403` for the wrong role, a path or method that is not listed,
+or a partner token without the `partner_id` claim or with a blank one.
+Health and metrics are only on the management port `9876`: `/observe/health` and `/observe/metrics`.
+Outside of dev mode and tests, the logs are JSON with the MDC fields `partnerId` and `camel.exchangeId`.
+
+== Features
+
+Each line says what the gateway does and why, with links to the code.
+
+. *OIDC bearer auth*: tokens are verified locally, Keycloak comes from Dev Services in dev mode and tests.
+link:src/main/resources/application.properties[application.properties], link:config/gateway-realm.json[gateway-realm.json]
+. *Deny-by-default RBAC*: everything is denied, then single paths and methods are allowed to one role, so a new
+endpoint is closed until listed. link:src/main/resources/application.properties[application.properties]
+. *Tenant isolation*: the partner comes from the signed `partner_id` claim, never from a header or the body.
+link:src/main/java/org/acme/partner/gateway/CallerIdentity.java[CallerIdentity], link:src/main/java/org/acme/partner/gateway/order/OrderService.java[OrderService]
+. *Header allow-list*: requests keep only the headers a route declares, responses only `Retry-After`, so tokens and
+spoofed headers go nowhere. link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes], link:src/main/java/org/acme/partner/gateway/ResponseHeaderFilter.java[ResponseHeaderFilter]
+. *Per-partner throttle*: `429` with `Retry-After`, one partner cannot starve the others.
+link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes], link:src/main/java/org/acme/partner/gateway/ErrorHandling.java[ErrorHandling]
+. *Input validation*: JSON schema, `Idempotency-Key` pattern, 64 KB body limit and `application/json` only.
+link:src/main/resources/schema/order.json[order.json], link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes]
+. *JDBC idempotent consumer*: retries with the same `partnerId:Idempotency-Key` get the first order, concurrent ones
+create one order. link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes],
+link:src/main/resources/db/migration/V1.0.0__gateway_schema.sql[V1.0.0__gateway_schema.sql]
+. *HMAC-chained audit trail*: each record is chained to the previous one, so changes are detectable.
+link:src/main/java/org/acme/partner/gateway/audit/AuditChain.java[AuditChain], link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
+. *`/api/audit` and `/api/audit/verify`*: auditors query and verify the trail. link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
+. *Append-only audit table*: database triggers reject `UPDATE`, `DELETE` and `TRUNCATE`.
+link:src/main/resources/db/migration/V1.0.0__gateway_schema.sql[V1.0.0__gateway_schema.sql]
+. *HMAC key checks at startup*: no key, a short key or a placeholder stops the startup.
+link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
+. *External anchor*: a timer logs the chain head, to be kept outside of the database.
+link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes]
+. *Security and Camel lifecycle events audited*: `401`, `403`, context start and shutdown, route start, stop and reload are
+in the trail.
+link:src/main/java/org/acme/partner/gateway/audit/SecurityEventAuditor.java[SecurityEventAuditor], link:src/main/java/org/acme/partner/gateway/audit/CamelLifecycleAuditor.java[CamelLifecycleAuditor]
+. *RFC 9457 errors*: `application/problem+json` without exception details. link:src/main/java/org/acme/partner/gateway/ErrorHandling.java[ErrorHandling],
+link:src/main/java/org/acme/partner/gateway/Problem.java[Problem]
+. *Ops*: health and metrics on the management port only, JSON logs with the MDC fields `partnerId` and
+`camel.exchangeId`. link:src/main/resources/application.properties[application.properties]
+. *JVM and native tests*: every `*Test` has an `*IT` that runs it against the packaged application.
+link:src/test/java/org/acme/partner/gateway/SecurityTest.java[SecurityTest], link:src/test/java/org/acme/partner/gateway/OrderApiTest.java[OrderApiTest], link:src/test/java/org/acme/partner/gateway/AuditTrailTest.java[AuditTrailTest],
+link:src/test/java/org/acme/partner/gateway/AuditImmutabilityTest.java[AuditImmutabilityTest]
+
+=== Reuse
+
+Other examples can copy these parts instead of covering the same concerns: the auth and RBAC configuration in
+`application.properties`, the header allow-list (`removeHeaders` and `ResponseHeaderFilter`), the audit chain
+(`audit` package and the Flyway schema) and the JDBC idempotent consumer.
+
+== Prerequisites
+
+* Docker or Podman. Dev mode and the tests start Keycloak and PostgreSQL with
+https://quarkus.io/guides/dev-services[Quarkus Dev Services].
+* `curl` and `jq` for the commands of the manual test guide.
+
+Keycloak imports the realm `gateway` from `config/gateway-realm.json`. It is outside of `src/main/resources`, so it is
+never packaged. Its secrets are for development and tests only:
+
+[cols="1,3"]
+|===
+|Actor |Setup
+
+|`partner-acme`
+|Client credentials grant, secret `acme-test-secret`, role `partner`, claim `partner_id=acme`
+
+|`partner-globex`
+|Client credentials grant, secret `globex-test-secret`, role `partner`, claim `partner_id=globex`
+
+|`partner-initech`
+|Like the two above, with `partner_id=initech`. Only the rate limit test uses it, as it uses up the limit.
+
+|`partner-without-tenant`
+|Client credentials grant, secret `without-tenant-test-secret`, role `partner`, but no `partner_id` claim
+
+|`partner-blank-tenant`
+|Like `partner-without-tenant`, with secret `blank-tenant-test-secret` and a blank `partner_id` claim
+
+|`aaron`
+|User with role `auditor` and password `aaron-test-password`, password grant through the public client `audit-console`
+
+|`short-lived-client`
+|Client credentials grant, secret `short-lived-test-secret`, no role, tokens expire after 3 seconds (expiry test)
+|===
+
+Every token carries the audience `gateway-api`.
+
+== Start in Development mode
+
+[source,shell]
+----
+mvn clean compile quarkus:dev
+----
+
+Keycloak listens on port `8082` in dev mode, the gateway on `8080`.
+
+TIP: Please refer to the Development mode section of
+https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode[Camel Quarkus User guide] for more details.
+
+== Try it
+
+Dev mode is enough to try authentication, idempotent retries, tenant isolation, roles, validation, the throttle and the
+audit chain with its append-only table. Every command, step by step, is in
+link:TEST-GUIDE.adoc[the manual test guide].
+
+== Package and run the application
+
+Outside of dev mode, nothing has a default. Without these variables the application does not start:
+
+[source,shell]
+----
+export QUARKUS_OIDC_AUTH_SERVER_URL=https://keycloak.example.com/realms/gateway
+export QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://db.example.com:5432/gateway
+export QUARKUS_DATASOURCE_USERNAME=gateway
+export QUARKUS_DATASOURCE_PASSWORD=<password>
+export AUDIT_HMAC_KEY=$(openssl rand -base64 32)
+----
+
+=== JVM mode
+
+[source,shell]
+----
+mvn clean package -DskipTests
+java -jar target/quarkus-app/quarkus-run.jar
+----
+
+=== Native mode
+
+IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
+of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
+
+[source,shell]
+----
+mvn clean package -DskipTests -Dnative
+./target/*-runner
+----
+
+== Testing
+
+[source,shell]
+----
+mvn clean test               # JVM mode
+mvn clean verify -Dnative    # the native application
+----
+
+* Manual steps with `curl`: see link:TEST-GUIDE.adoc[the manual test guide].
+* The tests need Docker or Podman. `-Dskip-testcontainers-tests` skips them in JVM and native mode, the plain unit tests
+`AuditChainTest` and `AuditLogTest` still run.
+* The tests of the packaged application run with the `test` profile (`quarkus.test.integration-test-profile=test`),
+which has the test HMAC key and a long throttle period. With the default `prod` profile, the application would refuse
+to start without `AUDIT_HMAC_KEY`.
+
+== Security model
+
+Quarkus, before a request reaches Camel:
+
+* `quarkus-oidc` checks the bearer token: signature, issuer, audience `gateway-api` and expiry. No token introspection.
+* Deny by default: `quarkus.http.auth.permission` denies `/*`, then allows single paths and methods to one role.
+The most specific path wins, and a method that is not listed on that path is denied.
+* Proactive authentication, 64 KB body limit, `X-Content-Type-Options: nosniff`.
+* In `prod`, the token verification warnings of Quarkus OIDC are not logged, as some contain the rejected token.
+The audit trail records these failures.
+* The `uri` tag of the HTTP metrics is the path template (`/api/orders/{id}`), or `UNKNOWN` (`NOT_FOUND` for a `404`)
+for a `4xx` on another path: no order ids in the metrics, and clients cannot add tag values.
+
+Camel:
+
+* `platform-http` answers `415` and `406` for media types that the REST DSL does not declare. It lets a wildcard
+`Content-Type` such as `application/*` through, the order route answers `415` for it.
+* `CallerIdentity` reads the `SecurityIdentity` that Quarkus verified (header `CamelVertxPlatformHttpAuthenticatedUser`)
+into exchange properties. The tenant is the signed `partner_id` claim, never a header or a body field. A partner token
+without that claim, or with a blank one, gets `403`.
+* Trust boundary: right after that, `removeHeaders("*", <inputs of the route>)` drops `Authorization`, `Cookie`,
+`Camel*` and spoofed ids. Caller tokens are never forwarded.
+* `ResponseHeaderFilter`, the header filter of `platform-http`, lets only `Retry-After` into responses. Request headers
+are never echoed, also not by answers before `removeHeaders`, like the `403` above.
+* `OrderService` enforces tenant ownership.
+* Per partner rate limit (Throttle EIP, `429` with `Retry-After`), JSON schema `schema/order.json` (no additional
+fields, also rejects malformed JSON and text after the order), idempotency per `partnerId:Idempotency-Key` with the
+camel-sql `JdbcMessageIdRepository`. Its primary key turns a concurrent insert of the same key into a duplicate.
+* One `routeConfiguration()` maps errors to RFC 9457 `application/problem+json`, without exception details.
+
+== Audit design
+
+A record holds `seq`, `ts`, `actor`, `actorType` (`CLIENT`, `USER`, `SYSTEM`, `ANONYMOUS`), `partnerId`, `action`,
+`resource`, `outcome` (`SUCCESS`, `REJECTED`, `DENIED`, `FAILED`), `reason`, `exchangeId`, `remoteAddr`, `prevHash` and
+`hash`. No bodies and no tokens, but `actor` (user names) and `remoteAddr` (IP addresses) are personal data. Ids sent by
+clients (`breadcrumbId`, `traceparent`) are not trusted, the records use the server side `seq` and the Camel
+`exchangeId`.
+
+Records come from three places, all through `AuditLog.append()`:
+
+. Business events, in the same transaction as the change: `ORDER_ACCEPTED`, `ORDER_REPLAYED`, `ORDER_READ`,
+`AUDIT_QUERIED`, `AUDIT_VERIFIED`. Rejections and failures come from the `onException` handlers: `REQUEST_REJECTED`,
+`ORDER_READ_DENIED`, `REQUEST_FAILED`.
+. `SecurityEventAuditor` observes the Quarkus `AuthenticationFailureEvent` and `AuthorizationFailureEvent`:
+`AUTHN_FAILED`, `AUTHZ_DENIED`. These are the `401` and `403` answers that Camel never sees.
+. `CamelLifecycleAuditor` observes Camel events through the Camel Quarkus CDI event bridge: `CONTEXT_STARTED`,
+`ROUTE_STARTED`, `ROUTE_STOPPED`, `ROUTE_RELOADED`. At shutdown it writes one `CONTEXT_STOPPING` record from the Quarkus
+`ShutdownEvent`, while the database is still open; the routes stopped by the shutdown get no own record.
+
+Tamper evidence:
+
+* `hash(n) = HMAC-SHA256(key, canonical(record n) || hash(n-1))`, the key comes from `AUDIT_HMAC_KEY`.
+* Every append locks the single row of `audit_chain_head`, so the chain stays linear.
+* A database trigger rejects `UPDATE`, `DELETE` and `TRUNCATE` on `audit_event`.
+* `/api/audit/verify` recomputes the chain and reports the first missing, altered or misplaced `seq`. It cannot see
+records cut from the end when `audit_chain_head` is rewound as well (that needs the database owner, the trigger blocks
+`DELETE`): only the anchors below reveal that.
+* The `audit-anchor` route logs the chain head every 5 minutes (`audit.anchor-period`), an anchor outside of the
+database.
+* The metric `audit_events_total{action,outcome}` counts the records.
+
+Limits:
+
+* This is not WORM storage. The database owner can drop the trigger and rewrite the chain, and with the key even
+consistently. Only anchors kept outside of the database reveal that.
+* Appends are serialized. A verification loads the whole chain into memory and blocks appends meanwhile.
+* Rotating the HMAC key needs a key id in each record, which is not implemented.
+* Real compliance needs external anchoring, for example a SIEM, WORM storage or a timestamping service.
+* The `413` of the HTTP layer and the `415` and `406` of `platform-http` happen before the route: they are plain
+answers, not `application/problem+json`, and they are not audited.
+* The `Idempotency-Key` is committed in its own transaction just before the order. If the gateway stops in between, the
+key stays without order and its retries get `409` until the key is deleted from `camel_messageprocessed`.
+* Idempotency keys are never deleted, `camel_messageprocessed` grows without limit.
+
+== Production checklist
+
+* Run with the `prod` profile: `camel.main.profile=prod` makes Camel refuse insecure Camel settings.
+* Set `QUARKUS_OIDC_AUTH_SERVER_URL`, `QUARKUS_DATASOURCE_*` and `AUDIT_HMAC_KEY` from a secret store. The key must be
+random (`openssl rand -base64 32`): the gateway does not start with fewer than 32 characters, or fewer than 8 different
+ones.
+* Serve HTTPS only, for example by terminating TLS in front of the gateway.
+* Do not expose the management port `9876`.
+* Rate limit unauthenticated traffic in front of the gateway: every `401`, `403` and `429` is an audit append, and
+appends are serialized.
+* Behind a reverse proxy, set `quarkus.http.proxy.proxy-address-forwarding` and `quarkus.http.proxy.trusted-proxies`,
+and make the proxy replace `X-Forwarded-For` with the client address instead of appending to it: Quarkus takes the
+first address, which clients can set.
+* Decide retention and access for the audit trail, it holds user names and IP addresses.
+* Ship the JSON logs, with the `audit-anchor` lines, to a SIEM that the database administrators cannot change.
+* Plan the HMAC key rotation (see the limits above).
+* Give the application database role `INSERT` and `SELECT` only on `audit_event`, and run Flyway with another role.
+* Register each partner as its own client. Auditors log in with the authorization code flow, not the password grant.
+
+== Feedback
+
+Please report bugs and propose improvements via https://github.com/apache/camel-quarkus/issues[GitHub issues of Camel Quarkus] project.

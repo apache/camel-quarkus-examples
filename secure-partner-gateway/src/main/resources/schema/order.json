@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order",
+  "description": "An order submitted by a partner. The partner is never part of the body, it comes from the access token.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sku",
+    "quantity"
+  ],
+  "properties": {
+    "sku": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]{3,32}$"
+    },
+    "quantity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    }
+  }
+}

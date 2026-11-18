@@ -1,0 +1,291 @@
+{
+  "realm": "gateway",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "partner",
+        "description": "Partner system: may submit orders and read its own orders"
+      },
+      {
+        "name": "auditor",
+        "description": "Human auditor: may query and verify the audit trail"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "partner-acme",
+      "description": "ACME partner system (client credentials). Test-only secret.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "acme-test-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "gateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "gateway-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "partner-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.name": "partner_id",
+            "claim.value": "acme",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "partner-globex",
+      "description": "Globex partner system (client credentials). Test-only secret.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "globex-test-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "gateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "gateway-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "partner-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.name": "partner_id",
+            "claim.value": "globex",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "partner-initech",
+      "description": "Initech partner system, used by the rate limit test. Test-only secret.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "initech-test-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "gateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "gateway-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "partner-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.name": "partner_id",
+            "claim.value": "initech",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "partner-without-tenant",
+      "description": "Misconfigured partner: role partner but no partner_id claim. Test-only secret.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "without-tenant-test-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "gateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "gateway-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "partner-blank-tenant",
+      "description": "Misconfigured partner: role partner but a blank partner_id claim. Test-only secret.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "blank-tenant-test-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "gateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "gateway-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "partner-id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.name": "partner_id",
+            "claim.value": " ",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "audit-console",
+      "description": "Auditor login. The password grant is enabled for tests and the README demo only.",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "gateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "gateway-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "short-lived-client",
+      "description": "Issues 3 second tokens without any role, used to test token expiry. Test-only secret.",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "short-lived-test-secret",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "attributes": {
+        "access.token.lifespan": "3"
+      },
+      "protocolMappers": [
+        {
+          "name": "gateway-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "gateway-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "aaron",
+      "enabled": true,
+      "firstName": "Aaron",
+      "lastName": "Auditor",
+      "email": "aaron@example.com",
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "aaron-test-password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "auditor"
+      ]
+    },
+    {
+      "username": "service-account-partner-acme",
+      "enabled": true,
+      "serviceAccountClientId": "partner-acme",
+      "realmRoles": [
+        "partner"
+      ]
+    },
+    {
+      "username": "service-account-partner-globex",
+      "enabled": true,
+      "serviceAccountClientId": "partner-globex",
+      "realmRoles": [
+        "partner"
+      ]
+    },
+    {
+      "username": "service-account-partner-initech",
+      "enabled": true,
+      "serviceAccountClientId": "partner-initech",
+      "realmRoles": [
+        "partner"
+      ]
+    },
+    {
+      "username": "service-account-partner-without-tenant",
+      "enabled": true,
+      "serviceAccountClientId": "partner-without-tenant",
+      "realmRoles": [
+        "partner"
+      ]
+    },
+    {
+      "username": "service-account-partner-blank-tenant",
+      "enabled": true,
+      "serviceAccountClientId": "partner-blank-tenant",
+      "realmRoles": [
+        "partner"
+      ]
+    }
+  ]
+}

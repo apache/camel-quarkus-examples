@@ -150,6 +150,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/saga"
   },
   {
+    "title": "Secure Partner Gateway",
+    "description": "Serves as a reference for securing and auditing an HTTP API: OIDC authentication, RBAC, tenant isolation, idempotency and a tamper-evident audit trail",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/secure-partner-gateway"
+  },
+  {
     "title": "Send and receive messages from Redis",
     "description": "Shows how to produce and consume messages from Redis, using both basic operations and pub/sub messaging.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/spring-redis"
