@@ -21,8 +21,8 @@ Auditors query and verify that trail.
 |`POST /api/orders`
 |`partner`
 |Needs an `Idempotency-Key` header (8 to 64 letters, digits, `-` or `_`). Answers `202` with the `orderId`.
-A retry with the same key gets `200` and the same `orderId`, or `409` while the first request still runs: retry later.
-The key alone identifies a retry, so a retry with another body also gets the first order.
+A retry with the same key and order gets `200` and the same `orderId`, a concurrent one waits for the first request.
+A retry with the same key but another order gets `422`.
 `400` for an invalid key or order, or any query string, `413` above 64 KB, `415` or `406` for other media types, `429` with `Retry-After`
 above the rate limit.
 
@@ -61,8 +61,9 @@ spoofed headers go nowhere. link:src/main/java/org/acme/partner/gateway/GatewayR
 link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes], link:src/main/java/org/acme/partner/gateway/ErrorHandling.java[ErrorHandling]
 . *Input validation*: JSON schema, `Idempotency-Key` pattern, 64 KB body limit and `application/json` only.
 link:src/main/resources/schema/order.json[order.json], link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes]
-. *JDBC idempotent consumer*: retries with the same `partnerId:Idempotency-Key` get the first order, concurrent ones
-create one order. link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes],
+. *Idempotent orders*: the unique `(partner_id, idempotency_key)` of the order table makes retries get the first order,
+concurrent ones create one order, in the transaction of the order.
+link:src/main/java/org/acme/partner/gateway/order/OrderService.java[OrderService],
 link:src/main/resources/db/migration/V1.0.0__gateway_schema.sql[V1.0.0__gateway_schema.sql]
 . *HMAC-chained audit trail*: each record is chained to the previous one, so changes are detectable.
 link:src/main/java/org/acme/partner/gateway/audit/AuditChain.java[AuditChain], link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
@@ -88,7 +89,7 @@ link:src/test/java/org/acme/partner/gateway/AuditImmutabilityTest.java[AuditImmu
 
 Other examples can copy these parts instead of covering the same concerns: the auth and RBAC configuration in
 `application.properties`, the header allow-list (`removeHeaders` and `ResponseHeaderFilter`), the audit chain
-(`audit` package and the Flyway schema) and the JDBC idempotent consumer.
+(`audit` package and the Flyway schema) and the idempotent order intake (`OrderService`).
 
 == Prerequisites
 
@@ -221,8 +222,10 @@ value comes from. Each route does: the order route rejects any query string (`Id
 are never echoed, also not by answers before `removeHeaders`, like the `403` above.
 * `OrderService` enforces tenant ownership.
 * Per partner rate limit (Throttle EIP, `429` with `Retry-After`), JSON schema `schema/order.json` (no additional
-fields, also rejects malformed JSON and text after the order), idempotency per `partnerId:Idempotency-Key` with the
-camel-sql `JdbcMessageIdRepository`. Its primary key turns a concurrent insert of the same key into a duplicate.
+fields, also rejects malformed JSON and text after the order).
+* Idempotency per partner and `Idempotency-Key`: `OrderService` inserts the order with
+`ON CONFLICT (partner_id, idempotency_key) DO NOTHING`. Nothing inserted means a retry, answered with the first order,
+or `422` if the order differs.
 * One `routeConfiguration()` maps errors to RFC 9457 `application/problem+json`, without exception details.
 
 == Audit design
@@ -265,9 +268,7 @@ consistently. Only anchors kept outside of the database reveal that.
 * Real compliance needs external anchoring, for example a SIEM, WORM storage or a timestamping service.
 * The `413` of the HTTP layer and the `415` and `406` of `platform-http` happen before the route: they are plain
 answers, not `application/problem+json`, and they are not audited.
-* The `Idempotency-Key` is committed in its own transaction just before the order. If the gateway stops in between, the
-key stays without order and its retries get `409` until the key is deleted from `camel_messageprocessed`.
-* Idempotency keys are never deleted, `camel_messageprocessed` grows without limit.
+* Idempotency keys never expire: a key stays bound to its order.
 
 == Production checklist
 

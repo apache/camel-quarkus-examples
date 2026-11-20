@@ -51,6 +51,11 @@ public class PartnerOrder {
         this.createdAt = Instant.now();
     }
 
+    /** Whether a retry sends the same order as the request that created this one. */
+    boolean sameOrderAs(OrderRequest request) {
+        return sku.equals(request.sku()) && quantity == request.quantity();
+    }
+
     public String getId() {
         return id;
     }

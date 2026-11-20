@@ -17,11 +17,11 @@
 package org.acme.partner.gateway.order;
 
 /**
- * A request with the same Idempotency-Key was accepted, but its order is not committed yet.
+ * A retry with the Idempotency-Key of an earlier request sends another order.
  */
-public class OrderInProgressException extends RuntimeException {
+public class IdempotencyKeyReusedException extends RuntimeException {
 
-    public OrderInProgressException() {
-        super("a request with the same Idempotency-Key is still in progress");
+    public IdempotencyKeyReusedException() {
+        super("the Idempotency-Key was used for another order");
     }
 }

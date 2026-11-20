@@ -18,6 +18,9 @@ package org.acme.partner.gateway.order;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
+/**
+ * The order of a request. {@code created} is false for a retry answered with the order of the first request.
+ */
 @RegisterForReflection
-public record OrderAccepted(String orderId) {
+public record OrderAccepted(String orderId, boolean created) {
 }

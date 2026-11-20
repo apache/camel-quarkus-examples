@@ -20,19 +20,17 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import io.netty.handler.codec.http.QueryStringDecoder;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.acme.partner.gateway.audit.AuditLog;
+import org.acme.partner.gateway.order.OrderAccepted;
 import org.acme.partner.gateway.order.OrderService;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.ValidationException;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.processor.idempotent.jdbc.JdbcMessageIdRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import static org.apache.camel.support.builder.PredicateBuilder.or;
@@ -55,9 +53,6 @@ public class GatewayRoutes extends RouteBuilder {
     @Inject
     AuditLog auditLog;
 
-    @Inject
-    DataSource dataSource;
-
     @ConfigProperty(name = "gateway.throttle.max-requests")
     long throttleMaxRequests;
 
@@ -69,11 +64,6 @@ public class GatewayRoutes extends RouteBuilder {
 
     @Override
     public void configure() {
-        // Primary key (processorName, messageId): a concurrent duplicate fails the insert and counts as a duplicate.
-        // Flyway creates the table.
-        JdbcMessageIdRepository idempotentRepository = new JdbcMessageIdRepository(dataSource, "order-create");
-        idempotentRepository.setCreateTableIfNotExists(false);
-
         // platform-http answers 415 for a wrong Content-Type and 406 for an unacceptable Accept header. Malformed JSON
         // is left to the schema validation of the route, behind the trust boundary.
         rest("/api")
@@ -101,24 +91,12 @@ public class GatewayRoutes extends RouteBuilder {
                 .to("json-validator:schema/order.json"
                         + "?enabledDeserializationFeatures=FAIL_ON_TRAILING_TOKENS,FAIL_ON_READING_DUP_TREE_KEY")
                 .process(Json::readOrder)
-                // keys are scoped to the partner, so partners cannot collide with or probe each other's keys
-                .idempotentConsumer(simple("${exchangeProperty.partnerId}:${header.Idempotency-Key}"),
-                        idempotentRepository)
-                .skipDuplicate(false)
-                .completionEager(true)
-                .filter(exchangeProperty(Exchange.DUPLICATE_MESSAGE).isNull())
-                .bean(orderService, "accept(${exchangeProperty.caller}, ${header.Idempotency-Key}, ${body})")
+                // a new order or a retry, decided by the unique (partner_id, idempotency_key) of the order table
+                .bean(orderService, "submit(${exchangeProperty.caller}, ${header.Idempotency-Key}, ${body})")
                 // the MDC adds partnerId and camel.exchangeId to this log record
-                .log("Order ${body.orderId} accepted")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(202))
-                .end()
-                .end()
-                // a retry gets the order of the first request, outside of the idempotent block so that a failure
-                // here cannot release the key of the first request
-                .filter(exchangeProperty(Exchange.DUPLICATE_MESSAGE))
-                .bean(orderService, "replay(${exchangeProperty.caller}, ${header.Idempotency-Key})")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(200))
-                .end()
+                .log("Order ${body.orderId} accepted, created: ${body.created}")
+                .process(e -> e.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE,
+                        e.getMessage().getBody(OrderAccepted.class).created() ? 202 : 200))
                 .process(Json::write);
 
         from("direct:order-read").routeId("order-read")

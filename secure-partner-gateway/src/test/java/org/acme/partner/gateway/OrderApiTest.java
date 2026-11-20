@@ -44,6 +44,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <li>valid orders are accepted (202) and can be read; invalid ones get a 400 without internals</li>
  * <li>wrong content type, accept header or oversized body are rejected (415, 406, 413)</li>
  * <li>a retry with the same Idempotency-Key returns the first order, also when sent concurrently</li>
+ * <li>a retry with the same Idempotency-Key but another order gets 422</li>
  * <li>a burst from one partner is throttled (429) without affecting the others</li>
  * </ul>
  * Partners retry on network errors, so a retry must never create a second order.
@@ -193,6 +194,24 @@ class OrderApiTest extends AbstractGatewayTest {
     }
 
     /**
+     * A retry with the same key but another order gets 422, and the first order stays.
+     */
+    @Test
+    void retryWithAnotherOrderIsRejected() {
+        String token = acmeToken();
+        String key = newKey();
+        String first = postOrder(token, key, ORDER).then().statusCode(202).extract().path("orderId");
+
+        postOrder(token, key, "{\"sku\":\"WIDGET-1\",\"quantity\":3}")
+                .then().statusCode(422)
+                .contentType("application/problem+json");
+        // the same order, formatted differently, is still a retry
+        postOrder(token, key, "{ \"quantity\": 2, \"sku\": \"WIDGET-1\" }")
+                .then().statusCode(200)
+                .body("orderId", is(first));
+    }
+
+    /**
      * The Idempotency-Key is an HTTP header: a request with a query string gets 400.
      */
     @Test
@@ -215,7 +234,7 @@ class OrderApiTest extends AbstractGatewayTest {
     }
 
     /**
-     * Of 8 parallel requests exactly one gets 202, the others 200 or 409, and one order is stored.
+     * Of 8 parallel requests exactly one gets 202, the others wait for it and get 200, and one order is stored.
      */
     @Test
     void concurrentRetriesWithTheSameKeyCreateOneOrder() throws Exception {
@@ -225,11 +244,10 @@ class OrderApiTest extends AbstractGatewayTest {
 
         List<Response> responses = concurrently(8, () -> postOrder(token, key, ORDER));
 
-        // one request creates the order, the others get it (200) or are told to retry (409), none fails
+        // one request creates the order, the others get it (200), none fails
         List<Integer> statuses = responses.stream().map(Response::statusCode).toList();
         assertEquals(1, statuses.stream().filter(status -> status == 202).count(), statuses::toString);
-        assertTrue(statuses.stream().allMatch(status -> status == 202 || status == 200 || status == 409),
-                statuses::toString);
+        assertTrue(statuses.stream().allMatch(status -> status == 202 || status == 200), statuses::toString);
         String orderId = responses.stream().filter(response -> response.statusCode() == 202).findFirst()
                 .orElseThrow().path("orderId");
         responses.stream().filter(response -> response.statusCode() == 200)

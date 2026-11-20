@@ -36,28 +36,40 @@ public class OrderService {
     @Inject
     AuditLog auditLog;
 
-    @Transactional
-    public OrderAccepted accept(Caller caller, String idempotencyKey, OrderRequest request) {
-        PartnerOrder order = new PartnerOrder(caller.partnerId(), idempotencyKey, request);
-        em.persist(order);
-        auditLog.append(caller, "ORDER_ACCEPTED", "order/" + order.getId(), Outcome.SUCCESS, null);
-        return new OrderAccepted(order.getId());
-    }
-
     /**
-     * Answers a retried request with the order created by the first one.
+     * Creates the order, or answers a retry with the order of the first request. The unique constraint on
+     * (partner_id, idempotency_key) decides, so keys are scoped to the partner. A concurrent request with the same key
+     * waits in the insert until the first one commits, then inserts nothing and gets its order.
      */
     @Transactional
-    public OrderAccepted replay(Caller caller, String idempotencyKey) {
-        PartnerOrder order = em
+    public OrderAccepted submit(Caller caller, String idempotencyKey, OrderRequest request) {
+        PartnerOrder order = new PartnerOrder(caller.partnerId(), idempotencyKey, request);
+        int inserted = em.createNativeQuery("INSERT INTO partner_order"
+                + " (id, partner_id, idempotency_key, sku, quantity, created_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)"
+                + " ON CONFLICT (partner_id, idempotency_key) DO NOTHING")
+                .setParameter(1, order.getId())
+                .setParameter(2, order.getPartnerId())
+                .setParameter(3, idempotencyKey)
+                .setParameter(4, order.getSku())
+                .setParameter(5, order.getQuantity())
+                .setParameter(6, order.getCreatedAt())
+                .executeUpdate();
+        if (inserted == 1) {
+            auditLog.append(caller, "ORDER_ACCEPTED", "order/" + order.getId(), Outcome.SUCCESS, null);
+            return new OrderAccepted(order.getId(), true);
+        }
+
+        PartnerOrder first = em
                 .createQuery("SELECT o FROM PartnerOrder o WHERE o.partnerId = :partnerId AND o.idempotencyKey = :key",
                         PartnerOrder.class)
                 .setParameter("partnerId", caller.partnerId())
                 .setParameter("key", idempotencyKey)
-                .getResultList().stream().findFirst()
-                .orElseThrow(OrderInProgressException::new);
-        auditLog.append(caller, "ORDER_REPLAYED", "order/" + order.getId(), Outcome.SUCCESS, null);
-        return new OrderAccepted(order.getId());
+                .getSingleResult();
+        if (!first.sameOrderAs(request)) {
+            throw new IdempotencyKeyReusedException();
+        }
+        auditLog.append(caller, "ORDER_REPLAYED", "order/" + first.getId(), Outcome.SUCCESS, null);
+        return new OrderAccepted(first.getId(), false);
     }
 
     /**

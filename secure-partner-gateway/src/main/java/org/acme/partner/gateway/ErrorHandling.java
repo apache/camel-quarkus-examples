@@ -23,7 +23,7 @@ import jakarta.inject.Inject;
 import org.acme.partner.gateway.audit.AuditLog;
 import org.acme.partner.gateway.audit.Caller;
 import org.acme.partner.gateway.audit.Outcome;
-import org.acme.partner.gateway.order.OrderInProgressException;
+import org.acme.partner.gateway.order.IdempotencyKeyReusedException;
 import org.acme.partner.gateway.order.OrderNotOwnedException;
 import org.apache.camel.Exchange;
 import org.apache.camel.ValidationException;
@@ -74,9 +74,9 @@ public class ErrorHandling extends RouteConfigurationBuilder {
         errors.onException(OrderNotOwnedException.class).handled(true)
                 .process(e -> problem(e, 404, "Not Found", "Order not found", "ORDER_READ_DENIED", Outcome.DENIED));
 
-        errors.onException(OrderInProgressException.class).handled(true)
-                .process(e -> problem(e, 409, "Conflict", "A request with the same Idempotency-Key is still in progress",
-                        "REQUEST_REJECTED", Outcome.REJECTED));
+        errors.onException(IdempotencyKeyReusedException.class).handled(true)
+                .process(e -> problem(e, 422, "Unprocessable Content",
+                        "The Idempotency-Key was used for another order", "REQUEST_REJECTED", Outcome.REJECTED));
 
         errors.onException(Exception.class).handled(true)
                 .process(e -> problem(e, 500, "Internal Server Error", "The request could not be processed",

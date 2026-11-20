@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
--- Orders, one row per (partner, Idempotency-Key)
+-- Orders, one row per (partner, Idempotency-Key). The unique constraint makes retries idempotent.
 CREATE TABLE partner_order (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
     partner_id VARCHAR(64) NOT NULL,
@@ -24,15 +24,6 @@ CREATE TABLE partner_order (
     quantity INTEGER NOT NULL,
     created_at TIMESTAMP(6) WITH TIME ZONE NOT NULL,
     CONSTRAINT partner_order_idempotency_key UNIQUE (partner_id, idempotency_key)
-);
-
--- Used by the Camel JdbcMessageIdRepository (idempotent consumer). The default table of camel-sql, with a longer
--- messageId for the partnerId:Idempotency-Key keys.
-CREATE TABLE CAMEL_MESSAGEPROCESSED (
-    processorName VARCHAR(255) NOT NULL,
-    messageId VARCHAR(255) NOT NULL,
-    createdAt TIMESTAMP,
-    PRIMARY KEY (processorName, messageId)
 );
 
 -- Hash-chained audit trail
