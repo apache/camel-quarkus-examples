@@ -151,7 +151,7 @@
   },
   {
     "title": "Secure Partner Gateway",
-    "description": "Serves as a reference for securing and auditing an HTTP API: OIDC authentication, RBAC, tenant isolation, idempotency and a tamper-evident audit trail",
+    "description": "Shows how to secure and audit an HTTP API: OIDC authentication, RBAC, tenant isolation, idempotency and a tamper-evident audit trail",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/secure-partner-gateway"
   },
   {

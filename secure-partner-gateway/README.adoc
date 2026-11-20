@@ -1,5 +1,5 @@
 = Secure Partner Gateway: A Camel Quarkus example
-:cq-example-description: An example that serves as a reference for securing and auditing an HTTP API: OIDC authentication, RBAC, tenant isolation, idempotency and a tamper-evident audit trail
+:cq-example-description: An example that shows how to secure and audit an HTTP API: OIDC authentication, RBAC, tenant isolation, idempotency and a tamper-evident audit trail
 
 {cq-description}
 
@@ -90,7 +90,7 @@ link:src/test/java/org/acme/partner/gateway/AuditImmutabilityTest.java[AuditImmu
 
 === Reuse
 
-Other examples can copy these parts instead of covering the same concerns: the auth and RBAC configuration in
+When another example needs one of these concerns, it can copy the matching part: the auth and RBAC configuration in
 `application.properties`, the header allow-list (`removeHeaders` and `ResponseHeaderFilter`), the audit chain
 (`audit` package and the Flyway schema) and the idempotent order intake (`OrderService`).
 

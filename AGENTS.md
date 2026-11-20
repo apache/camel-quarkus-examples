@@ -115,12 +115,12 @@ formatting, compilation, tests, and native builds (Linux/Windows, JDK 21/25).
 - **README**: AsciiDoc, with `Start in Development mode`, `Package and run`, and
   (where relevant) native sections, plus a Feedback section.
 
-## Reference for securing an API
+## Securing an API
 
-For authentication, RBAC, tenant isolation, idempotency and audit, follow
-[`secure-partner-gateway`](secure-partner-gateway/README.adoc): its Features
-section links each concern to the code to reuse, so other examples need not
-cover them.
+When an example needs authentication, RBAC, tenant isolation, idempotency or an
+audit trail, see [`secure-partner-gateway`](secure-partner-gateway/README.adoc):
+its Features section links each concern to its code. Match the security of an
+example to its scope, and copy only the parts it needs.
 
 ## Adding a new example (checklist)
 
