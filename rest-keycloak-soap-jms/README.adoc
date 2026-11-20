@@ -292,6 +292,8 @@ Now you can go to the <<playground>> section (with the assumption that `KEYCLOAK
 
 == Native mode
 
+WARNING: Native mode is temporarily unsupported for this example. See https://github.com/apache/camel-quarkus/issues/9528.
+
 IMPORTANT: Native mode requires having GraalVM and other tools installed. Please check the Prerequisites section
 of https://camel.apache.org/camel-quarkus/latest/first-steps.html#_prerequisites[Camel Quarkus User guide].
 
