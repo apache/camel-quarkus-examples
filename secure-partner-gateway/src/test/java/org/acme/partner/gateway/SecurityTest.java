@@ -145,6 +145,16 @@ class SecurityTest extends AbstractGatewayTest {
     }
 
     /**
+     * Roles come from realm_access/roles only: a groups claim naming the auditor role grants nothing.
+     */
+    @Test
+    void rolesAreNotReadFromTheGroupsClaim() {
+        String token = keycloak.getClientAccessToken("groups-claim-client", "groups-claim-test-secret");
+
+        given().auth().oauth2(token).get("/api/audit").then().statusCode(403);
+    }
+
+    /**
      * Requests without a valid token are counted, not appended to the audit chain: anonymous callers cannot make the
      * gateway write to the database.
      */

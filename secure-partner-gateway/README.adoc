@@ -128,6 +128,9 @@ never packaged. Its secrets are for development and tests only:
 
 |`short-lived-client`
 |Client credentials grant, secret `short-lived-test-secret`, no role, tokens expire after 3 seconds (expiry test)
+
+|`groups-claim-client`
+|Client credentials grant, secret `groups-claim-test-secret`, no role but a `groups` claim with `auditor` (role source test)
 |===
 
 Every token carries the audience `gateway-api`.
@@ -209,6 +212,10 @@ to start without `AUDIT_HMAC_KEY`.
 Quarkus, before a request reaches Camel:
 
 * `quarkus-oidc` checks the bearer token: signature, issuer, audience `gateway-api` and expiry. No token introspection.
+* Roles come from the realm roles only (`quarkus.oidc.roles.role-claim-path=realm_access/roles`), not from a `groups`
+claim.
+* Every client of the realm that can get the role `partner` and the audience `gateway-api` is trusted as a partner.
+Keep both under the control of the realm administrators.
 * Deny by default: `quarkus.http.auth.permission` denies `/*`, then allows single paths and methods to one role.
 The most specific path wins, and a method that is not listed on that path is denied.
 * Proactive authentication, 64 KB body limit, `X-Content-Type-Options: nosniff`.
@@ -222,7 +229,9 @@ Camel:
 * `platform-http` answers `415` and `406` for media types that the REST DSL does not declare. It lets a wildcard
 `Content-Type` such as `application/*` through, the order route answers `415` for it.
 * `CallerIdentity` reads the `SecurityIdentity` that Quarkus verified (header `CamelVertxPlatformHttpAuthenticatedUser`)
-into exchange properties. The tenant is the signed `partner_id` claim, never a header or a body field. A partner token
+into exchange properties. The tenant is the signed `partner_id` claim, never a header or a body field. The claim must
+come from a mapper only realm administrators control, like the hardcoded claim mapper of each partner client in
+`gateway-realm.json`, never from an attribute users or clients can edit. A partner token
 without that claim, or with a blank one, gets `403`.
 * Trust boundary: right after that, `removeHeaders("*", <inputs of the route>)` drops `Authorization`, `Cookie`,
 `Camel*` and spoofed ids. Caller tokens are never forwarded.
