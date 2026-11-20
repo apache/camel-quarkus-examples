@@ -23,7 +23,7 @@ Auditors query and verify that trail.
 |Needs an `Idempotency-Key` header (8 to 64 letters, digits, `-` or `_`). Answers `202` with the `orderId`.
 A retry with the same key gets `200` and the same `orderId`, or `409` while the first request still runs: retry later.
 The key alone identifies a retry, so a retry with another body also gets the first order.
-`400` for an invalid key or order, `413` above 64 KB, `415` or `406` for other media types, `429` with `Retry-After`
+`400` for an invalid key or order, or any query string, `413` above 64 KB, `415` or `406` for other media types, `429` with `Retry-After`
 above the rate limit.
 
 |`GET /api/orders/{id}`
@@ -214,6 +214,9 @@ into exchange properties. The tenant is the signed `partner_id` claim, never a h
 without that claim, or with a blank one, gets `403`.
 * Trust boundary: right after that, `removeHeaders("*", <inputs of the route>)` drops `Authorization`, `Cookie`,
 `Camel*` and spoofed ids. Caller tokens are never forwarded.
+* Camel puts HTTP headers, query and path parameters into one header map, so `removeHeaders` does not fix where a
+value comes from. Each route does: the order route rejects any query string (`Idempotency-Key` is the HTTP header),
+`{id}` wins over a query parameter or header named `id`, and the audit query reads its filters from the query string.
 * `ResponseHeaderFilter`, the header filter of `platform-http`, lets only `Retry-After` into responses. Request headers
 are never echoed, also not by answers before `removeHeaders`, like the `403` above.
 * `OrderService` enforces tenant ownership.

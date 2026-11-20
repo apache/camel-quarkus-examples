@@ -129,15 +129,32 @@ class AuditTrailTest extends AbstractGatewayTest {
     }
 
     /**
-     * A limit that is not a number or is zero, and an actor or action with control characters, get 400.
+     * A limit that is not a number or is zero, an actor or action with control characters, and a repeated parameter
+     * get 400.
      */
     @Test
     void invalidQueryIsRejected() {
-        for (String query : new String[] { "limit=all", "limit=0", "actor=a%00b", "action=a%00b", "action=order" }) {
+        for (String query : new String[] { "limit=all", "limit=0", "actor=a%00b", "action=a%00b", "action=order",
+                "actor=a&actor=b", "limit=1&limit=2" }) {
             given().auth().oauth2(auditorToken()).urlEncodingEnabled(false).get("/api/audit?" + query)
                     .then().statusCode(400)
                     .contentType("application/problem+json");
         }
+    }
+
+    /**
+     * Filters are query parameters: HTTP headers with the same names are ignored.
+     */
+    @Test
+    void filtersComeFromTheQueryOnly() {
+        List<Map<String, Object>> events = given().auth().oauth2(auditorToken())
+                .header("limit", "1")
+                .header("action", "NO_SUCH_ACTION")
+                .get("/api/audit")
+                .then().statusCode(200)
+                .extract().jsonPath().getList("$");
+
+        assertTrue(events.size() > 1, events::toString);
     }
 
     /**

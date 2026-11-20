@@ -23,6 +23,7 @@ import java.util.List;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
@@ -189,6 +190,18 @@ class OrderApiTest extends AbstractGatewayTest {
         // a single order was stored: one more ORDER_ACCEPTED, and the retry was answered from it
         assertEquals(accepted + 1, audit("?action=ORDER_ACCEPTED&limit=500").size());
         assertEquals("order/" + first, audit("?action=ORDER_REPLAYED&limit=1").get(0).get("resource"));
+    }
+
+    /**
+     * The Idempotency-Key is an HTTP header: a request with a query string gets 400.
+     */
+    @Test
+    void idempotencyKeyInTheQueryIsRejected() {
+        given().auth().oauth2(acmeToken()).contentType(ContentType.JSON).body(ORDER)
+                .queryParam(IDEMPOTENCY_KEY, newKey())
+                .post("/api/orders")
+                .then().statusCode(400)
+                .contentType("application/problem+json");
     }
 
     /**
