@@ -269,7 +269,8 @@ class SecurityTest extends AbstractGatewayTest {
 
         noTenant.then().statusCode(403).contentType("application/problem+json");
         malformed.then().statusCode(400).contentType("application/problem+json");
-        audit.then().statusCode(200).contentType("application/json");
+        // control characters are not valid in actor
+        audit.then().statusCode(400).contentType("application/problem+json");
         for (Response response : new Response[] { noTenant, malformed, audit }) {
             for (String header : new String[] { "X-Accel-Redirect", "Set-Cookie", "Location", "Retry-After",
                     IDEMPOTENCY_KEY, "actor", "action", "limit" }) {

@@ -192,6 +192,16 @@ class OrderApiTest extends AbstractGatewayTest {
     }
 
     /**
+     * An order id that is not a UUID gets 400, and no stack trace.
+     */
+    @Test
+    void invalidOrderIdIsRejected() {
+        given().auth().oauth2(acmeToken()).urlEncodingEnabled(false).get("/api/orders/abc%00def")
+                .then().statusCode(400)
+                .contentType("application/problem+json");
+    }
+
+    /**
      * Of 8 parallel requests exactly one gets 202, the others 200 or 409, and one order is stored.
      */
     @Test

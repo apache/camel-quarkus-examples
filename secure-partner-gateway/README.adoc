@@ -28,11 +28,12 @@ above the rate limit.
 
 |`GET /api/orders/{id}`
 |`partner`
-|Own orders only. An order of another partner gets `404`, like an unknown one.
+|Own orders only. An order of another partner gets `404`, like an unknown one. An id that is not a UUID gets `400`.
 
 |`GET /api/audit?actor=&action=&limit=`
 |`auditor`
 |Audit records, newest first. `limit` from 1 to 999, at most 500 records are returned, 50 by default.
+`actor` without control characters, `action` in upper case letters and `_`, else `400`.
 
 |`GET /api/audit/verify`
 |`auditor`

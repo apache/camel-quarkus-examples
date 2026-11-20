@@ -29,10 +29,16 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.processor.idempotent.jdbc.JdbcMessageIdRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import static org.apache.camel.support.builder.PredicateBuilder.or;
+
 @ApplicationScoped
 public class GatewayRoutes extends RouteBuilder {
 
     static final String IDEMPOTENCY_KEY = "Idempotency-Key";
+    // Inputs that reach the database are validated first: invalid ones get 400, not a database error
+    static final String UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+    static final String ACTOR = "[^\\p{Cntrl}]{1,255}";
+    static final String ACTION = "[A-Z_]{1,32}";
 
     @Inject
     CallerIdentity callerIdentity;
@@ -107,6 +113,7 @@ public class GatewayRoutes extends RouteBuilder {
         from("direct:order-read").routeId("order-read")
                 .process(callerIdentity)
                 .removeHeaders("*", "id")
+                .validate(header("id").regex(UUID))
                 .bean(orderService, "read(${exchangeProperty.caller}, ${header.id})")
                 .process(Json::write);
 
@@ -114,6 +121,8 @@ public class GatewayRoutes extends RouteBuilder {
                 .process(callerIdentity)
                 .removeHeaders("*", "actor", "action", "limit")
                 .validate(simple("${header.limit} == null || ${header.limit} regex '[1-9][0-9]{0,2}'"))
+                .validate(or(header("actor").isNull(), header("actor").regex(ACTOR)))
+                .validate(or(header("action").isNull(), header("action").regex(ACTION)))
                 .bean(auditLog, "query(${exchangeProperty.caller}, ${header.actor}, ${header.action}, ${header.limit})")
                 .process(Json::write);
 

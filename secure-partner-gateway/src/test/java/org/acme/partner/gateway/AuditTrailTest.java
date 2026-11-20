@@ -129,12 +129,12 @@ class AuditTrailTest extends AbstractGatewayTest {
     }
 
     /**
-     * A limit that is not a number or is zero gets 400.
+     * A limit that is not a number or is zero, and an actor or action with control characters, get 400.
      */
     @Test
     void invalidQueryIsRejected() {
-        for (String limit : new String[] { "all", "0" }) {
-            given().auth().oauth2(auditorToken()).get("/api/audit?limit=" + limit)
+        for (String query : new String[] { "limit=all", "limit=0", "actor=a%00b", "action=a%00b", "action=order" }) {
+            given().auth().oauth2(auditorToken()).urlEncodingEnabled(false).get("/api/audit?" + query)
                     .then().statusCode(400)
                     .contentType("application/problem+json");
         }
