@@ -219,8 +219,6 @@ Keep both under the control of the realm administrators.
 * Deny by default: `quarkus.http.auth.permission` denies `/*`, then allows single paths and methods to one role.
 The most specific path wins, and a method that is not listed on that path is denied.
 * Proactive authentication, 64 KB body limit, `X-Content-Type-Options: nosniff`.
-* In `prod`, the token verification warnings of Quarkus OIDC are not logged, as some contain the rejected token.
-The audit trail records these failures.
 * The `uri` tag of the HTTP metrics is the path template (`/api/orders/{id}`), or `UNKNOWN` (`NOT_FOUND` for a `404`)
 for a `4xx` on another path: no order ids in the metrics, and clients cannot add tag values.
 
@@ -298,7 +296,7 @@ application with `QUARKUS_FLYWAY_MIGRATE_AT_START=false` and without `QUARKUS_FL
 
 == Production checklist
 
-* Run with the `prod` profile: `camel.main.profile=prod` makes Camel refuse insecure Camel settings.
+* Run with the `prod` profile, which also sets `camel.main.profile=prod`.
 * Set `QUARKUS_OIDC_AUTH_SERVER_URL`, `QUARKUS_DATASOURCE_*`, `QUARKUS_FLYWAY_USERNAME`, `QUARKUS_FLYWAY_PASSWORD`
 and `AUDIT_HMAC_KEY` from a secret store. The key must be random (`openssl rand -base64 32`): the gateway does not
 start with fewer than 32 characters, or fewer than 8 different ones.
