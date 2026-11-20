@@ -99,7 +99,7 @@ When another example needs one of these concerns, it can copy the matching part:
 * Docker or Podman. Dev mode and the tests start Keycloak and PostgreSQL with
 https://quarkus.io/guides/dev-services[Quarkus Dev Services].
 * PostgreSQL 16 or newer in production.
-* `curl` and `jq` for the commands of the manual test guide.
+* `curl`, `jq` and `uuidgen` for the commands of <<_try_it,Try it>>.
 
 Keycloak imports the realm `gateway` from `config/gateway-realm.json`. It is outside of `src/main/resources`, so it is
 never packaged. Its secrets are for development and tests only:
@@ -149,9 +149,42 @@ https://camel.apache.org/camel-quarkus/latest/first-steps.html#_development_mode
 
 == Try it
 
-Dev mode is enough to try authentication, idempotent retries, tenant isolation, roles, validation, the throttle and the
-audit chain with its append-only table. Every command, step by step, is in
-link:TEST-GUIDE.adoc[the manual test guide].
+With dev mode running, get the tokens (they are short-lived, get new ones on an unexpected `401`):
+
+[source,shell]
+----
+export TOKEN_URL=http://localhost:8082/realms/gateway/protocol/openid-connect/token
+export ACME=$(curl -s -d grant_type=client_credentials -d client_id=partner-acme -d client_secret=acme-test-secret $TOKEN_URL | jq -r .access_token)
+export GLOBEX=$(curl -s -d grant_type=client_credentials -d client_id=partner-globex -d client_secret=globex-test-secret $TOKEN_URL | jq -r .access_token)
+export AARON=$(curl -s -d grant_type=password -d client_id=audit-console -d username=aaron -d password=aaron-test-password $TOKEN_URL | jq -r .access_token)
+----
+
+Submit an order, retry it, retry it with another order, and read it as its partner and as another partner:
+
+[source,shell]
+----
+export KEY=$(uuidgen)
+order() { curl -s -w ' %{http_code}\n' -H "Authorization: Bearer $ACME" -H "Idempotency-Key: $KEY" \
+  -H 'Content-Type: application/json' -d "$1" http://localhost:8080/api/orders; }
+order '{"sku":"WIDGET-1","quantity":2}'   # 202 and the orderId
+order '{"sku":"WIDGET-1","quantity":2}'   # 200 and the same orderId
+order '{"sku":"WIDGET-1","quantity":3}'   # 422
+export ORDER_ID=$(order '{"sku":"WIDGET-1","quantity":2}' | cut -d'"' -f4)   # a retry again, for the orderId
+curl -s -w ' %{http_code}\n' -H "Authorization: Bearer $ACME" http://localhost:8080/api/orders/$ORDER_ID    # 200
+curl -s -w ' %{http_code}\n' -H "Authorization: Bearer $GLOBEX" http://localhost:8080/api/orders/$ORDER_ID  # 404
+----
+
+Query and verify the audit trail as the auditor:
+
+[source,shell]
+----
+curl -s -H "Authorization: Bearer $AARON" 'http://localhost:8080/api/audit?limit=20' \
+  | jq -r '.[] | [.seq, .action, .outcome, .actor] | @tsv'
+curl -s -H "Authorization: Bearer $AARON" http://localhost:8080/api/audit/verify   # {"valid":true,"checked":N}
+----
+
+The dev mode log shows the chain head (`Audit chain head: seq=N hash=...`) at startup and every 5 minutes.
+The tests cover the rest: tokens, roles, validation, the throttle and the append-only table.
 
 == Package and run the application
 
@@ -200,7 +233,6 @@ mvn clean test               # JVM mode
 mvn clean verify -Dnative    # the native application
 ----
 
-* Manual steps with `curl`: see link:TEST-GUIDE.adoc[the manual test guide].
 * The tests need Docker or Podman. `-Dskip-testcontainers-tests` skips them in JVM and native mode, the plain unit tests
 `AuditChainTest` and `AuditLogTest` still run.
 * The tests of the packaged application run with the `test` profile (`quarkus.test.integration-test-profile=test`),
