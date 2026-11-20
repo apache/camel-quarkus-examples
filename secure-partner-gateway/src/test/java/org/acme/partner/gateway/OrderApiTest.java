@@ -271,7 +271,8 @@ class OrderApiTest extends AbstractGatewayTest {
     }
 
     /**
-     * Requests are sent until 429 with a Retry-After header; another partner is still served (202).
+     * Requests are sent until 429 with a Retry-After header, invalid requests then get 429 too; another partner is
+     * still served (202).
      */
     @Test
     void burstFromOnePartnerIsThrottled() {
@@ -284,8 +285,17 @@ class OrderApiTest extends AbstractGatewayTest {
                 .then().statusCode(429)
                 .contentType("application/problem+json")
                 .header("Retry-After", matchesPattern("[0-9]+"));
+        // the throttle runs first: a wildcard content type or a query string do not bypass it
+        postBytes(token, "application/*", ORDER.getBytes(StandardCharsets.UTF_8)).then().statusCode(429);
+        given().auth().oauth2(token).header(IDEMPOTENCY_KEY, newKey())
+                .contentType("application/json").body(ORDER)
+                .post("/api/orders?" + IDEMPOTENCY_KEY + "=" + newKey())
+                .then().statusCode(429);
         // the limit is per partner
         postOrder(acmeToken(), newKey(), ORDER).then().statusCode(202);
+        // rejections by the throttle are counted, not appended to the audit chain
+        assertTrue(audit("?action=REQUEST_REJECTED&limit=500").stream()
+                .noneMatch(event -> "ThrottlerRejectedExecutionException".equals(event.get("reason"))));
     }
 
     // the Content-Type exactly as given, REST Assured would otherwise append its default charset

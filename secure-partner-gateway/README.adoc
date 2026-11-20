@@ -74,8 +74,9 @@ link:src/main/resources/db/migration/V1.0.0__gateway_schema.sql[V1.0.0__gateway_
 link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
 . *External anchor*: a timer logs the chain head, to be kept outside of the database.
 link:src/main/java/org/acme/partner/gateway/GatewayRoutes.java[GatewayRoutes]
-. *Security and Camel lifecycle events audited*: `401`, `403`, context start and shutdown, route start, stop and reload are
-in the trail.
+. *Security and Camel lifecycle events audited*: `403` for authenticated callers, context start and shutdown, route
+start, stop and reload are in the trail. Requests without a valid token and `429` answers are only counted, so anonymous
+traffic cannot fill the trail.
 link:src/main/java/org/acme/partner/gateway/audit/SecurityEventAuditor.java[SecurityEventAuditor], link:src/main/java/org/acme/partner/gateway/audit/CamelLifecycleAuditor.java[CamelLifecycleAuditor]
 . *RFC 9457 errors*: `application/problem+json` without exception details. link:src/main/java/org/acme/partner/gateway/ErrorHandling.java[ErrorHandling],
 link:src/main/java/org/acme/partner/gateway/Problem.java[Problem]
@@ -241,8 +242,10 @@ Records come from three places, all through `AuditLog.append()`:
 . Business events, in the same transaction as the change: `ORDER_ACCEPTED`, `ORDER_REPLAYED`, `ORDER_READ`,
 `AUDIT_QUERIED`, `AUDIT_VERIFIED`. Rejections and failures come from the `onException` handlers: `REQUEST_REJECTED`,
 `ORDER_READ_DENIED`, `REQUEST_FAILED`.
-. `SecurityEventAuditor` observes the Quarkus `AuthenticationFailureEvent` and `AuthorizationFailureEvent`:
-`AUTHN_FAILED`, `AUTHZ_DENIED`. These are the `401` and `403` answers that Camel never sees.
+. `SecurityEventAuditor` observes the Quarkus `AuthorizationFailureEvent` of authenticated callers: `AUTHZ_DENIED`, a
+`403` that Camel never sees. It is observed asynchronously, so a record can be lost if the gateway stops first.
+Requests without a valid token (`401`) and throttled ones (`429`) only increment the metric
+`gateway_rejected_requests_total{status}`: anyone can send them, so they must not cause database writes.
 . `CamelLifecycleAuditor` observes Camel events through the Camel Quarkus CDI event bridge: `CONTEXT_STARTED`,
 `ROUTE_STARTED`, `ROUTE_STOPPED`, `ROUTE_RELOADED`. At shutdown it writes one `CONTEXT_STOPPING` record from the Quarkus
 `ShutdownEvent`, while the database is still open; the routes stopped by the shutdown get no own record.
@@ -263,7 +266,7 @@ Limits:
 
 * This is not WORM storage. The database owner can drop the trigger and rewrite the chain, and with the key even
 consistently. Only anchors kept outside of the database reveal that.
-* Appends are serialized. A verification loads the whole chain into memory and blocks appends meanwhile.
+* Appends are serialized. A verification reads every record, 1000 at a time, without blocking appends.
 * Rotating the HMAC key needs a key id in each record, which is not implemented.
 * Real compliance needs external anchoring, for example a SIEM, WORM storage or a timestamping service.
 * The `413` of the HTTP layer and the `415` and `406` of `platform-http` happen before the route: they are plain
@@ -278,8 +281,7 @@ random (`openssl rand -base64 32`): the gateway does not start with fewer than 3
 ones.
 * Serve HTTPS only, for example by terminating TLS in front of the gateway.
 * Do not expose the management port `9876`.
-* Rate limit unauthenticated traffic in front of the gateway: every `401`, `403` and `429` is an audit append, and
-appends are serialized.
+* Rate limit unauthenticated traffic in front of the gateway: it is not audited, but token verification still costs CPU.
 * Behind a reverse proxy, set `quarkus.http.proxy.proxy-address-forwarding` and `quarkus.http.proxy.trusted-proxies`,
 and make the proxy replace `X-Forwarded-For` with the client address instead of appending to it: Quarkus takes the
 first address, which clients can set.

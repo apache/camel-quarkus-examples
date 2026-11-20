@@ -47,27 +47,53 @@ final class AuditChain {
         event.link(prevHash, hash(event, prevHash));
     }
 
-    /**
-     * Checks events ordered by seq: no gap from seq 1, each record points to the hash of the previous one, each hash
-     * matches the record, and the last record is the chain head.
-     */
     Verification verify(List<AuditEvent> events, long headSeq, String headHash) {
-        long expectedSeq = 1;
-        String prevHash = GENESIS;
-        for (AuditEvent event : events) {
-            if (event.getSeq() != expectedSeq
-                    || !prevHash.equals(event.getPrevHash())
-                    || !hash(event, prevHash).equals(event.getHash())) {
+        Verifier verifier = verifier();
+        verifier.check(events);
+        return verifier.result(headSeq, headHash);
+    }
+
+    Verifier verifier() {
+        return new Verifier();
+    }
+
+    /**
+     * Checks events ordered by seq, page by page: no gap from seq 1, each record points to the hash of the previous
+     * one, each hash matches the record, and the last record is the chain head.
+     */
+    final class Verifier {
+
+        private long expectedSeq = 1;
+        private String prevHash = GENESIS;
+        private boolean intact = true;
+
+        void check(List<AuditEvent> page) {
+            for (AuditEvent event : page) {
+                if (!intact) {
+                    return;
+                }
+                if (event.getSeq() != expectedSeq
+                        || !prevHash.equals(event.getPrevHash())
+                        || !hash(event, prevHash).equals(event.getHash())) {
+                    intact = false;
+                    return;
+                }
+                prevHash = event.getHash();
+                expectedSeq++;
+            }
+        }
+
+        boolean intact() {
+            return intact;
+        }
+
+        Verification result(long headSeq, String headHash) {
+            // records cut from the end leave a consistent chain, the head reveals them unless it was rewound as well
+            if (!intact || expectedSeq - 1 != headSeq || !prevHash.equals(headHash)) {
                 return Verification.brokenAt(expectedSeq);
             }
-            prevHash = event.getHash();
-            expectedSeq++;
+            return Verification.valid(headSeq);
         }
-        // records cut from the end leave a consistent chain, the head reveals them unless it was rewound as well
-        if (expectedSeq - 1 != headSeq || !prevHash.equals(headHash)) {
-            return Verification.brokenAt(expectedSeq);
-        }
-        return Verification.valid(headSeq);
     }
 
     private String hash(AuditEvent event, String prevHash) {

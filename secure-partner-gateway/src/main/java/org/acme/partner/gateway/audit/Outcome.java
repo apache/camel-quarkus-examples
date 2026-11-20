@@ -18,7 +18,7 @@ package org.acme.partner.gateway.audit;
 
 public enum Outcome {
     SUCCESS,
-    /** The request broke the API contract or a limit (400, 409, 429). */
+    /** The request broke the API contract (400, 415, 422). */
     REJECTED,
     /** Authentication, authorization or tenant isolation said no (401, 403, 404). */
     DENIED,

@@ -45,6 +45,7 @@ public class AuditLog {
     private static final int MIN_KEY_DISTINCT_CHARACTERS = 8;
     private static final int DEFAULT_LIMIT = 50;
     private static final int MAX_LIMIT = 500;
+    private static final int VERIFY_PAGE_SIZE = 1000;
 
     @Inject
     EntityManager em;
@@ -108,20 +109,42 @@ public class AuditLog {
     }
 
     /**
-     * Recomputes the whole chain. The head lock keeps appends out while the chain is read.
+     * Recomputes the chain up to the current head, page by page. Without the head lock: the records up to the head are
+     * committed and append-only, so appends go on meanwhile.
      */
     @Transactional
     public Verification verify(Caller caller) {
-        AuditChainHead head = em.find(AuditChainHead.class, AuditChainHead.ID, LockModeType.PESSIMISTIC_WRITE);
-        List<AuditEvent> events = em.createQuery("SELECT e FROM AuditEvent e ORDER BY e.seq", AuditEvent.class)
-                .getResultList();
-        Verification verification = chain.verify(events, head.getSeq(), head.getHash());
+        AuditChainHead head = em.find(AuditChainHead.class, AuditChainHead.ID);
+        long headSeq = head.getSeq();
+        String headHash = head.getHash();
+        // the append below must read the head again, with the lock
+        em.detach(head);
+        Verification verification = verifyUpTo(headSeq, headHash);
         if (!verification.valid()) {
             LOG.errorf("Audit chain is broken at seq %d", verification.brokenAtSeq());
         }
         append(caller, "AUDIT_VERIFIED", "audit", Outcome.SUCCESS,
                 verification.valid() ? "valid" : "broken at seq " + verification.brokenAtSeq());
         return verification;
+    }
+
+    /**
+     * Checks the records up to {@code headSeq} only: records appended after the head was read are left to the next
+     * verification.
+     */
+    Verification verifyUpTo(long headSeq, String headHash) {
+        AuditChain.Verifier verifier = chain.verifier();
+        for (long from = 1; from <= headSeq && verifier.intact(); from += VERIFY_PAGE_SIZE) {
+            verifier.check(em
+                    .createQuery("SELECT e FROM AuditEvent e WHERE e.seq >= :from AND e.seq < :to ORDER BY e.seq",
+                            AuditEvent.class)
+                    .setParameter("from", from)
+                    .setParameter("to", Math.min(from + VERIFY_PAGE_SIZE, headSeq + 1))
+                    .getResultList());
+            // only one page in memory
+            em.clear();
+        }
+        return verifier.result(headSeq, headHash);
     }
 
     /**

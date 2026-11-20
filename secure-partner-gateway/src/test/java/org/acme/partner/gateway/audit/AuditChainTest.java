@@ -93,8 +93,25 @@ class AuditChainTest {
     }
 
     @Test
+    void chainCanBeVerifiedPageByPage() {
+        assertEquals(new Verification(true, 5, null), verifyInPagesOfTwo());
+
+        // a gap at the start of the second page
+        events.remove(2);
+        assertEquals(new Verification(false, 2, 3L), verifyInPagesOfTwo());
+    }
+
+    @Test
     void wrongKeyIsDetected() {
         assertEquals(new Verification(false, 0, 1L), verify(new AuditChain("another-audit-hmac-key-0123456789")));
+    }
+
+    private Verification verifyInPagesOfTwo() {
+        AuditChain.Verifier verifier = chain.verifier();
+        for (int from = 0; from < events.size(); from += 2) {
+            verifier.check(events.subList(from, Math.min(from + 2, events.size())));
+        }
+        return verifier.result(5, headHash);
     }
 
     // The chain head keeps naming the last record that was appended

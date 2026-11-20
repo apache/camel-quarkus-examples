@@ -18,11 +18,13 @@ package org.acme.partner.gateway;
 
 import java.time.Duration;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.acme.partner.gateway.audit.AuditLog;
 import org.acme.partner.gateway.audit.Caller;
 import org.acme.partner.gateway.audit.Outcome;
+import org.acme.partner.gateway.audit.SecurityEventAuditor;
 import org.acme.partner.gateway.order.IdempotencyKeyReusedException;
 import org.acme.partner.gateway.order.OrderNotOwnedException;
 import org.apache.camel.Exchange;
@@ -45,6 +47,9 @@ public class ErrorHandling extends RouteConfigurationBuilder {
     @Inject
     AuditLog auditLog;
 
+    @Inject
+    MeterRegistry registry;
+
     @ConfigProperty(name = "gateway.throttle.period")
     Duration throttlePeriod;
 
@@ -61,10 +66,13 @@ public class ErrorHandling extends RouteConfigurationBuilder {
                 .process(e -> problem(e, 415, "Unsupported Media Type", "The order must be application/json",
                         "REQUEST_REJECTED", Outcome.REJECTED));
 
+        // counted, not audited: a partner over its limit must not cause one audit append per rejected request
         errors.onException(ThrottlerRejectedExecutionException.class).handled(true)
                 .setHeader("Retry-After", constant(Math.max(1, throttlePeriod.toSeconds())))
-                .process(e -> problem(e, 429, "Too Many Requests", "Rate limit exceeded, retry later",
-                        "REQUEST_REJECTED", Outcome.REJECTED));
+                .process(e -> {
+                    registry.counter(SecurityEventAuditor.REJECTED_REQUESTS, "status", "429").increment();
+                    respond(e, 429, "Too Many Requests", "Rate limit exceeded, retry later");
+                });
 
         errors.onException(MissingTenantException.class).handled(true)
                 .process(e -> problem(e, 403, "Forbidden", "The caller is not assigned to a partner", "AUTHZ_DENIED",
@@ -98,7 +106,10 @@ public class ErrorHandling extends RouteConfigurationBuilder {
                 ? cause.getMessage()
                 : cause.getClass().getSimpleName();
         auditLog.append(caller != null ? caller : Caller.SYSTEM, action, resource, outcome, reason);
+        respond(exchange, status, title, detail);
+    }
 
+    private static void respond(Exchange exchange, int status, String title, String detail) {
         exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, status);
         exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/problem+json");
         exchange.getMessage().setBody(Json.encode(new Problem(title, status, detail)));

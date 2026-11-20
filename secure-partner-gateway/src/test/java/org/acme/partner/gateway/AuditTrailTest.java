@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 
 import io.quarkus.arc.Arc;
 import io.quarkus.test.junit.DisabledOnIntegrationTest;
@@ -80,23 +79,16 @@ class AuditTrailTest extends AbstractGatewayTest {
     }
 
     /**
-     * A bad token and a missing token give AUTHN_FAILED and AUTHZ_DENIED, a wrong role gives AUTHZ_DENIED.
+     * A wrong role gives AUTHZ_DENIED. Requests without a valid token are only counted, see SecurityTest.
      */
     @Test
     void requestsRejectedByQuarkusAreAudited() {
         long start = lastSeq();
-        String path = "/api/orders/" + UUID.randomUUID();
-        given().auth().oauth2("garbage").get(path).then().statusCode(401);
-        given().get(path).then().statusCode(401);
         given().auth().oauth2(acmeToken()).get("/api/audit/verify").then().statusCode(403);
 
         // Quarkus security events are observed asynchronously
-        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> {
-            List<Map<String, Object>> events = since(start);
-            assertAudited(events, "AUTHN_FAILED", "GET " + path, "anonymous", "ANONYMOUS", null, "DENIED");
-            assertAudited(events, "AUTHZ_DENIED", "GET " + path, "anonymous", "ANONYMOUS", null, "DENIED");
-            assertAudited(events, "AUTHZ_DENIED", "GET /api/audit/verify", ACME, "CLIENT", "acme", "DENIED");
-        });
+        await().atMost(Duration.ofSeconds(10)).untilAsserted(() -> assertAudited(since(start), "AUTHZ_DENIED",
+                "GET /api/audit/verify", ACME, "CLIENT", "acme", "DENIED"));
     }
 
     /**

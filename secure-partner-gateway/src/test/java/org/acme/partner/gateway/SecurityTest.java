@@ -145,6 +145,26 @@ class SecurityTest extends AbstractGatewayTest {
     }
 
     /**
+     * Requests without a valid token are counted, not appended to the audit chain: anonymous callers cannot make the
+     * gateway write to the database.
+     */
+    @Test
+    void anonymousRequestsAreNotAudited() throws Exception {
+        String path = "/api/orders/" + UUID.randomUUID();
+        for (int i = 0; i < 25; i++) {
+            given().get(path).then().statusCode(401);
+            given().auth().oauth2("garbage").get(path).then().statusCode(401);
+        }
+
+        // Quarkus security events are observed asynchronously, records would show up within this time
+        await().during(Duration.ofSeconds(2)).atMost(Duration.ofSeconds(5))
+                .until(() -> audit("?actor=anonymous").isEmpty());
+        given().get(management.toURI().resolve("/observe/metrics"))
+                .then().statusCode(200)
+                .body(containsString("gateway_rejected_requests_total{status=\"401\"}"));
+    }
+
+    /**
      * A partner token without a usable tenant gets 403 and an AUTHZ_DENIED audit record.
      */
     @Test
