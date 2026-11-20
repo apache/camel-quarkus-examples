@@ -383,7 +383,9 @@
                 </property>
             </activation>
             <properties>
-                <quarkus.native.enabled>true</quarkus.native.enabled>
+                <!-- Native mode is temporarily unsupported by camel-quarkus-keycloak -->
+                <!-- TODO: Re-enable - https://github.com/apache/camel-quarkus/issues/9528 -->
+                <quarkus.native.enabled>false</quarkus.native.enabled>
             </properties>
             <build>
                 <plugins>
