@@ -68,7 +68,9 @@ link:src/main/resources/db/migration/V1.0.0__gateway_schema.sql[V1.0.0__gateway_
 . *HMAC-chained audit trail*: each record is chained to the previous one, so changes are detectable.
 link:src/main/java/org/acme/partner/gateway/audit/AuditChain.java[AuditChain], link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
 . *`/api/audit` and `/api/audit/verify`*: auditors query and verify the trail. link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
-. *Append-only audit table*: database triggers reject `UPDATE`, `DELETE` and `TRUNCATE`.
+. *Append-only audit table*: database triggers reject `UPDATE`, `DELETE` and `TRUNCATE`. Flyway runs as the schema
+owner, the application as `gateway_app` with `INSERT` and `SELECT` only on `audit_event`, so it cannot remove the
+triggers.
 link:src/main/resources/db/migration/V1.0.0__gateway_schema.sql[V1.0.0__gateway_schema.sql]
 . *HMAC key checks at startup*: no key, a short key or a placeholder stops the startup.
 link:src/main/java/org/acme/partner/gateway/audit/AuditLog.java[AuditLog]
@@ -96,6 +98,7 @@ Other examples can copy these parts instead of covering the same concerns: the a
 
 * Docker or Podman. Dev mode and the tests start Keycloak and PostgreSQL with
 https://quarkus.io/guides/dev-services[Quarkus Dev Services].
+* PostgreSQL 16 or newer in production.
 * `curl` and `jq` for the commands of the manual test guide.
 
 Keycloak imports the realm `gateway` from `config/gateway-realm.json`. It is outside of `src/main/resources`, so it is
@@ -149,16 +152,23 @@ link:TEST-GUIDE.adoc[the manual test guide].
 
 == Package and run the application
 
-Outside of dev mode, nothing has a default. Without these variables the application does not start:
+Outside of dev and test mode, nothing has a default. Set these variables:
 
 [source,shell]
 ----
 export QUARKUS_OIDC_AUTH_SERVER_URL=https://keycloak.example.com/realms/gateway
 export QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://db.example.com:5432/gateway
-export QUARKUS_DATASOURCE_USERNAME=gateway
+# the schema owner runs the Flyway migration
+export QUARKUS_FLYWAY_USERNAME=gateway_owner
+export QUARKUS_FLYWAY_PASSWORD=<password>
+# the application role, created by the database administrator, gets its grants from the migration
+export QUARKUS_DATASOURCE_USERNAME=gateway_app
 export QUARKUS_DATASOURCE_PASSWORD=<password>
 export AUDIT_HMAC_KEY=$(openssl rand -base64 32)
 ----
+
+Without `AUDIT_HMAC_KEY` the application does not start. Without `QUARKUS_FLYWAY_*`, Flyway runs as `gateway_app`
+and the startup fails: it cannot create `flyway_schema_history` (no `CREATE` on schema `public`).
 
 === JVM mode
 
@@ -254,7 +264,8 @@ Tamper evidence:
 
 * `hash(n) = HMAC-SHA256(key, canonical(record n) || hash(n-1))`, the key comes from `AUDIT_HMAC_KEY`.
 * Every append locks the single row of `audit_chain_head`, so the chain stays linear.
-* A database trigger rejects `UPDATE`, `DELETE` and `TRUNCATE` on `audit_event`.
+* A database trigger rejects `UPDATE`, `DELETE` and `TRUNCATE` on `audit_event`. The application role `gateway_app`
+has only `INSERT` and `SELECT` on it and does not own it, so it cannot drop or disable the trigger.
 * `/api/audit/verify` recomputes the chain and reports the first missing, altered or misplaced `seq`. It cannot see
 records cut from the end when `audit_chain_head` is rewound as well (that needs the database owner, the trigger blocks
 `DELETE`): only the anchors below reveal that.
@@ -272,13 +283,16 @@ consistently. Only anchors kept outside of the database reveal that.
 * The `413` of the HTTP layer and the `415` and `406` of `platform-http` happen before the route: they are plain
 answers, not `application/problem+json`, and they are not audited.
 * Idempotency keys never expire: a key stays bound to its order.
+* With `quarkus.flyway.migrate-at-start`, the application process holds the password of the schema owner, so a
+compromised process can drop the trigger. To avoid that, run the migration as a separate step, and start the
+application with `QUARKUS_FLYWAY_MIGRATE_AT_START=false` and without `QUARKUS_FLYWAY_*` credentials.
 
 == Production checklist
 
 * Run with the `prod` profile: `camel.main.profile=prod` makes Camel refuse insecure Camel settings.
-* Set `QUARKUS_OIDC_AUTH_SERVER_URL`, `QUARKUS_DATASOURCE_*` and `AUDIT_HMAC_KEY` from a secret store. The key must be
-random (`openssl rand -base64 32`): the gateway does not start with fewer than 32 characters, or fewer than 8 different
-ones.
+* Set `QUARKUS_OIDC_AUTH_SERVER_URL`, `QUARKUS_DATASOURCE_*`, `QUARKUS_FLYWAY_USERNAME`, `QUARKUS_FLYWAY_PASSWORD`
+and `AUDIT_HMAC_KEY` from a secret store. The key must be random (`openssl rand -base64 32`): the gateway does not
+start with fewer than 32 characters, or fewer than 8 different ones.
 * Serve HTTPS only, for example by terminating TLS in front of the gateway.
 * Do not expose the management port `9876`.
 * Rate limit unauthenticated traffic in front of the gateway: it is not audited, but token verification still costs CPU.
@@ -288,7 +302,8 @@ first address, which clients can set.
 * Decide retention and access for the audit trail, it holds user names and IP addresses.
 * Ship the JSON logs, with the `audit-anchor` lines, to a SIEM that the database administrators cannot change.
 * Plan the HMAC key rotation (see the limits above).
-* Give the application database role `INSERT` and `SELECT` only on `audit_event`, and run Flyway with another role.
+* Create the role `gateway_app` for the application, and run Flyway as the schema owner, as shown above. The migration
+grants `gateway_app` only `INSERT` and `SELECT` on `audit_event`.
 * Register each partner as its own client. Auditors log in with the authorization code flow, not the password grant.
 
 == Feedback

@@ -35,7 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Checks that the audit table is append-only in the database itself.
  * <ul>
- * <li>UPDATE, DELETE and TRUNCATE on audit_event fail with an "append-only" error</li>
+ * <li>UPDATE, DELETE and TRUNCATE on audit_event fail</li>
+ * <li>the application role cannot drop or disable the trigger, as Flyway runs as another role</li>
  * </ul>
  * Even a bug or a stolen application connection must not be able to rewrite the audit history.
  * <p>
@@ -67,7 +68,33 @@ class AuditImmutabilityTest {
                     "DELETE FROM audit_event",
                     "TRUNCATE audit_event" }) {
                 SQLException e = assertThrows(SQLException.class, () -> statement.executeUpdate(tampering));
-                assertTrue(e.getMessage().contains("audit_event is append-only"), e.getMessage());
+                // the runtime role has no such privilege, the trigger stops the owner as well
+                assertTrue(e.getMessage().contains("permission denied")
+                        || e.getMessage().contains("audit_event is append-only"), e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * The runtime role does not own the tables, Flyway does: it cannot drop or disable the trigger.
+     */
+    @Test
+    @DisabledOnIntegrationTest("Needs the DataSource of the application")
+    void applicationRoleCannotRemoveTheTrigger() throws SQLException {
+        DataSource dataSource = Arc.container().instance(DataSource.class).get();
+        try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
+            try {
+                for (String tampering : new String[] {
+                        "ALTER TABLE audit_event DISABLE TRIGGER audit_event_no_update_or_delete",
+                        "DROP TRIGGER audit_event_no_update_or_delete ON audit_event" }) {
+                    SQLException e = assertThrows(SQLException.class, () -> statement.execute(tampering));
+                    assertTrue(e.getMessage().contains("must be owner"), e.getMessage());
+                    connection.rollback();
+                }
+            } finally {
+                connection.rollback();
+                connection.setAutoCommit(true);
             }
         }
     }
