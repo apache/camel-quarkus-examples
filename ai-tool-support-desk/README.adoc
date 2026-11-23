@@ -84,6 +84,8 @@ To use another server with an OpenAI compatible API, set the `SUPPORT_DESK_LLM_B
 
 Dev mode and the tests also need Docker or Podman, for the PostgreSQL started by Dev Services.
 
+NOTE: Until quarkus-mcp-server supports Quarkus 4, build with `-Dno-mcp` (chat only).
+
 == Start in Development mode
 
 [source,shell]
