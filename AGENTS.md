@@ -115,6 +115,13 @@ formatting, compilation, tests, and native builds (Linux/Windows, JDK 21/25).
 - **README**: AsciiDoc, with `Start in Development mode`, `Package and run`, and
   (where relevant) native sections, plus a Feedback section.
 
+## Securing an API
+
+When an example needs authentication, RBAC, tenant isolation, idempotency or an
+audit trail, see [`secure-partner-gateway`](secure-partner-gateway/README.adoc):
+its Features section links each concern to its code. Match the security of an
+example to its scope, and copy only the parts it needs.
+
 ## Adding a new example (checklist)
 
 1. Scaffold the example with the Camel Quarkus Maven mojo — it creates the
