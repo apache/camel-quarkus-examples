@@ -16,7 +16,6 @@
  */
 package org.acme.a2a.openai.ticket.triage.orchestrator;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.acme.a2a.openai.ticket.triage.orchestrator.model.Ticket;
@@ -39,17 +38,6 @@ public class TicketTriageRoutes extends RouteBuilder {
 
     @Override
     public void configure() {
-        // Invalid tickets are rejected with HTTP 400. The details are logged, the caller only gets a generic message
-        // so that nothing about the internals leaks out. A JSON parsing error only counts as the caller's fault while
-        // the ticket has not been parsed yet (onWhen): Jackson errors later in the route are server side problems.
-        onException(InvalidTicketException.class, JsonProcessingException.class)
-                .onWhen(exchangeProperty(TriageSupport.PROPERTY_TICKET).isNull())
-                .handled(true)
-                .log(LoggingLevel.WARN, "Rejected ticket: ${exception.message}")
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
-                .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-                .setBody(constant("{\"error\":\"Invalid ticket: a non-empty subject and body are required\"}"));
-
         // The orchestrator is at capacity: tell the caller to retry later (HTTP 503) instead of queueing LLM calls
         onException(ThrottlerRejectedExecutionException.class)
                 .handled(true)
@@ -71,8 +59,20 @@ public class TicketTriageRoutes extends RouteBuilder {
 
         from("platform-http:/tickets?httpMethodRestrict=POST&consumes=application/json&produces=application/json")
                 .routeId("ticket-triage")
+                // A ticket that cannot be parsed or fails validation is rejected with HTTP 400. The details are logged,
+                // the caller only gets a generic message so that nothing about the internals leaks out. Only these
+                // steps are the caller's fault: JSON errors later in the route are server side problems (HTTP 502).
+                .doTry()
                 .unmarshal().json(Ticket.class)
                 .process(support::validateTicket)
+                .endDoTry()
+                .doCatch(Exception.class)
+                .log(LoggingLevel.WARN, "Rejected ticket: ${exception.message}")
+                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(400))
+                .setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
+                .setBody(constant("{\"error\":\"Invalid ticket: a non-empty subject and body are required\"}"))
+                .stop()
+                .end()
                 // Drop every inbound HTTP header before talking to the LLM or to other agents. Otherwise a caller could
                 // inject CamelOpenAI* or CamelA2A* headers and hijack the prompt or the task.
                 .removeHeaders("*")
