@@ -46,7 +46,7 @@
         <license-maven-plugin.version>5.1.2</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
         <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
-        <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
         <!-- Keep aligned with smallrye-certificate-generator managed by the Quarkus BOM -->
         <smallrye-certificate-generator.version>1.1.3</smallrye-certificate-generator.version>
 
