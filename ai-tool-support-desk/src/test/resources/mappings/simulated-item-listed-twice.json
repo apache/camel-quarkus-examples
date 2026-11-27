@@ -1,0 +1,113 @@
+{
+  "mappings": [
+    {
+      "name": "simulated-item-listed-twice-tool-call",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "Please return the charger of order 2003, I do not need it."
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-stub-item-listed-twice-tool-call",
+          "object": "chat.completion",
+          "created": 0,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_item_listed_twice",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "request_return",
+                      "arguments": "{\"orderId\":2003,\"items\":[{\"sku\":\"CHARGER-C1\",\"quantity\":1},{\"sku\":\"CHARGER-C1\",\"quantity\":1}],\"reason\":\"NO_LONGER_NEEDED\"}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "simulated-item-listed-twice-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_item_listed_twice"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "The requested items or quantities are not part of order 2003"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-stub-item-listed-twice-reply",
+          "object": "chat.completion",
+          "created": 0,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "I could not create the return: order 2003 contains one charger only."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        }
+      }
+    }
+  ]
+}

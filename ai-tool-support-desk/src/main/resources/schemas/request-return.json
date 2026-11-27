@@ -1,0 +1,34 @@
+{
+  "type": "object",
+  "properties": {
+    "orderId": {
+      "type": "integer",
+      "description": "The order number"
+    },
+    "items": {
+      "type": "array",
+      "description": "The items of the order to return",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "description": "The SKU of the item, as returned by get_order"
+          },
+          "quantity": {
+            "type": "integer",
+            "description": "How many pieces of the item to return"
+          }
+        },
+        "required": ["sku", "quantity"]
+      }
+    },
+    "reason": {
+      "type": "string",
+      "enum": ["DEFECTIVE", "DAMAGED", "WRONG_ITEM", "NOT_AS_EXPECTED", "NO_LONGER_NEEDED"],
+      "description": "Why the customer returns the items"
+    }
+  },
+  "required": ["orderId", "items", "reason"],
+  "additionalProperties": false
+}

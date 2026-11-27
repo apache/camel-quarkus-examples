@@ -1,0 +1,113 @@
+{
+  "mappings": [
+    {
+      "name": "simulated-carrier-unavailable-tool-call",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "Has my order 1003 left the warehouse?"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-sim-6",
+          "object": "chat.completion",
+          "created": 1791900000,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_carrier_unavailable",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "track_shipment",
+                      "arguments": "{\"orderId\":1003}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "simulated-carrier-unavailable-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_carrier_unavailable"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "The carrier tracking service is not available right now, try again later"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-sim-7",
+          "object": "chat.completion",
+          "created": 1791900000,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "I cannot reach the carrier right now, please try again later."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        }
+      }
+    }
+  ]
+}

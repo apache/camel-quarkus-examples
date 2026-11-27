@@ -1,0 +1,51 @@
+{
+  "mappings": [
+    {
+      "name": "simulated-slow-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "Hello, is anybody there?"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-sim-5",
+          "object": "chat.completion",
+          "created": 1791900000,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Hello, how can I help you?"
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        },
+        "fixedDelayMilliseconds": 5000
+      }
+    }
+  ]
+}

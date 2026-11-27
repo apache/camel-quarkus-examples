@@ -5,6 +5,11 @@
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/a2a-openai"
   },
   {
+    "title": "AI Tool Support Desk with LangChain4j and MCP",
+    "description": "Shows how to serve Camel routes as AI tools to a LangChain4j agent and, over MCP, to the AI assistant of the support staff",
+    "link": "https://github.com/apache/camel-quarkus-examples/tree/main/ai-tool-support-desk"
+  },
+  {
     "title": "AMQP",
     "description": "Shows how to produce and consume messages to an ActiveMQ Artemis broker using AMQP.",
     "link": "https://github.com/apache/camel-quarkus-examples/tree/main/amqp"

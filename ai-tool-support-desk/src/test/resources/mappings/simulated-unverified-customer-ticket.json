@@ -1,0 +1,113 @@
+{
+  "mappings": [
+    {
+      "name": "simulated-unverified-customer-ticket-tool-call",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "I want to talk to a human about my order 3001."
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-sim-14",
+          "object": "chat.completion",
+          "created": 1791900000,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_unverified_customer_ticket",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "escalate_to_human",
+                      "arguments": "{\"summary\":\"The customer wants to talk to a human about order 3001\",\"priority\":\"MEDIUM\"}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "simulated-unverified-customer-ticket-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_unverified_customer_ticket"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "Access denied: not authorized to call tool 'escalate_to_human'"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-sim-15",
+          "object": "chat.completion",
+          "created": 1791900000,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "I am sorry, I cannot open a ticket for you."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0
+          }
+        }
+      }
+    }
+  ]
+}

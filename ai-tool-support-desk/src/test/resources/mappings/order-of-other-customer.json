@@ -1,0 +1,113 @@
+{
+  "mappings": [
+    {
+      "name": "order-of-other-customer-tool-call",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "And what about order 2001?"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-184",
+          "object": "chat.completion",
+          "created": 1791885962,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_order_2001",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "get_order",
+                      "arguments": "{\"orderId\":2001}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1417,
+            "completion_tokens": 20,
+            "total_tokens": 1437
+          }
+        }
+      }
+    },
+    {
+      "name": "order-of-other-customer-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_order_2001"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "Order 2001 not found"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-644",
+          "object": "chat.completion",
+          "created": 1791885966,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "I\u2019m sorry, but there is no record of an order with the number 2001 in our system. Please double-check the order ID and try again. If you have another question or need further assistance, feel free to ask!"
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1457,
+            "completion_tokens": 48,
+            "total_tokens": 1505
+          }
+        }
+      }
+    }
+  ]
+}

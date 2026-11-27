@@ -1,0 +1,113 @@
+{
+  "mappings": [
+    {
+      "name": "order-status-tool-call",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "equalTo": "What is the status of my order 1001?"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-244",
+          "object": "chat.completion",
+          "created": 1791885955,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "",
+                "tool_calls": [
+                  {
+                    "id": "call_order_1001",
+                    "index": 0,
+                    "type": "function",
+                    "function": {
+                      "name": "get_order",
+                      "arguments": "{\"orderId\":1001}"
+                    }
+                  }
+                ]
+              },
+              "finish_reason": "tool_calls"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1230,
+            "completion_tokens": 21,
+            "total_tokens": 1251
+          }
+        }
+      }
+    },
+    {
+      "name": "order-status-reply",
+      "request": {
+        "method": "POST",
+        "url": "/chat/completions",
+        "bodyPatterns": [
+          {
+            "contains": "You are the customer support assistant of the Acme online shop"
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].tool_call_id",
+              "equalTo": "call_order_1001"
+            }
+          },
+          {
+            "matchesJsonPath": {
+              "expression": "$.messages[-1].content",
+              "contains": "CABLE-USBC"
+            }
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "chatcmpl-397",
+          "object": "chat.completion",
+          "created": 1791885960,
+          "model": "granite4.1:3b",
+          "system_fingerprint": "fp_ollama",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "Your order 1001 is currently **DELIVERED** on October 8, 2026. It contains two USB-C cables (SKU: CABLE-USBC) with a unit price of 12.50 EUR each."
+              },
+              "finish_reason": "stop"
+            }
+          ],
+          "usage": {
+            "prompt_tokens": 1352,
+            "completion_tokens": 48,
+            "total_tokens": 1400
+          }
+        }
+      }
+    }
+  ]
+}
